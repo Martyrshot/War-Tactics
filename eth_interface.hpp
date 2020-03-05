@@ -5,7 +5,6 @@
 #include <mutex>
 
 #include "json/include/nlohmann/json.hpp"
-#include <libconfig.h++>
 #include <sodium.h>
 
 #include <eth_interface_except.hpp>
