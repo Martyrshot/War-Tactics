@@ -120,47 +120,6 @@ class ThreadExistsException : public EthException
 };
 
 
-
-class CryptographicException : public EthException
-{
-	public:
-	CryptographicException(const char* msg)
-		: EthException(msg)
-	{
-	}
-	CryptographicException(const std::string& msg)
-		: EthException(msg)
-	{
-	}
-};
-
-class CryptographicFailureException : public CryptographicException
-{
-	public:
-	CryptographicFailureException(const char* msg)
-		: CryptographicException(msg)
-	{
-	}
-	CryptographicFailureException(const std::string& msg)
-		: CryptographicException(msg)
-	{
-	}
-};
-
-class CryptographicKeyMissmatchException : public CryptographicException
-{
-	public:
-	CryptographicKeyMissmatchException(const char* msg)
-		: CryptographicException(msg)
-	{
-	}
-	CryptographicKeyMissmatchException(const std::string& msg)
-		: CryptographicException(msg)
-	{
-	}
-};
-
-
 } //namespace
 
 
