@@ -1,10 +1,10 @@
 # 434-project
 
-#### Dependencies
+## Dependencies
 
 This list is a work in progress and more will be added
 
-##### ethabi
+#### ethabi
 Compile and install the ethabi binary. It MUST use only this one specific commit from the project as listed. This is because of a bug was fixed on one commit, then the commit following that one changed the CLI fairly radically and broke compatibility.
 
 First install rustc & cargo as directed at [https://www.rust-lang.org/tools/install]
@@ -16,9 +16,10 @@ Then
 
 Test ethabi works: `ethabi -h`
 
-##### Boost Library
+#### Boost Library
 
-######Ubuntu/Debian
+##### Ubuntu/Debian
+
 `sudo apt update && sudo apt install libboost-all-dev`
 
 
