@@ -88,27 +88,41 @@ contract Game {
 	}
 
 
-	function get_player1_deck() external view returns(uint8[]) {
+	function get_player1_deck() external view returns(uint8[] memory) {
 		require(has_player1_deck && has_player2_deck);
 		return player1_deck;
 	}
 
 
-	function get_player2_deck() external view returns(uint8[]) {
+	function get_player2_deck() external view returns(uint8[] memory) {
 		require(has_player1_deck && has_player2_deck);
 		return player2_deck;
 	}
 
 
 	// WORK IN PROGRESS
-	function submit_deck_signatures(uint8[] v, uint32[] r, uint32[] r) external _player {
+	function submit_deck_signatures(uint8[] calldata v, bytes32[] calldata r, bytes32[] calldata s) external _player {
 		require(v.length == DECK_SIZE && r.length == DECK_SIZE && r.length == DECK_SIZE);
+		uint8 memory hidden_card;
 
 		if (player1 == msg.sender) {
 			require(!has_player1_decksigs);
 
 			for (uint8 i = 0; i < DECK_SIZE; i++) {
-				if ()
+				if (msg.sender == player1) {
+					hidden_card = player1_deck[i];
+				} else {
+					hidden_card = player2_deck[i];
+				}
+
+				if (!verify_card(card, hidden_card, i, addr, v[i], r[i], s[i])) {
+					if (msg.sender == player1) {
+						player1_cheated = true;
+					} else {
+						player2_cheated = true;
+					}
+					break;
+				}
 				player1_revealed_deck[i] = player1_deck[i];
 			}
 
