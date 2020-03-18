@@ -3,6 +3,8 @@ pragma solidity >=0.6.0;
 // Validating keccak256 signatures in Solidity: https://ethereum.stackexchange.com/questions/710/how-can-i-verify-a-cryptographic-signature-that-was-produced-by-an-ethereum-addr/718
 
 contract Game {
+	uint8 constant DECK_SIZE = 52;
+
 	string game_create_time;
 	string game_join_time;
 
@@ -55,14 +57,22 @@ contract Game {
 	}
 
 
-	// https://ethereum.stackexchange.com/questions/710/how-can-i-verify-a-cryptographic-signature-that-was-produced-by-an-ethereum-addr/718
-	function verify_card(uint8 hidden_card, uint8 mod, address addr, uint8 v, bytes32 r, bytes32 s) internal returns(bool) {
-		bytes32 memory hash = strConcat(game_create_time, game_join_time, hidden_card);
-		return ecrecover(hash, v, r, s) == addr && ; // TODO: WORK IN PROGRESS
+	function signature_to_card(uint8 v, bytes32 r, bytes32 s) internal returns(uint8) {
+		uint8 memory c = v;
+		for (uint8 i = 0; i < 32; i++) {
+			c = c ^ r ^ s;
+		}
+		return c % DECK_SIZE;
 	}
 
 
-	function get_timestamps() view _player returns(uint32, uint32) {
+	function verify_card(uint8 card, uint8 hidden_card, uint8 modulo, address addr, uint8 v, bytes32 r, bytes32 s) internal returns(bool) {
+		bytes32 memory hash = strConcat(game_create_time, game_join_time, hidden_card);
+		return ecrecover(hash, v, r, s) == addr && signature_to_card(v, r, s) == card;
+	}
+
+
+	function get_timestamps() external view _player returns(uint32, uint32) {
 		require(has_player2);
 		return (game_creation_time, game_join_time);
 	}
@@ -90,13 +100,14 @@ contract Game {
 	}
 
 
+	// WORK IN PROGRESS
 	function submit_deck_signatures(uint8[] v, uint32[] r, uint32[] r) external _player {
-		require(v.length == 52 && r.length == 52 && r.length == 52);
+		require(v.length == DECK_SIZE && r.length == DECK_SIZE && r.length == DECK_SIZE);
 
 		if (player1 == msg.sender) {
 			require(!has_player1_decksigs);
 
-			for (uint8 i = 0; i < 52; i++) {
+			for (uint8 i = 0; i < DECK_SIZE; i++) {
 				if ()
 				player1_revealed_deck[i] = player1_deck[i];
 			}
@@ -129,13 +140,13 @@ contract Game {
 
 
 	function create_deck(uint8[] calldata my_deck, uint8[] calldata their_deck) external _player {
-		require(my_deck.length == 52 && their_deck.length == 52);
+		require(my_deck.length == DECK_SIZE && their_deck.length == DECK_SIZE);
 
 		if (player1 == msg.sender) {
 			require(!has_player1_deck);
 
 			if (has_player2_deck) {
-				for (uint8 i = 0; i < 52; i++) {
+				for (uint8 i = 0; i < DECK_SIZE; i++) {
 					player1_deck[i] = player1_deck[i] ^ my_deck[i];
 					player2_deck[i] = player2_deck[i] ^ their_deck[i];
 				}
@@ -150,7 +161,7 @@ contract Game {
 			require(!has_player2_deck);
 
 			if (has_player1_deck) {
-				for (uint8 i = 0; i < 52; i++) {
+				for (uint8 i = 0; i < DECK_SIZE; i++) {
 					player2_deck[i] = player2_deck[i] ^ my_deck[i];
 					player1_deck[i] = player1_deck[i] ^ their_deck[i];
 				}
