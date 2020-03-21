@@ -6,6 +6,11 @@ import "./helper.sol";
 
 contract Game {
 
+	uint8 constant DECK_SIZE = 52;
+	uint8 constant HAND_SIZE = 5;
+	uint8 constant BOARD_WIDTH = 10;
+	uint8 constant BOARD_HEIGHT = 9;
+
 	enum owner_e {unowned, player1, player2}
 
 	struct BoardSpace {
@@ -14,29 +19,29 @@ contract Game {
 		owner_e owner;
 	}
 
-	BoardSpace[10][9] board;
 
-	uint8 constant DECK_SIZE = 52;
+	BoardSpace[BOARD_WIDTH][BOARD_HEIGHT] board;
 
 	string game_create_time;
 	string game_join_time;
 
-	uint8[] deck;
+	uint8[DECK_SIZE] deck;
+
 
 	address player1;
-	uint8[] player1_revealed_deck;
-	bool player1_cheated;
+	uint8[HAND_SIZE] player1_hand;
 	bool has_player1_deck;
-	bool has_player1_decksigs;
+
 
 	address player2;
-	uint8[] player2_revealed_deck;
-	bool player2_cheated;
+	uint8[HAND_SIZE] player2_hand;
 	bool has_player2_deck;
-	bool has_player2_decksigs;
 	bool has_player2;
 
-	address helper;
+
+	Helper helper_contract;
+
+
 
 	// keccak256 signature: 683bd2659be7113b3c0113c3c6d6a2d8a84e09a864bada4a03a67998e041ad24
 	event PlayerJoined();
@@ -51,103 +56,22 @@ contract Game {
 	event SignaturesVerified();
 
 
+
 	modifier _player {
 		require(msg.sender == player1 || msg.sender == player2);
 		_;
 	}
 
 	constructor(address _helper) public {
-		helper = Helper(_helper);
+		helper_contract = Helper(_helper);
 
 		player1 = msg.sender;
 		has_player1_deck = false;
-		has_player1_decksigs = false;
-		player1_cheated = false;
 
 		has_player2_deck = false;
-		has_player2_decksigs = false;
 		has_player2 = false;
-		player2_cheated = false;
 
-		game_create_time = helper.uint2str(now);
-	}
-
-
-	function signature_to_card(uint8 v, bytes32 r, bytes32 s) internal returns(uint8) {
-		uint8 memory c = v;
-		for (uint8 i = 0; i < 32; i++) {
-			c = c ^ r ^ s;
-		}
-		return c % DECK_SIZE;
-	}
-
-
-	function verify_card(uint8 card, uint8 hidden_card, uint8 modulo, address addr, uint8 v, bytes32 r, bytes32 s) internal returns(bool) {
-		bytes32 memory hash = helper.strConcat(game_create_time, game_join_time, hidden_card);
-		return ecrecover(hash, v, r, s) == addr && signature_to_card(v, r, s) == card;
-	}
-
-
-	function get_timestamps() external view _player returns(uint32, uint32) {
-		require(has_player2);
-		return (game_creation_time, game_join_time);
-	}
-
-
-	function has_players() public view returns(bool) {
-		return has_player2;
-	}
-
-
-	function has_decks() public view returns(bool) {
-		return has_player1_deck && has_player2_deck;
-	}
-
-
-	function get_deck() external view returns(uint8[] memory) {
-		require(has_player1_deck && has_player2_deck);
-		return deck;
-	}
-
-
-	// WORK IN PROGRESS
-	function submit_deck_signatures(uint8[] calldata v, bytes32[] calldata r, bytes32[] calldata s) external _player {
-		require(v.length == DECK_SIZE && r.length == DECK_SIZE && r.length == DECK_SIZE);
-		uint8 memory hidden_card;
-
-		if (player1 == msg.sender) {
-			require(!has_player1_decksigs);
-
-			for (uint8 i = 0; i < DECK_SIZE; i++) {
-				if (msg.sender == player1) {
-					hidden_card = player1_deck[i];
-				} else {
-					hidden_card = player2_deck[i];
-				}
-
-				if (!verify_card(card, hidden_card, i, addr, v[i], r[i], s[i])) {
-					if (msg.sender == player1) {
-						player1_cheated = true;
-					} else {
-						player2_cheated = true;
-					}
-					break;
-				}
-				player1_revealed_deck[i] = player1_deck[i];
-			}
-
-			has_player1_decksigs = true;
-
-		} else if (player2 == msg.sender) {
-			require(!has_player2_decksigs);
-
-		}
-
-		emit SubmitDeckSignatures(msg.sender);
-
-		if (has_player1_decksigs && has_player2_decksigs) {
-			emit SignaturesVerified();
-		}
+		game_create_time = helper_contract.uint2str(now);
 	}
 
 
@@ -155,7 +79,7 @@ contract Game {
 		require(!hasPlayer2);
 
 		player2 = msg.sender;
-		game_join_time = helper.uint2str(now);
+		game_join_time = helper_contract.uint2str(now);
 
 		emit PlayerJoined();
 
@@ -175,7 +99,9 @@ contract Game {
 				}
 
 			} else {
-				deck = _deck; // TODO: Do we need to iterate the array to copy it?
+				for (uint8 i = 0; i < DECK_SIZE; i++) {
+					deck[i] = _deck[i];
+				}
 			}
 			has_player1_deck = true;
 
@@ -188,7 +114,9 @@ contract Game {
 				}
 
 			} else {
-				deck = _deck; // TODO: Do we need to iterate the array to copy it?
+				for (uint8 i = 0; i < DECK_SIZE; i++) {
+					deck[i] = _deck[i];
+				}
 			}
 			has_player2_deck = true;
 		}
@@ -197,5 +125,36 @@ contract Game {
 			emit DecksReady();
 		}
 	}
+
+
+	function signature_to_card(uint8 v, bytes32 r, bytes32 s) internal returns (uint8) {
+		uint8 memory c = v;
+		for (uint8 i = 0; i < 32; i++) {
+			c = c ^ r ^ s;
+		}
+		return c % DECK_SIZE;
+	}
+
+
+	function verify_card(uint8 card, uint8 hidden_card, uint8 modulo, address addr, uint8 v, bytes32 r, bytes32 s) internal returns (bool) {
+		bytes32 memory hash = helper_contract.strConcat(game_create_time, game_join_time, hidden_card);
+		return ecrecover(hash, v, r, s) == addr && signature_to_card(v, r, s) == card;
+	}
+
+
+	function has_players() public view returns (bool) {
+		return has_player2;
+	}
+
+
+	function has_deck() public view returns (bool) {
+		return has_player1_deck && has_player2_deck;
+	}
+
+
+	function get_board_state() public view returns (board[10][9]) {
+		return board;
+	}
+
 
 }
