@@ -1,5 +1,7 @@
 pragma solidity >=0.6.0;
 
+import "./helper.sol";
+
 // Validating keccak256 signatures in Solidity: https://ethereum.stackexchange.com/questions/710/how-can-i-verify-a-cryptographic-signature-that-was-produced-by-an-ethereum-addr/718
 
 contract Game {
@@ -34,6 +36,7 @@ contract Game {
 	bool has_player2_decksigs;
 	bool has_player2;
 
+	address helper;
 
 	// keccak256 signature: 683bd2659be7113b3c0113c3c6d6a2d8a84e09a864bada4a03a67998e041ad24
 	event PlayerJoined();
@@ -53,7 +56,9 @@ contract Game {
 		_;
 	}
 
-	constructor() public {
+	constructor(address _helper) public {
+		helper = Helper(_helper);
+
 		player1 = msg.sender;
 		has_player1_deck = false;
 		has_player1_decksigs = false;
@@ -64,7 +69,7 @@ contract Game {
 		has_player2 = false;
 		player2_cheated = false;
 
-		game_create_time = uint2str(now);
+		game_create_time = helper.uint2str(now);
 	}
 
 
@@ -78,7 +83,7 @@ contract Game {
 
 
 	function verify_card(uint8 card, uint8 hidden_card, uint8 modulo, address addr, uint8 v, bytes32 r, bytes32 s) internal returns(bool) {
-		bytes32 memory hash = strConcat(game_create_time, game_join_time, hidden_card);
+		bytes32 memory hash = helper.strConcat(game_create_time, game_join_time, hidden_card);
 		return ecrecover(hash, v, r, s) == addr && signature_to_card(v, r, s) == card;
 	}
 
@@ -156,7 +161,7 @@ contract Game {
 		require(!hasPlayer2);
 
 		player2 = msg.sender;
-		game_join_time = uint2str(now);
+		game_join_time = helper.uint2str(now);
 
 		emit PlayerJoined();
 
@@ -201,57 +206,6 @@ contract Game {
 		if (has_player1_deck && has_player2_deck) {
 			emit DecksReady();
 		}
-	}
-
-
-	// https://github.com/provable-things/ethereum-api/blob/master/oraclizeAPI_0.5.sol
-	function strConcat(string _a, string _b, string _c, string _d, string _e) internal returns (string){
-		bytes memory _ba = bytes(_a);
-		bytes memory _bb = bytes(_b);
-		bytes memory _bc = bytes(_c);
-		bytes memory _bd = bytes(_d);
-		bytes memory _be = bytes(_e);
-		string memory abcde = new string(_ba.length + _bb.length + _bc.length + _bd.length + _be.length);
-		bytes memory babcde = bytes(abcde);
-		uint k = 0;
-		for (uint i = 0; i < _ba.length; i++) babcde[k++] = _ba[i];
-		for (i = 0; i < _bb.length; i++) babcde[k++] = _bb[i];
-		for (i = 0; i < _bc.length; i++) babcde[k++] = _bc[i];
-		for (i = 0; i < _bd.length; i++) babcde[k++] = _bd[i];
-		for (i = 0; i < _be.length; i++) babcde[k++] = _be[i];
-		return string(babcde);
-	}
-
-	function strConcat(string _a, string _b, string _c, string _d) internal returns (string) {
-		return strConcat(_a, _b, _c, _d, "");
-	}
-
-	function strConcat(string _a, string _b, string _c) internal returns (string) {
-		return strConcat(_a, _b, _c, "", "");
-	}
-
-	function strConcat(string _a, string _b) internal returns (string) {
-		return strConcat(_a, _b, "", "", "");
-	}
-
-	// https://github.com/provable-things/ethereum-api/blob/master/oraclizeAPI_0.5.sol
-	function uint2str(uint _i) internal pure returns (string memory _uintAsString) {
-		if (_i == 0) {
-			return "0";
-		}
-		uint j = _i;
-		uint len;
-		while (j != 0) {
-			len++;
-			j /= 10;
-		}
-		bytes memory bstr = new bytes(len);
-		uint k = len - 1;
-		while (_i != 0) {
-			bstr[k--] = byte(uint8(48 + _i % 10));
-			_i /= 10;
-		}
-		return string(bstr);
 	}
 
 }
