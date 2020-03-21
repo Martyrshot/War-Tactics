@@ -21,15 +21,15 @@ contract Game {
 	string game_create_time;
 	string game_join_time;
 
+	uint8[] deck;
+
 	address player1;
-	uint8[] player1_deck;
 	uint8[] player1_revealed_deck;
 	bool player1_cheated;
 	bool has_player1_deck;
 	bool has_player1_decksigs;
 
 	address player2;
-	uint8[] player2_deck;
 	uint8[] player2_revealed_deck;
 	bool player2_cheated;
 	bool has_player2_deck;
@@ -104,15 +104,9 @@ contract Game {
 	}
 
 
-	function get_player1_deck() external view returns(uint8[] memory) {
+	function get_deck() external view returns(uint8[] memory) {
 		require(has_player1_deck && has_player2_deck);
-		return player1_deck;
-	}
-
-
-	function get_player2_deck() external view returns(uint8[] memory) {
-		require(has_player1_deck && has_player2_deck);
-		return player2_deck;
+		return deck;
 	}
 
 
@@ -169,21 +163,19 @@ contract Game {
 	}
 
 
-	function create_deck(uint8[] calldata my_deck, uint8[] calldata their_deck) external _player {
-		require(my_deck.length == DECK_SIZE && their_deck.length == DECK_SIZE);
+	function create_deck(uint8[] calldata _deck) external _player {
+		require(_deck.length == DECK_SIZE);
 
 		if (player1 == msg.sender) {
 			require(!has_player1_deck);
 
 			if (has_player2_deck) {
 				for (uint8 i = 0; i < DECK_SIZE; i++) {
-					player1_deck[i] = player1_deck[i] ^ my_deck[i];
-					player2_deck[i] = player2_deck[i] ^ their_deck[i];
+					deck[i] = deck[i] ^ _deck[i];
 				}
 
 			} else {
-				player1_deck = my_deck;
-				player2_deck = their_deck;
+				deck = _deck; // TODO: Do we need to iterate the array to copy it?
 			}
 			has_player1_deck = true;
 
@@ -192,13 +184,11 @@ contract Game {
 
 			if (has_player1_deck) {
 				for (uint8 i = 0; i < DECK_SIZE; i++) {
-					player2_deck[i] = player2_deck[i] ^ my_deck[i];
-					player1_deck[i] = player1_deck[i] ^ their_deck[i];
+					deck[i] = deck[i] ^ _deck[i];
 				}
 
 			} else {
-				player2_deck = my_deck;
-				player1_deck = their_deck;
+				deck = _deck; // TODO: Do we need to iterate the array to copy it?
 			}
 			has_player2_deck = true;
 		}
