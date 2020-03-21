@@ -3,6 +3,17 @@ pragma solidity >=0.6.0;
 // Validating keccak256 signatures in Solidity: https://ethereum.stackexchange.com/questions/710/how-can-i-verify-a-cryptographic-signature-that-was-produced-by-an-ethereum-addr/718
 
 contract Game {
+
+	enum owner_e {unowned, player1, player2}
+
+	struct BoardSpace {
+		uint8 card;
+		uint8 state;
+		owner_e owner;
+	}
+
+	BoardSpace[10][9] board;
+
 	uint8 constant DECK_SIZE = 52;
 
 	string game_create_time;
