@@ -26,16 +26,21 @@ contract Game {
 	string game_join_time;
 
 	uint8[DECK_SIZE] deck;
+	bool player1_turn;
 
 
 	address player1;
-	uint8[HAND_SIZE] player1_hand;
+	uint8[] player1_hand;
+	int8 player1_deck_top;
 	bool has_player1_deck;
+	bool has_player1_hand;
 
 
 	address player2;
-	uint8[HAND_SIZE] player2_hand;
+	uint8[] player2_hand;
+	int8 player2_deck_top;
 	bool has_player2_deck;
+	bool has_player2_hand;
 	bool has_player2;
 
 
@@ -62,13 +67,25 @@ contract Game {
 		_;
 	}
 
+
+	modifier _players_turn {
+		require(msg.sender == player1 || msg.sender == player2);
+		require((msg.sender == player1 && player1_turn) || (msg.sender == player2 && !player1_turn));
+		_;
+	}
+
+
 	constructor(address _helper) public {
 		helper_contract = Helper(_helper);
 
 		player1 = msg.sender;
+		player1_deck_top = DECK_SIZE - 1;
 		has_player1_deck = false;
+		has_player1_hand = false;
 
+		player2_deck_top = DECK_SIZE - 1;
 		has_player2_deck = false;
+		has_player2_hand = false;
 		has_player2 = false;
 
 		game_create_time = helper_contract.uint2str(now);
@@ -127,7 +144,7 @@ contract Game {
 	}
 
 
-	function signature_to_card(uint8 v, bytes32 r, bytes32 s) internal returns (uint8) {
+	function get_signed_card(uint8 v, bytes32 r, bytes32 s) internal returns (uint8) {
 		uint8 memory c = v;
 		for (uint8 i = 0; i < 32; i++) {
 			c = c ^ r ^ s;
@@ -142,6 +159,38 @@ contract Game {
 	}
 
 
+	function draw_hand() external _players {
+		require(has_deck());
+		if (player1 == msg.sender) {
+			require(!has_player1_hand);
+			has_player1_hand = true;
+		} else {
+			require(!has_player2_hand);
+			has_player2_hand = true;
+		}
+		draw_cards();
+	}
+
+
+	function draw_cards() internal {
+		uint8[] storage hand;
+		int8 storage deck_top;
+
+		if (msg.sender == player1) {
+			hand = player1_hand;
+			deck_top = player1_deck_top;
+		} else {
+			hand = player2_hand;
+			deck_top = player2_deck_top;
+		}
+
+		for (uint8 i = hand.length; i < HAND_SIZE && deck_top > -1; i++) {
+			hand.push(deck[deck_top]);
+			deck_top--;
+		}
+	}
+
+
 	function has_players() public view returns (bool) {
 		return has_player2;
 	}
@@ -152,9 +201,45 @@ contract Game {
 	}
 
 
+	function get_player_seed_hand(uint8 player) external returns (uint8[]) {
+		require(player == 1 || player == 2);
+		if (player == 1) {
+			return player1_hand;
+		} else {
+			return player2_hand;
+		}
+	}
+
+
 	function get_board_state() public view returns (board[10][9]) {
 		return board;
 	}
 
+
+	function lay_path(uint8 x, uint8 y, uint8 handIndex) external _players_turn returns (bool) {
+		// TODO
+
+		draw_cards();
+		player1_turn = !player1_turn;
+		return true;
+	}
+
+
+	function lay_unit(uint8 x, uint8 y, uint8 handIndex, uint8 card, uint8 v, bytes32 r, bytes32 s) external _players_turn returns (bool) {
+		// TODO
+
+		draw_cards();
+		player1_turn = !player1_turn;
+		return true;
+	}
+
+
+	function move_unit(uint8 unitX, uint8 unitY, uint8 moveX, uint8 moveY) external _players_turn returns (bool) {
+		// TODO
+
+		draw_cards();
+		player1_turn = !player1_turn;
+		return true;
+	}
 
 }
