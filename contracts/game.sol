@@ -300,7 +300,7 @@ contract Game {
 				return false;
 			}
 
-			if (!verify_card(card, player1_hand[handIndex], 52, msg.sender, v, r, s)) { // TODO: MODULO
+			if (!verify_card(card, player1_hand[handIndex], DECK_SIZE, msg.sender, v, r, s)) {
 				return false;
 			}
 
@@ -317,7 +317,7 @@ contract Game {
 				return false;
 			}
 
-			if (!verify_card(card, player2_hand[handIndex], 52, msg.sender, v, r, s)) { // TODO: MODULO
+			if (!verify_card(card, player2_hand[handIndex], DECK_SIZE, msg.sender, v, r, s)) {
 				return false;
 			}
 
