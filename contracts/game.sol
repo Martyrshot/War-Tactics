@@ -1,4 +1,5 @@
 pragma solidity >=0.6.0;
+pragma experimental ABIEncoderV2;
 
 import "./helper.sol";
 
@@ -79,11 +80,11 @@ contract Game {
 		helper_contract = Helper(_helper);
 
 		player1 = msg.sender;
-		player1_deck_top = DECK_SIZE - 1;
+		player1_deck_top = int8(DECK_SIZE - 1);
 		has_player1_deck = false;
 		has_player1_hand = false;
 
-		player2_deck_top = DECK_SIZE - 1;
+		player2_deck_top = int8(DECK_SIZE - 1);
 		has_player2_deck = false;
 		has_player2_hand = false;
 		has_player2 = false;
@@ -93,7 +94,7 @@ contract Game {
 
 
 	function join_game() external returns(bool) {
-		require(!hasPlayer2);
+		require(!has_player2);
 
 		player2 = msg.sender;
 		game_join_time = helper_contract.uint2str(now);
@@ -105,7 +106,7 @@ contract Game {
 
 
 	function create_deck(uint8[] calldata _deck) external _player {
-		require(_deck.length == DECK_SIZE);
+		require(_deck.length == uint256(DECK_SIZE));
 
 		if (player1 == msg.sender) {
 			require(!has_player1_deck);
@@ -144,22 +145,13 @@ contract Game {
 	}
 
 
-	function get_signed_card(uint8 v, bytes32 r, bytes32 s) internal returns (uint8) {
-		uint8 memory c = v;
-		for (uint8 i = 0; i < 32; i++) {
-			c = c ^ r ^ s;
-		}
-		return c % DECK_SIZE;
+	function verify_card(uint8 card, uint8 hidden_card, uint8 modulo, address addr, uint8 v, bytes32 r, bytes32 s) public view returns (bool) {
+		bytes32 hash = helper_contract.prefixed(keccak256(abi.encodePacked(game_create_time, game_join_time, hidden_card)));
+		return ecrecover(hash, v, r, s) == addr && helper_contract.get_signed_card(v, r, s, modulo) == card;
 	}
 
 
-	function verify_card(uint8 card, uint8 hidden_card, uint8 modulo, address addr, uint8 v, bytes32 r, bytes32 s) internal returns (bool) {
-		bytes32 memory hash = helper_contract.strConcat(game_create_time, game_join_time, hidden_card);
-		return ecrecover(hash, v, r, s) == addr && signature_to_card(v, r, s) == card;
-	}
-
-
-	function draw_hand() external _players {
+	function draw_hand() external _player {
 		require(has_deck());
 		if (player1 == msg.sender) {
 			require(!has_player1_hand);
@@ -173,21 +165,18 @@ contract Game {
 
 
 	function draw_cards() internal {
-		uint8[] storage hand;
-		int8 storage deck_top;
-
 		if (msg.sender == player1) {
-			hand = player1_hand;
-			deck_top = player1_deck_top;
+			for (uint i = player1_hand.length; i < HAND_SIZE && player1_deck_top > -1; i++) {
+				player1_hand.push(deck[uint256(player1_deck_top)]);
+				player1_deck_top--;
+			}
 		} else {
-			hand = player2_hand;
-			deck_top = player2_deck_top;
+			for (uint i = player2_hand.length; i < HAND_SIZE && player2_deck_top > -1; i++) {
+				player2_hand.push(deck[uint256(player2_deck_top)]);
+				player1_deck_top--;
+			}
 		}
 
-		for (uint8 i = hand.length; i < HAND_SIZE && deck_top > -1; i++) {
-			hand.push(deck[deck_top]);
-			deck_top--;
-		}
 	}
 
 
@@ -201,7 +190,7 @@ contract Game {
 	}
 
 
-	function get_player_seed_hand(uint8 player) external returns (uint8[]) {
+	function get_player_seed_hand(uint8 player) external view returns (uint8[] memory) {
 		require(player == 1 || player == 2);
 		if (player == 1) {
 			return player1_hand;
@@ -211,7 +200,7 @@ contract Game {
 	}
 
 
-	function get_board_state() public view returns (board[10][9]) {
+	function get_board_state() public view returns (BoardSpace[10][9] memory) {
 		return board;
 	}
 
