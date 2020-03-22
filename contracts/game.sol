@@ -13,9 +13,11 @@ contract Game {
 	uint8 constant BOARD_HEIGHT = 9;
 
 	uint8 constant STATE_BLANK = 0;
-	uint8 constant STATE_PATH  = 1;
-	uint8 constant STATE_UNIT  = 2;
-	uint8 constant STATE_HQ    = 3;
+	uint8 constant STATE_PATH = 1;
+	uint8 constant STATE_UNIT = 2;
+	uint8 constant STATE_PATH_AND_UNIT = 3;
+	uint8 constant STATE_HQ = 4;
+	uint8 constant STATE_HQ_AND_UNIT = 5;
 
 	struct BoardSpace {
 		uint8 card;
@@ -36,6 +38,8 @@ contract Game {
 	address player1;
 	uint8[] player1_hand;
 	int8 player1_deck_top;
+	uint8 player1_hq;
+	uint8 player1_hq_health;
 	bool has_player1_deck;
 	bool has_player1_hand;
 	bool has_player1_hq;
@@ -44,6 +48,8 @@ contract Game {
 	address player2;
 	uint8[] player2_hand;
 	int8 player2_deck_top;
+	uint8 player2_hq;
+	uint8 player2_hq_health;
 	bool has_player2_deck;
 	bool has_player2_hand;
 	bool has_player2_hq;
@@ -212,10 +218,10 @@ contract Game {
 	}
 
 
-	function lay_path(uint8 x, uint8 y, uint8 handIndex, uint8 adjacentUnitX, uint8 adjacentUnitY) external _players_turn returns (bool) {
+	function lay_path(uint8 x, uint8 y, uint8 handIndex, uint8 adjacentPathX, uint8 adjacentPathY) external _players_turn returns (bool) {
 		uint8 sender;
-		int8 diffX = int8(adjacentUnitX - x);
-		int8 diffY = int8(adjacentUnitY - y);
+		int8 diffX = int8(adjacentPathX - x);
+		int8 diffY = int8(adjacentPathY - y);
 		bool has_hq;
 
 		if (msg.sender == player1) {
@@ -238,12 +244,11 @@ contract Game {
 
 		if (
 			(
-				(board[adjacentUnitX][adjacentUnitY].owner != sender) ||
-				(board[adjacentUnitX][adjacentUnitY].state == 3) ||
+				(board[adjacentPathX][adjacentPathY].owner != sender) ||
+				(board[adjacentPathX][adjacentPathY].state == 3) ||
 				(diffX < -1 || diffX > 1) ||
 				(diffY < -1 || diffY > 1) ||
-				(board[adjacentUnitX][adjacentUnitY].state != STATE_HQ) ||
-				(board[adjacentUnitX][adjacentUnitY].state != STATE_UNIT)
+				(board[adjacentPathX][adjacentPathY].state == STATE_BLANK)
 			) && !has_hq
 		) {
 			return false;
@@ -253,18 +258,20 @@ contract Game {
 			return false;
 		}
 
-		board[x][y].owner = sender;
 		if (!has_hq) {
 			board[x][y].state = STATE_HQ;
 			if (sender == 1) {
+				player1_hq = x;
 				has_player1_hq = true;
 			} else {
+				player2_hq = x;
 				has_player2_hq = true;
 			}
 		} else {
 			board[x][y].state = STATE_PATH;
 		}
 		// The card value of board is irrelavent so just ignore it
+		board[x][y].owner = sender;
 
 		if (sender == 1) {
 			player1_hand[handIndex] = player1_hand[player1_hand.length - 1];
@@ -280,8 +287,45 @@ contract Game {
 	}
 
 
-	function lay_unit(uint8 x, uint8 y, uint8 handIndex, uint8 card, uint8 v, bytes32 r, bytes32 s) external _players_turn returns (bool) {
+	function lay_unit(uint8 handIndex, uint8 card, uint8 v, bytes32 r, bytes32 s) external _players_turn returns (bool) {
 		// TODO
+		uint8 sender;
+
+		if (msg.sender == player1) {
+			if (handIndex >= player1_hand.length) {
+				return false;
+			}
+
+			if (!has_player1_hq || board[player1_hq][0].state != STATE_HQ) {
+				return false;
+			}
+
+			if (!verify_card(card, player1_hand[handIndex], 52, msg.sender, v, r, s)) { // TODO: MODULO
+				return false;
+			}
+
+			sender = 1;
+			player1_hand[handIndex] = player1_hand[player1_hand.length - 1];
+			player1_hand.pop();
+
+		} else {
+			if (handIndex >= player2_hand.length) {
+				return false;
+			}
+
+			if (!has_player2_hq || board[player2_hq][BOARD_HEIGHT - 1].state != STATE_HQ) {
+				return false;
+			}
+
+			if (!verify_card(card, player2_hand[handIndex], 52, msg.sender, v, r, s)) { // TODO: MODULO
+				return false;
+			}
+
+			sender = 2;
+			player2_hand[handIndex] = player2_hand[player2_hand.length - 1];
+			player2_hand.pop();
+		}
+
 
 		draw_cards();
 		player1_turn = !player1_turn;
