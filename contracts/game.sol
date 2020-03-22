@@ -12,12 +12,15 @@ contract Game {
 	uint8 constant BOARD_WIDTH = 10;
 	uint8 constant BOARD_HEIGHT = 9;
 
-	enum owner_e {unowned, player1, player2}
+	uint8 constant STATE_BLANK = 0;
+	uint8 constant STATE_PATH  = 1;
+	uint8 constant STATE_UNIT  = 2;
+	uint8 constant STATE_HQ    = 3;
 
 	struct BoardSpace {
 		uint8 card;
 		uint8 state;
-		owner_e owner;
+		uint8 owner;
 	}
 
 
@@ -35,6 +38,7 @@ contract Game {
 	int8 player1_deck_top;
 	bool has_player1_deck;
 	bool has_player1_hand;
+	bool has_player1_hq;
 
 
 	address player2;
@@ -42,6 +46,7 @@ contract Game {
 	int8 player2_deck_top;
 	bool has_player2_deck;
 	bool has_player2_hand;
+	bool has_player2_hq;
 	bool has_player2;
 
 
@@ -83,10 +88,12 @@ contract Game {
 		player1_deck_top = int8(DECK_SIZE - 1);
 		has_player1_deck = false;
 		has_player1_hand = false;
+		has_player1_hq = false;
 
 		player2_deck_top = int8(DECK_SIZE - 1);
 		has_player2_deck = false;
 		has_player2_hand = false;
+		has_player2_hq = false;
 		has_player2 = false;
 
 		game_create_time = helper_contract.uint2str(now);
@@ -205,8 +212,67 @@ contract Game {
 	}
 
 
-	function lay_path(uint8 x, uint8 y, uint8 handIndex) external _players_turn returns (bool) {
-		// TODO
+	function lay_path(uint8 x, uint8 y, uint8 handIndex, uint8 adjacentUnitX, uint8 adjacentUnitY) external _players_turn returns (bool) {
+		uint8 sender;
+		int8 diffX = int8(adjacentUnitX - x);
+		int8 diffY = int8(adjacentUnitY - y);
+		bool has_hq;
+
+		if (msg.sender == player1) {
+			if (handIndex >= player1_hand.length) {
+				return false;
+			}
+			sender = 1;
+			has_hq = has_player1_hq;
+		} else {
+			if (handIndex >= player2_hand.length) {
+				return false;
+			}
+			sender = 2;
+			has_hq = has_player2_hq;
+		}
+
+		if (board[x][y].state != STATE_BLANK) {
+			return false;
+		}
+
+		if (
+			(
+				(board[adjacentUnitX][adjacentUnitY].owner != sender) ||
+				(board[adjacentUnitX][adjacentUnitY].state == 3) ||
+				(diffX < -1 || diffX > 1) ||
+				(diffY < -1 || diffY > 1) ||
+				(board[adjacentUnitX][adjacentUnitY].state != STATE_HQ) ||
+				(board[adjacentUnitX][adjacentUnitY].state != STATE_UNIT)
+			) && !has_hq
+		) {
+			return false;
+		}
+
+		if (!has_hq && ((sender == 1 && y == 0) || (sender == 2 && y == BOARD_HEIGHT - 1))) {
+			return false;
+		}
+
+		board[x][y].owner = sender;
+		if (!has_hq) {
+			board[x][y].state = STATE_HQ;
+			if (sender == 1) {
+				has_player1_hq = true;
+			} else {
+				has_player2_hq = true;
+			}
+		} else {
+			board[x][y].state = STATE_PATH;
+		}
+		// The card value of board is irrelavent so just ignore it
+
+		if (sender == 1) {
+			player1_hand[handIndex] = player1_hand[player1_hand.length - 1];
+			player1_hand.pop();
+		} else {
+			player2_hand[handIndex] = player2_hand[player2_hand.length - 1];
+			player2_hand.pop();
+		}
 
 		draw_cards();
 		player1_turn = !player1_turn;
@@ -226,7 +292,16 @@ contract Game {
 	function move_unit(uint8 unitX, uint8 unitY, uint8 moveX, uint8 moveY) external _players_turn returns (bool) {
 		// TODO
 
-		draw_cards();
+		//draw_cards(); // TODO: No cards were spent from the players hand, so no need to draw, correct?
+		player1_turn = !player1_turn;
+		return true;
+	}
+
+
+	function attack(uint8 unitX, uint8 unitY, uint8 attackX, uint8 attackY) external _players_turn returns (bool) {
+		// TODO
+
+		//draw_cards(); // TODO: No cards were spent from the players hand, so no need to draw, correct?
 		player1_turn = !player1_turn;
 		return true;
 	}
