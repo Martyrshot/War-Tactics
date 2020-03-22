@@ -288,7 +288,6 @@ contract Game {
 
 
 	function lay_unit(uint8 handIndex, uint8 card, uint8 v, bytes32 r, bytes32 s) external _players_turn returns (bool) {
-		// TODO
 		uint8 sender;
 
 		if (msg.sender == player1) {
@@ -336,7 +335,7 @@ contract Game {
 	function move_unit(uint8 unitX, uint8 unitY, uint8 moveX, uint8 moveY) external _players_turn returns (bool) {
 		// TODO
 
-		//draw_cards(); // TODO: No cards were spent from the players hand, so no need to draw, correct?
+		// No cards were spent from the players hand, so no need to draw, correct?
 		player1_turn = !player1_turn;
 		return true;
 	}
@@ -345,7 +344,7 @@ contract Game {
 	function attack(uint8 unitX, uint8 unitY, uint8 attackX, uint8 attackY) external _players_turn returns (bool) {
 		// TODO
 
-		//draw_cards(); // TODO: No cards were spent from the players hand, so no need to draw, correct?
+		// No cards were spent from the players hand, so no need to draw, correct?
 		player1_turn = !player1_turn;
 		return true;
 	}
