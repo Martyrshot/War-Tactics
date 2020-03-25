@@ -7,6 +7,9 @@ import "./helper.sol";
 
 contract Game {
 
+	uint8 constant PLAYER1 = 0;
+	uint8 constant PLAYER2 = 1;
+
 	uint8 constant DECK_SIZE = 52;
 	uint8 constant HAND_SIZE = 5;
 	uint8 constant BOARD_WIDTH = 10;
@@ -35,24 +38,16 @@ contract Game {
 	bool player1_turn;
 
 
-	address player1;
-	uint8[] player1_hand;
-	int8 player1_deck_top;
-	uint8 player1_hq;
-	uint8 player1_hq_health;
-	bool has_player1_deck;
-	bool has_player1_hand;
-	bool has_player1_hq;
 
+	address[2] player;
+	uint8[][2] player_hand;
+	int8[2] player_deck_top;
+	uint8[2] player_hq;
+	uint8[2] player_hq_health;
+	bool[2] has_player_deck;
+	bool[2] has_player_hand;
+	bool[2] has_player_hq;
 
-	address player2;
-	uint8[] player2_hand;
-	int8 player2_deck_top;
-	uint8 player2_hq;
-	uint8 player2_hq_health;
-	bool has_player2_deck;
-	bool has_player2_hand;
-	bool has_player2_hq;
 	bool has_player2;
 
 
@@ -75,14 +70,14 @@ contract Game {
 
 
 	modifier _player {
-		require(msg.sender == player1 || msg.sender == player2);
+		require(msg.sender == player[PLAYER1] || msg.sender == player[PLAYER2]);
 		_;
 	}
 
 
 	modifier _players_turn {
-		require(msg.sender == player1 || msg.sender == player2);
-		require((msg.sender == player1 && player1_turn) || (msg.sender == player2 && !player1_turn));
+		require(msg.sender == player[PLAYER1] || msg.sender == player[PLAYER2]);
+		require((msg.sender == player[PLAYER1] && player1_turn) || (msg.sender == player[PLAYER2] && !player1_turn));
 		_;
 	}
 
@@ -90,16 +85,16 @@ contract Game {
 	constructor(address _helper) public {
 		helper_contract = Helper(_helper);
 
-		player1 = msg.sender;
-		player1_deck_top = int8(DECK_SIZE - 1);
-		has_player1_deck = false;
-		has_player1_hand = false;
-		has_player1_hq = false;
+		player[PLAYER1] = msg.sender;
+		player_deck_top[PLAYER1] = int8(DECK_SIZE - 1);
+		has_player_deck[PLAYER1] = false;
+		has_player_hand[PLAYER1] = false;
+		has_player_hq[PLAYER1] = false;
 
-		player2_deck_top = int8(DECK_SIZE - 1);
-		has_player2_deck = false;
-		has_player2_hand = false;
-		has_player2_hq = false;
+		player_deck_top[PLAYER2] = int8(DECK_SIZE - 1);
+		has_player_deck[PLAYER2] = false;
+		has_player_hand[PLAYER2] = false;
+		has_player_hq[PLAYER2] = false;
 		has_player2 = false;
 
 		game_create_time = helper_contract.uint2str(now);
@@ -109,7 +104,7 @@ contract Game {
 	function join_game() external returns(bool) {
 		require(!has_player2);
 
-		player2 = msg.sender;
+		player[PLAYER2] = msg.sender;
 		game_join_time = helper_contract.uint2str(now);
 
 		emit PlayerJoined();
@@ -121,10 +116,10 @@ contract Game {
 	function create_deck(uint8[] calldata _deck) external _player {
 		require(_deck.length == uint256(DECK_SIZE));
 
-		if (player1 == msg.sender) {
-			require(!has_player1_deck);
+		if (player[PLAYER1] == msg.sender) {
+			require(!has_player_deck[PLAYER1]);
 
-			if (has_player2_deck) {
+			if (has_player_deck[PLAYER2]) {
 				for (uint8 i = 0; i < DECK_SIZE; i++) {
 					deck[i] = deck[i] ^ _deck[i];
 				}
@@ -134,12 +129,12 @@ contract Game {
 					deck[i] = _deck[i];
 				}
 			}
-			has_player1_deck = true;
+			has_player_deck[PLAYER1] = true;
 
-		} else if (player2 == msg.sender) {
-			require(!has_player2_deck);
+		} else if (player[PLAYER2] == msg.sender) {
+			require(!has_player_deck[PLAYER2]);
 
-			if (has_player1_deck) {
+			if (has_player_deck[PLAYER1]) {
 				for (uint8 i = 0; i < DECK_SIZE; i++) {
 					deck[i] = deck[i] ^ _deck[i];
 				}
@@ -149,10 +144,10 @@ contract Game {
 					deck[i] = _deck[i];
 				}
 			}
-			has_player2_deck = true;
+			has_player_deck[PLAYER2] = true;
 		}
 
-		if (has_player1_deck && has_player2_deck) {
+		if (has_player_deck[PLAYER1] && has_player_deck[PLAYER2]) {
 			emit DecksReady();
 		}
 	}
@@ -166,30 +161,29 @@ contract Game {
 
 	function draw_hand() external _player {
 		require(has_deck());
-		if (player1 == msg.sender) {
-			require(!has_player1_hand);
-			has_player1_hand = true;
+		if (player[PLAYER1] == msg.sender) {
+			require(!has_player_hand[PLAYER1]);
+			has_player_hand[PLAYER1] = true;
 		} else {
-			require(!has_player2_hand);
-			has_player2_hand = true;
+			require(!has_player_hand[PLAYER2]);
+			has_player_hand[PLAYER2] = true;
 		}
 		draw_cards();
 	}
 
 
 	function draw_cards() internal {
-		if (msg.sender == player1) {
-			for (uint i = player1_hand.length; i < HAND_SIZE && player1_deck_top > -1; i++) {
-				player1_hand.push(deck[uint256(player1_deck_top)]);
-				player1_deck_top--;
-			}
+		uint8 p;
+		if (msg.sender == player[PLAYER1]) {
+			p = PLAYER1;
 		} else {
-			for (uint i = player2_hand.length; i < HAND_SIZE && player2_deck_top > -1; i++) {
-				player2_hand.push(deck[uint256(player2_deck_top)]);
-				player1_deck_top--;
-			}
+			p = PLAYER2;
 		}
 
+		for (uint i = player_hand[p].length; i < HAND_SIZE && player_deck_top[p] > -1; i++) {
+			(player_hand[p]).push(deck[uint256(player_deck_top[p])]);
+			player_deck_top[p]--;
+		}
 	}
 
 
@@ -199,17 +193,14 @@ contract Game {
 
 
 	function has_deck() public view returns (bool) {
-		return has_player1_deck && has_player2_deck;
+		return has_player_deck[PLAYER1] && has_player_deck[PLAYER2];
 	}
 
 
-	function get_player_seed_hand(uint8 player) external view returns (uint8[] memory) {
-		require(player == 1 || player == 2);
-		if (player == 1) {
-			return player1_hand;
-		} else {
-			return player2_hand;
-		}
+	function get_player_seed_hand(uint8 playerNum) external view returns (uint8[] memory) {
+		require(playerNum == 1 || playerNum == 2);
+
+		return player_hand[playerNum - 1];
 	}
 
 
@@ -222,20 +213,15 @@ contract Game {
 		uint8 sender;
 		int8 diffX = int8(adjacentPathX - x);
 		int8 diffY = int8(adjacentPathY - y);
-		bool has_hq;
 
-		if (msg.sender == player1) {
-			if (handIndex >= player1_hand.length) {
-				return false;
-			}
-			sender = 1;
-			has_hq = has_player1_hq;
+		if (msg.sender == player[PLAYER1]) {
+			sender = PLAYER1;
 		} else {
-			if (handIndex >= player2_hand.length) {
-				return false;
-			}
-			sender = 2;
-			has_hq = has_player2_hq;
+			sender = PLAYER2;
+		}
+
+		if (handIndex >= player_hand[sender].length) {
+			return false;
 		}
 
 		if (board[x][y].state != STATE_BLANK) {
@@ -244,42 +230,34 @@ contract Game {
 
 		if (
 			(
-				(board[adjacentPathX][adjacentPathY].owner != sender) ||
-				(board[adjacentPathX][adjacentPathY].state == 3) ||
+				(board[adjacentPathX][adjacentPathY].owner != sender + 1) ||
+				(board[adjacentPathX][adjacentPathY].state != STATE_PATH_AND_UNIT) ||
 				(diffX < -1 || diffX > 1) ||
 				(diffY < -1 || diffY > 1) ||
 				(board[adjacentPathX][adjacentPathY].state == STATE_BLANK)
-			) && !has_hq
+			) && !has_player_hq[sender]
 		) {
 			return false;
 		}
 
-		if (!has_hq && ((sender == 1 && y == 0) || (sender == 2 && y == BOARD_HEIGHT - 1))) {
+		if (!has_player_hq[sender] && ((sender == PLAYER1 && y == 0) || (sender == PLAYER2 && y == BOARD_HEIGHT - 1))) {
 			return false;
 		}
 
-		if (!has_hq) {
+		if (!has_player_hq[sender]) {
 			board[x][y].state = STATE_HQ;
-			if (sender == 1) {
-				player1_hq = x;
-				has_player1_hq = true;
-			} else {
-				player2_hq = x;
-				has_player2_hq = true;
-			}
+			player_hq[sender] = x;
+			has_player_hq[sender] = true;
+
 		} else {
 			board[x][y].state = STATE_PATH;
 		}
-		// The card value of board is irrelavent so just ignore it
-		board[x][y].owner = sender;
 
-		if (sender == 1) {
-			player1_hand[handIndex] = player1_hand[player1_hand.length - 1];
-			player1_hand.pop();
-		} else {
-			player2_hand[handIndex] = player2_hand[player2_hand.length - 1];
-			player2_hand.pop();
-		}
+		// The card value of board is irrelavent so just ignore it
+		board[x][y].owner = sender + 1;
+
+		player_hand[sender][handIndex] = player_hand[sender][player_hand[sender].length - 1];
+		player_hand[sender].pop();
 
 		draw_cards();
 		player1_turn = !player1_turn;
@@ -290,41 +268,27 @@ contract Game {
 	function lay_unit(uint8 handIndex, uint8 card, uint8 v, bytes32 r, bytes32 s) external _players_turn returns (bool) {
 		uint8 sender;
 
-		if (msg.sender == player1) {
-			if (handIndex >= player1_hand.length) {
-				return false;
-			}
-
-			if (!has_player1_hq || board[player1_hq][0].state != STATE_HQ) {
-				return false;
-			}
-
-			if (!verify_card(card, player1_hand[handIndex], DECK_SIZE, msg.sender, v, r, s)) {
-				return false;
-			}
-
-			sender = 1;
-			player1_hand[handIndex] = player1_hand[player1_hand.length - 1];
-			player1_hand.pop();
+		if (msg.sender == player[PLAYER1]) {
+			sender = PLAYER1;
 
 		} else {
-			if (handIndex >= player2_hand.length) {
-				return false;
-			}
-
-			if (!has_player2_hq || board[player2_hq][BOARD_HEIGHT - 1].state != STATE_HQ) {
-				return false;
-			}
-
-			if (!verify_card(card, player2_hand[handIndex], DECK_SIZE, msg.sender, v, r, s)) {
-				return false;
-			}
-
-			sender = 2;
-			player2_hand[handIndex] = player2_hand[player2_hand.length - 1];
-			player2_hand.pop();
+			sender = PLAYER2;
 		}
 
+		if (handIndex >= player_hand[sender].length) {
+			return false;
+		}
+
+		if (!has_player_hq[sender] || board[player_hq[sender]][0].state != STATE_HQ) {
+			return false;
+		}
+
+		if (!verify_card(card, player_hand[sender][handIndex], DECK_SIZE, msg.sender, v, r, s)) {
+			return false;
+		}
+
+		player_hand[sender][handIndex] = player_hand[sender][player_hand[sender].length - 1];
+		player_hand[sender].pop();
 
 		draw_cards();
 		player1_turn = !player1_turn;
