@@ -64,3 +64,8 @@ int promptForCard(string stringToPrint, int numCards) {
     }
     return input;
 }
+
+
+int mainMenu(string stringToPrint) {
+    
+}
