@@ -52,3 +52,15 @@ int promptForAction(string stringToPrint) {
     }
     return input;
 }
+
+int promptForCard(string stringToPrint, int numCards) {
+    int input = -1;
+    cout << stringToPrint << flush;
+    cin >> input;
+    input = input - 1;
+    if (input > numCards - 1 || input < 0) {
+        cout << "Bad input!\n" << flush;
+        return -1;
+    }
+    return input;
+}
