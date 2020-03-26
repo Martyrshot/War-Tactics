@@ -429,15 +429,16 @@ void printHand(vector<int> ids) {
         }
     }
 
-    for (int i = 0; i < cards.size(); i++) {
-        cout << "   " << i << "   ";
-    }
-    cout << endl;
+    
     for (int i = 0; i < CARDHEIGHT; i++) {
         for (vector<string> j: cards) {
             cout << j[i];
         }
         cout << endl;
     }
+    for (int i = 0; i < cards.size(); i++) {
+        cout << "   " << i << "   ";
+    }
+    cout << endl;
 }
 
