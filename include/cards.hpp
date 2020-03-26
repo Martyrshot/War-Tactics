@@ -396,7 +396,11 @@ vector< vector<string> > diamonds = {
 
 
 
-void printCards(vector<vector<string>>cards) {
+void printHand(vector<vector<string>>cards) {
+    for (int i = 0; i < cards.size(); i++) {
+        cout << "   " << i << "   ";
+    }
+    cout << endl;
     for (int i = 0; i < CARDHEIGHT; i++) {
         for (vector<string> j: cards) {
             cout << j[i];
@@ -424,4 +428,5 @@ vector< vector<string> > idsToASCII(vector<int> ids) {
             result.push_back(hearts[n%13]);
         }
     }
+    return result;
 }
