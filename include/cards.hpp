@@ -395,7 +395,7 @@ vector< vector<string> > diamonds = {
                             ,string("|_%%%>|")}};
 
 
-
+/*
 void printHand(vector<vector<string>>cards) {
     for (int i = 0; i < cards.size(); i++) {
         cout << "   " << i << "   ";
@@ -408,25 +408,36 @@ void printHand(vector<vector<string>>cards) {
         cout << endl;
     }
 }
-
-vector< vector<string> > idsToASCII(vector<int> ids) {
-    vector< vector<string> > result;
+*/
+void printHand(vector<int> ids) {
+    vector< vector<string> > cards;
     for(int n : ids) {
         if (n < 0) {
-            return result;
+            return;
         }
         if (n < 13) {
-            result.push_back(spades[n]);
+            cards.push_back(spades[n]);
         }
         else if (n < 26) {
-            result.push_back(clubs[n%13]);
+            cards.push_back(clubs[n%13]);
         }
         else if (n < 39) {
-            result.push_back(diamonds[n%13]);
+            cards.push_back(diamonds[n%13]);
         }
         else {
-            result.push_back(hearts[n%13]);
+            cards.push_back(hearts[n%13]);
         }
     }
-    return result;
+
+    for (int i = 0; i < cards.size(); i++) {
+        cout << "   " << i << "   ";
+    }
+    cout << endl;
+    for (int i = 0; i < CARDHEIGHT; i++) {
+        for (vector<string> j: cards) {
+            cout << j[i];
+        }
+        cout << endl;
+    }
 }
+
