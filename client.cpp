@@ -34,12 +34,14 @@ void printBoard(void) {
 int main(int argc, char **argv) {
     vector<int> v;
     for (int i = 0; i < 52; i++) {
-        if (i % 9 == 2) {
+        if (i % 10 == 2) {
             v.push_back(i);
         } 
     }
 
+    printOpponentsHand(5);
     printBoard();
     printHand(v);
     return 0;
+
 }

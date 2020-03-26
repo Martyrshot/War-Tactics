@@ -442,3 +442,11 @@ void printHand(vector<int> ids) {
     cout << endl;
 }
 
+void printOpponentsHand(int n) {
+    for (int i = 0; i < CARDHEIGHT; i++) {
+        for (int j = 0; j < n; j++) {
+            cout << cardback[i];
+        }
+        cout << endl;
+    }
+}
