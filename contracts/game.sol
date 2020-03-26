@@ -1,5 +1,4 @@
 pragma solidity >=0.6.0;
-pragma experimental ABIEncoderV2;
 
 import "./helper.sol";
 
@@ -21,14 +20,12 @@ contract Game {
 	uint8 constant STATE_HQ = 3;
 	uint8 constant STATE_HQ_AND_UNIT = 4;
 
-	struct BoardSpace {
-		uint8 card;
-		uint8 state;
-		uint8 owner;
-	}
+	uint8 constant BOARD_CARD = 0;
+	uint8 constant BOARD_STATE = 1;
+	uint8 constant BOARD_OWNER = 2;
 
 
-	BoardSpace[BOARD_WIDTH][BOARD_HEIGHT] board;
+	uint8[3][BOARD_WIDTH][BOARD_HEIGHT] board;
 
 	string game_create_time;
 	string game_join_time;
@@ -203,7 +200,7 @@ contract Game {
 	}
 
 
-	function get_board_state() public view returns (BoardSpace[10][9] memory) {
+	function get_board_state() public view returns (uint8[3][10][9] memory) {
 		return board;
 	}
 
@@ -223,17 +220,17 @@ contract Game {
 			return false;
 		}
 
-		if (board[x][y].state != STATE_BLANK) {
+		if (board[BOARD_STATE][x][y] != STATE_BLANK) {
 			return false;
 		}
 
 		if (
 			(
-				(board[adjacentPathX][adjacentPathY].owner != sender + 1) ||
-				(board[adjacentPathX][adjacentPathY].state != STATE_PATH_AND_UNIT) ||
+				(board[BOARD_OWNER][adjacentPathX][adjacentPathY] != sender + 1) ||
+				(board[BOARD_STATE][adjacentPathX][adjacentPathY] != STATE_PATH_AND_UNIT) ||
 				(diffX < -1 || diffX > 1) ||
 				(diffY < -1 || diffY > 1) ||
-				(board[adjacentPathX][adjacentPathY].state == STATE_BLANK)
+				(board[BOARD_STATE][adjacentPathX][adjacentPathY] == STATE_BLANK)
 			) && !has_player_hq[sender]
 		) {
 			return false;
@@ -244,16 +241,16 @@ contract Game {
 		}
 
 		if (!has_player_hq[sender]) {
-			board[x][y].state = STATE_HQ;
+			board[BOARD_STATE][x][y] = STATE_HQ;
 			player_hq[sender] = x;
 			has_player_hq[sender] = true;
 
 		} else {
-			board[x][y].state = STATE_PATH;
+			board[BOARD_STATE][x][y] = STATE_PATH;
 		}
 
 		// The card value of board is irrelavent so just ignore it
-		board[x][y].owner = sender + 1;
+		board[BOARD_OWNER][x][y] = sender + 1;
 
 		player_hand[sender][handIndex] = player_hand[sender][player_hand[sender].length - 1];
 		player_hand[sender].pop();
@@ -278,7 +275,7 @@ contract Game {
 			return false;
 		}
 
-		if (!has_player_hq[sender] || board[player_hq[sender]][0].state != STATE_HQ) {
+		if (!has_player_hq[sender] || board[BOARD_STATE][player_hq[sender]][0] != STATE_HQ) {
 			return false;
 		}
 
@@ -298,7 +295,6 @@ contract Game {
 	function move_unit(uint8 unitX, uint8 unitY, uint8 moveX, uint8 moveY) external _players_turn returns (bool) {
 		// TODO
 
-		// No cards were spent from the players hand, so no need to draw, correct?
 		player1_turn = !player1_turn;
 		return true;
 	}
@@ -319,22 +315,22 @@ contract Game {
 			other = PLAYER1;
 		}
 
-		if (board[unitX][unitY].owner != sender + 1 || board[unitX][unitY].state != STATE_PATH_AND_UNIT {
+		if (board[BOARD_OWNER][unitX][unitY] != sender + 1 || board[BOARD_STATE][unitX][unitY] != STATE_PATH_AND_UNIT) {
 			return false;
 		}
 
-		if (board[attackX][attackY].owner != other ||
+		if (board[BOARD_OWNER][attackX][attackY] != other ||
 			(
-				board[attackX][attackY].state != STATE_HQ &&
-				board[attackX][attackY].state != STATE_HQ_AND_UNIT &&
-				board[attackX][attackY].state != STATE_PATH_AND_UNIT
+				board[BOARD_STATE][attackX][attackY] != STATE_HQ &&
+				board[BOARD_STATE][attackX][attackY] != STATE_HQ_AND_UNIT &&
+				board[BOARD_STATE][attackX][attackY] != STATE_PATH_AND_UNIT
 			)
 		){
 			return false;
 		}
 
-		attackerCard = board[unitX][unitY].card % 13;
-		attackeeCard = board[attackX][attackY].card % 13;
+		attackerCard = board[BOARD_CARD][unitX][unitY] % 13;
+		attackeeCard = board[BOARD_CARD][attackX][attackY] % 13;
 
 		if (attackerCard == attackeeCard) {
 			// Tie, both cards are lost
