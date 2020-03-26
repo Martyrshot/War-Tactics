@@ -154,6 +154,71 @@ void printBoard(vector< vector<int> > points) {
     cout << endl << BOARDHANDSEPARATER << endl;
 }
 
+vector< vector<int> >getAllUnitsPoints(void) {
+    vector< vector<int> > points;
+    for (int i = 0; i < 9; i++) {
+        for (int j = 0; j < 10; j++) {
+            if ((board[1][j][i] == STATE_PATH_AND_UNIT
+                            || board[1][j][i] == STATE_HQ_AND_UNIT)
+                            && board[2][j][i] == playerID) {
+                
+                points.push_back({j, i});
+            }
+        }
+    }
+    return points;
+}
+
+vector< vector<int> > getPossibleMovementOptionsForUnit(vector<int> unit) {
+    int x = unit[0];
+    int y = unit[1];
+    vector< vector<int> > points = { {x-1, y}, {x, y-1}, {x+1, y}, {x, y+1}};
+    return points;
+}
+
+vector< vector<int> > getPossibleAttackOptionsForUnit(vector<int> unit) {
+    int x = unit[0];
+    int y = unit[1];
+    vector< vector<int> > points;
+    if (x < 9 && (board[1][x+1][y] == STATE_HQ_AND_UNIT
+            || board[1][x+1][y] == STATE_PATH_AND_UNIT
+            || board[1][x+1][y] == STATE_HQ)
+            && board[2][x+1][y] != playerID) {
+                points.push_back({x+1,y});
+    }
+    if (x > 0 && (board[1][x-1][y] == STATE_HQ_AND_UNIT
+            || board[1][x-1][y] == STATE_PATH_AND_UNIT
+            || board[1][x+1][y] == STATE_HQ)
+            && board[2][x-1][y] != playerID) {
+                points.push_back({x-1,y});
+    }
+    if (y > 0 && (board[1][x][y-1] == STATE_HQ_AND_UNIT
+            || board[1][x][y-1] == STATE_PATH_AND_UNIT
+            || board[1][x+1][y] == STATE_HQ)
+            && board[2][x][y-1] != playerID) {
+                points.push_back({x,y-1});
+    }
+    if (y < 8 && (board[1][x][y+1] == STATE_HQ_AND_UNIT
+            || board[1][x][y+1] == STATE_PATH_AND_UNIT
+            || board[1][x+1][y] == STATE_HQ)
+            && board[2][x][y+1] != playerID) {
+                points.push_back({x,y+1});
+    }
+    return points;
+}
+
+vector< vector<int> > getFriendlyEmptyHQ(void) {
+    vector <vector<int> > points;
+    for (int i = 0; i < 9; i++) {
+        for (int j = 0; j < 10; j++) {
+            if (board[1][j][i] == STATE_HQ
+                && board[2][j][i] == playerID) {
+                points.push_back({j,i});
+            }
+        }
+    }
+    return points;
+}
 
 int main(int argc, char **argv) {
     vector<int> v;
@@ -173,10 +238,13 @@ int main(int argc, char **argv) {
         }
     }
 
-    vector< vector<int> > testpoints ={{0,0}, {8,8}, {4,4}, {4,3}, {4,5}, {9,8}, {8,7}};
-
+    //vector< vector<int> > testpoints ={{0,0}, {8,8}, {4,4}, {4,3}, {4,5}, {9,8}, {8,7}};
+    //vector< vector<int> > units = getAllUnitsPoints();
+    //vector<int> unit = {3,3};
+    //vector< vector<int> > points = getPossibleAttackOptionsForUnit(unit);
+    vector< vector<int> > points = getFriendlyEmptyHQ();
     printOpponentsHand(5);
-    printBoard(testpoints);
+    printBoard(points);
     printHand(v);
     return 0;
 
