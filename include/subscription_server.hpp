@@ -24,7 +24,7 @@ class EventLogWaitManager
 		std::vector<std::pair<std::string, std::string>> const& contractLogSignatures);
 	std::unique_ptr<std::unordered_map<std::string, std::string>> getEventLog(std::string const& logID);
 	void setEventLog(std::string const& logID, std::unordered_map<std::string, std::string> const& eventLog);
-	void joinThread(void);
+	void joinThreads(void);
 
 	// Thread main function for geth log monitor thread
 	void ipc_subscription_listener_thread(void);
@@ -47,7 +47,7 @@ class EventLogWaitManager
 		std::condition_variable cv;
 		bool hasWaitingThread = false;
 		bool hasEventLog = false;
-		std::unique_ptr<std::unordered_map<std::string, std::string>> eventLog; //TODO: Should this be a pointer?
+		std::unique_ptr<std::unordered_map<std::string, std::string>> eventLog;
 
 		EventLogWaitElement()
 		{

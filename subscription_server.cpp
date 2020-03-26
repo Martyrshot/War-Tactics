@@ -35,7 +35,7 @@ EventLogWaitManager::EventLogWaitManager(
 
 
 void
-EventLogWaitManager::joinThread(void)
+EventLogWaitManager::joinThreads(void)
 {
 	if (subscriptionListener != NULL)
 	{
@@ -131,11 +131,13 @@ EventLogWaitManager::setEventLog(string const& logID, unordered_map<string, stri
 	}
 #endif //_DEBUG
 
+	/*
 	if (eventLogMap[logID].get()->hasEventLog)
 	{
 		mtx.unlock();
 		throw ResourceRequestFailedException("logID \"" + logID + "\" already has an associated event log.");
 	}
+	*/
 
 	eventLogMap[logID].get()->eventLog = unique_ptr<unordered_map<string, string>>(new unordered_map<string, string>(eventLog));
 	eventLogMap[logID].get()->hasEventLog = true;
@@ -289,19 +291,28 @@ EventLogWaitManager::ipc_subscription_listener_thread(void)
 	cout << "ipc_subscription_listener_thread()" << endl;
 #endif //_DEBUG
 
+begin:
 	ipc_subscription_listener_setup(socket, ep);
 
 	for (;;)
 	{
 		while (receiveParse.find_first_of('\n', 0) == string::npos)
 		{
-			receiveLength = socket.receive(boost::asio::buffer(receiveBuffer, IPC_BUFFER_LENGTH - 1));
+			try
+			{
+				receiveLength = socket.receive(boost::asio::buffer(receiveBuffer, IPC_BUFFER_LENGTH - 1));
+			}
+			catch (...)
+			{
+				socket.close();
+				goto begin;
+			}
 
 			if (receiveLength == 0)
 			{
 				// Socket was closed by other end
-				socket.close(); // TODO: What happens if this socket is already closed?
-				ipc_subscription_listener_setup(socket, ep);
+				socket.close();
+				goto begin;
 			}
 			receiveBuffer[receiveLength] = 0;
 			receiveParse += receiveBuffer;

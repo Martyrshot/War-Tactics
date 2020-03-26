@@ -16,9 +16,6 @@
 #include <misc.hpp>
 
 
-//TODO: Make a function to verify ethereum address formatting! (Apply to configuration file validation)
-//TODO: Make function to see if "0x" needs to be prepended to function arguments
-
 
 using namespace std;
 
@@ -44,27 +41,39 @@ EthInterface::initialize(
 	string ipcPath,
 	string clientAddress,
 	string contractAddress,
-	vector<pair<string, string>> contractEventSignatures)
+	vector<pair<string, string>> contractEventSignatures,
+	bool createEventLogWaitManager)
 {
 	this->ipcPath = boost::trim_copy(ipcPath);
 
-	this->clientAddress = boost::to_upper_copy(boost::trim_copy(clientAddress));
-	if (this->clientAddress.substr(0, 2) == "0X")
+	this->clientAddress = boost::to_lower_copy(boost::trim_copy(clientAddress));
+	if (this->clientAddress.substr(0, 2) == "0x")
 	{
 		this->clientAddress = this->clientAddress.substr(2);
 	}
 
-	this->contractAddress = boost::to_upper_copy(boost::trim_copy(contractAddress));
-	if (this->contractAddress.substr(0, 2) == "0X")
+	this->contractAddress = boost::to_lower_copy(boost::trim_copy(contractAddress));
+	if (this->contractAddress.substr(0, 2) == "0x")
 	{
 		this->contractAddress = this->contractAddress.substr(2);
 	}
 
-	eventLogWaitManager = new EventLogWaitManager(
-		this->clientAddress,
-		this->contractAddress,
-		ipcPath,
-		contractEventSignatures);
+	if (createEventLogWaitManager)
+	{
+		eventLogWaitManager = new EventLogWaitManager(
+			this->clientAddress,
+			this->contractAddress,
+			ipcPath,
+			contractEventSignatures);
+	}
+}
+
+
+
+string
+EthInterface::getIPCPath(void)
+{
+	return ipcPath;
 }
 
 
@@ -309,6 +318,11 @@ EthInterface::create_contract(void)
 
 	if (jsonFindResult == transactionJsonData.end())
 	{
+
+#ifdef _DEBUG
+		cout << "create_contract(): Transaction responce: \"" << transactionJsonStr << "\"" << endl;
+#endif //_DEBUG
+
 		// "result" not in JSON responce
 		// TODO: What if "result" is not a string
 		throw TransactionFailedException(
@@ -351,8 +365,8 @@ EthInterface::create_contract(void)
 
 	cout << "Contract Address: " << contractAddress << endl;
 
-	this->contractAddress = boost::to_upper_copy(boost::trim_copy(contractAddress));
-	if (this->contractAddress.substr(0, 2) == "0X")
+	this->contractAddress = boost::to_lower_copy(boost::trim_copy(contractAddress));
+	if (this->contractAddress.substr(0, 2) == "0x")
 	{
 		this->contractAddress = this->contractAddress.substr(2);
 	}
@@ -449,14 +463,13 @@ EthInterface::eth_ipc_request(string const& jsonRequest)
 
 	while (fgets(ipcBuffer.data(), IPC_BUFFER_LENGTH, ipc) != NULL)
 	{
-
-#ifdef _DEBUG
-		cout << "eth_ipc_request(): Read: ''"
-			 << ipcBuffer.data() << "'" << endl;
-#endif //_DEBUG
-
 		json += ipcBuffer.data();
 	}
+
+#ifdef _DEBUG
+	cout << "eth_ipc_request(): Responce: \""
+			<< json << "\"" << endl;
+#endif //_DEBUG
 
 	if (pclose(ipc) < 0)
 	{
@@ -504,7 +517,7 @@ EthInterface::eth_sendTransaction(string const& abiData)
 		+ clientAddress + "\","
 						  "\"to\":\"0x"
 		+ contractAddress + "\","
-							"\"gas\":\"0x14F46B\"," //TODO: WHERE THE THE BLOCK GAS LIMIT SET? Choose this value more intentionally
+							"\"gas\":\"" + ETH_DEFAULT_GAS + "\","
 							"\"gasPrice\":\"0x0\","
 							"\"data\":\"0x"
 		+ abiData + "\"}],"
@@ -526,10 +539,10 @@ EthInterface::eth_createContract(string const& data)
 						 "\"method\":\"eth_sendTransaction\""
 						 ",\"params\":[{"
 						 "\"from\":\"0x"
-		+ clientAddress + "\","
-						  //"\"gas\":0,"
-						  //"\"gasPrice\":\"" + ETH_DEFAULT_GAS + "\","
-						  "\"data\":\"0x"
+						 + clientAddress + "\","
+						 "\"gasPrice\":\"0x0\","
+						 "\"gas\":\"" + ETH_DEFAULT_GAS + "\","
+						 "\"data\":\"0x"
 		+ data + "\"}],"
 				 "\"id\":1}";
 
@@ -564,7 +577,7 @@ EthInterface::eth_getTransactionReceipt(string const& transactionHash)
 void
 EthInterface::joinThreads(void)
 {
-	eventLogWaitManager->joinThread();
+	eventLogWaitManager->joinThreads();
 }
 
 

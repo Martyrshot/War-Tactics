@@ -23,4 +23,4 @@ bool isInt(std::string& s);
 } //namespace
 
 
-#endif // __MISC_HPP
+#endif //__MISC_HPP

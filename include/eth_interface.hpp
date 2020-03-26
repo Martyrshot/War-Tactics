@@ -4,9 +4,7 @@
 #include <thread>
 #include <mutex>
 
-#include "json/include/nlohmann/json.hpp"
-#include <sodium.h>
-
+#include <nlohmann/json.hpp>
 #include <eth_interface_except.hpp>
 #include <subscription_server.hpp>
 
@@ -15,7 +13,7 @@
 
 #define IPC_BUFFER_LENGTH 128
 
-#define ETH_DEFAULT_GAS "0x7A120"
+#define ETH_DEFAULT_GAS "0xFFFFFF"
 
 
 using Json = nlohmann::json;
@@ -37,8 +35,11 @@ class EthInterface
 		std::string ipcPath,
 		std::string clientAddress,
 		std::string contractAddress,
-		std::vector<std::pair<std::string, std::string>> contractEventSignatures);
+		std::vector<std::pair<std::string, std::string>> contractEventSignatures,
+		bool createEventLogWaitManager);
 
+
+	std::string getIPCPath(void);
 	std::string getClientAddress(void);
 	std::string getContractAddress(void);
 	std::string getEthContractSOL(void);
