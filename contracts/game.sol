@@ -230,6 +230,11 @@ contract Game {
 	}
 
 
+	function get_hq_health() external view returns (uint8, uint8) {
+		return (HQ_HITPOINTS - player_hq_damage[0], HQ_HITPOINTS - player_hq_damage[1]);
+	}
+
+
 	function lay_path(uint8 x, uint8 y, uint8 handIndex, uint8 adjacentPathX, uint8 adjacentPathY) external _players_turn returns (bool) {
 		uint8 sender;
 		uint8 other;
