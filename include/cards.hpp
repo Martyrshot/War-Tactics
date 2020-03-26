@@ -2,383 +2,426 @@
 // cards from https://www.asciiart.eu/miscellaneous/playing-cards
 //       by ejm98
 #include <string>
+#include <iostream>
+#include <vector>
 
 using namespace std;
 
+#define CARDSPERSUIT 13
+#define CARDHEIGHT 6
 
-string cardback[6] = {   " _____ "
-                        ,"|\\ ~ /|"
-                        ,"|}}:{{|"
-                        ,"|}}:{{|"
-                        ,"|}}:{{|"
-                        ,"|/_~_\\|"};
+vector<string> cardback = {   
+                         string(" _____ ")
+                        ,string("|\\ ~ /|")
+                        ,string("|}}:{{|")
+                        ,string("|}}:{{|")
+                        ,string("|}}:{{|")
+                        ,string("|/_~_\\|")};
 //Use this for HQ, but if have time, let's make it look cooler
-string joker[6] = {      " _____ "
-                        ,"|Joker|"
-                        ,"|==%, |"
-                        ,"| \\/>\\|"
-                        ,"| _>^^|"
-                        ,"|/_\\/_|"};
+vector<string> joker = {
+                         string(" _____ ")
+                        ,string("|Joker|")
+                        ,string("|==%, |")
+                        ,string("| \\/>\\|")
+                        ,string("| _>^^|")
+                        ,string("|/_\\/_|")};
       
-string spades[13][6] = {{    " _____ "
-                            ,"|A .  |"
-                            ,"| /.\\ |"
-                            ,"|(_._)|"
-                            ,"|  |  |"
-                            ,"|____V|"}
-                        ,{   " _____ "
-                            ,"|2    |"
-                            ,"|  ^  |"
-                            ,"|     |"
-                            ,"|  ^  |"
-                            ,"|____Z|"}
+vector< vector<string> > spades = {
+                        {    string(" _____ ")
+                            ,string("|A .  |")
+                            ,string("| /.\\ |")
+                            ,string("|(_._)|")
+                            ,string("|  |  |")
+                            ,string("|____V|")}
+                        ,{   string(" _____ ")
+                            ,string("|2    |")
+                            ,string("|  ^  |")
+                            ,string("|     |")
+                            ,string("|  ^  |")
+                            ,string("|____Z|")}
 
-                        ,{   " _____ "
-                            ,"|3    |"
-                            ,"| ^ ^ |"
-                            ,"|     |"
-                            ,"|  ^  |"
-                            ,"|____E|"}
+                        ,{   string(" _____ ")
+                            ,string("|3    |")
+                            ,string("| ^ ^ |")
+                            ,string("|     |")
+                            ,string("|  ^  |")
+                            ,string("|____E|")}
 
-                        ,{   " _____ "
-                            ,"|4    |"
-                            ,"| ^ ^ |"
-                            ,"|     |"
-                            ,"| ^ ^ |"
-                            ,"|____h|"}
+                        ,{   string(" _____ ")
+                            ,string("|4    |")
+                            ,string("| ^ ^ |")
+                            ,string("|     |")
+                            ,string("| ^ ^ |")
+                            ,string("|____h|")}
 
-                        ,{   " _____ "
-                            ,"|5    |"
-                            ,"| ^ ^ |"
-                            ,"|  ^  |"
-                            ,"| ^ ^ |"
-                            ,"|____S|"}
+                        ,{   string(" _____ ")
+                            ,string("|5    |")
+                            ,string("| ^ ^ |")
+                            ,string("|  ^  |")
+                            ,string("| ^ ^ |")
+                            ,string("|____S|")}
 
-                        ,{   " _____ "
-                            ,"|6    |"
-                            ,"| ^ ^ |"
-                            ,"| ^ ^ |"
-                            ,"| ^ ^ |"
-                            ,"|____9|"}
+                        ,{   string(" _____ ")
+                            ,string("|6    |")
+                            ,string("| ^ ^ |")
+                            ,string("| ^ ^ |")
+                            ,string("| ^ ^ |")
+                            ,string("|____9|")}
 
-                        ,{   " _____ "
-                            ,"|7    |"
-                            ,"| ^ ^ |"
-                            ,"|^ ^ ^|"
-                            ,"| ^ ^ |"
-                            ,"|____L|"}
+                        ,{   string(" _____ ")
+                            ,string("|7    |")
+                            ,string("| ^ ^ |")
+                            ,string("|^ ^ ^|")
+                            ,string("| ^ ^ |")
+                            ,string("|____L|")}
 
-                        ,{   " _____ "
-                            ,"|8    |"
-                            ,"|^ ^ ^|"
-                            ,"| ^ ^ |"
-                            ,"|^ ^ ^|"
-                            ,"|____8|"}
+                        ,{   string(" _____ ")
+                            ,string("|8    |")
+                            ,string("|^ ^ ^|")
+                            ,string("| ^ ^ |")
+                            ,string("|^ ^ ^|")
+                            ,string("|____8|")}
 
-                        ,{   " _____ "
-                            ,"|9    |"
-                            ,"|^ ^ ^|"
-                            ,"|^ ^ ^|"
-                            ,"|^ ^ ^|"
-                            ,"|____6|"}
+                        ,{   string(" _____ ")
+                            ,string("|9    |")
+                            ,string("|^ ^ ^|")
+                            ,string("|^ ^ ^|")
+                            ,string("|^ ^ ^|")
+                            ,string("|____6|")}
 
-                        ,{   " _____ "
-                            ,"|10 ^ |"
-                            ,"|^ ^ ^|"
-                            ,"|^ ^ ^|"
-                            ,"|^ ^ ^|"
-                            ,"|___0I|"}
+                        ,{   string(" _____ ")
+                            ,string("|10 ^ |")
+                            ,string("|^ ^ ^|")
+                            ,string("|^ ^ ^|")
+                            ,string("|^ ^ ^|")
+                            ,string("|___0I|")}
 
-                        ,{   " _____ "
-                            ,"|J  ww|"
-                            ,"| ^ {)|"
-                            ,"|(.)% |"
-                            ,"| | % |"
-                            ,"|__%%[|"}
+                        ,{   string(" _____ ")
+                            ,string("|J  ww|")
+                            ,string("| ^ {)|")
+                            ,string("|(.)% |")
+                            ,string("| | % |")
+                            ,string("|__%%[|")}
 
-                        ,   {" _____ "
-                            ,"|Q  ww|"
-                            ,"| ^ {(|"
-                            ,"|(.)%%|"
-                            ,"| |%%%|"
-                            ,"|_%%%O|"}
+                        ,{   string(" _____ ")
+                            ,string("|Q  ww|")
+                            ,string("| ^ {(|")
+                            ,string("|(.)%%|")
+                            ,string("| |%%%|")
+                            ,string("|_%%%O|")}
 
-                       ,{    " _____ "
-                            ,"|K  WW|"
-                            ,"| ^ {)|"
-                            ,"|(.)%%|"
-                            ,"| |%%%|"
-                            ,"|_%%%>|"}};
+                       ,{    string(" _____ ")
+                            ,string("|K  WW|")
+                            ,string("| ^ {)|")
+                            ,string("|(.)%%|")
+                            ,string("| |%%%|")
+                            ,string("|_%%%>|")}};
    
       
-string clubs[13][6] = {{     " _____ "
-                            ,"|A _  |"
-                            ,"| ( ) |"
-                            ,"|(_'_)|"
-                            ,"|  |  |"
-                            ,"|____V|"}
+vector< vector<string> > clubs = {
+                        {    string(" _____ ")
+                            ,string("|A _  |")
+                            ,string("| ( ) |")
+                            ,string("|(_'_)|")
+                            ,string("|  |  |")
+                            ,string("|____V|")}
     
-                        ,{   " _____ "
-                            ,"|2    |"
-                            ,"|  &  |"
-                            ,"|     |"
-                            ,"|  &  |"
-                            ,"|____Z|"}
+                        ,{   string(" _____ ")
+                            ,string("|2    |")
+                            ,string("|  &  |")
+                            ,string("|     |")
+                            ,string("|  &  |")
+                            ,string("|____Z|")}
 
-                        ,{   " _____ "
-                            ,"|3    |"
-                            ,"| & & |"
-                            ,"|     |"
-                            ,"|  &  |"
-                            ,"|____E|"}
+                        ,{   string(" _____ ")
+                            ,string("|3    |")
+                            ,string("| & & |")
+                            ,string("|     |")
+                            ,string("|  &  |")
+                            ,string("|____E|")}
 
-                        ,{   " _____ "
-                            ,"|4    |"
-                            ,"| & & |"
-                            ,"|     |"
-                            ,"| & & |"
-                            ,"|____h|"}
+                        ,{   string(" _____ ")
+                            ,string("|4    |")
+                            ,string("| & & |")
+                            ,string("|     |")
+                            ,string("| & & |")
+                            ,string("|____h|")}
                         
-                        ,{   " _____ "
-                            ,"|5    |"
-                            ,"| & & |"
-                            ,"|  &  |"
-                            ,"| & & |"
-                            ,"|____S|"}
+                        ,{   string(" _____ ")
+                            ,string("|5    |")
+                            ,string("| & & |")
+                            ,string("|  &  |")
+                            ,string("| & & |")
+                            ,string("|____S|")}
                         
-                        ,{   " _____ "
-                            ,"|6    |"
-                            ,"| & & |"
-                            ,"| & & |"
-                            ,"| & & |"
-                            ,"|____9|"}
+                        ,{   string(" _____ ")
+                            ,string("|6    |")
+                            ,string("| & & |")
+                            ,string("| & & |")
+                            ,string("| & & |")
+                            ,string("|____9|")}
 
-                        ,{   " _____ "
-                            ,"|7    |"
-                            ,"| & & |"
-                            ,"|& & &|"
-                            ,"| & & |"
-                            ,"|____L|"}
+                        ,{   string(" _____ ")
+                            ,string("|7    |")
+                            ,string("| & & |")
+                            ,string("|& & &|")
+                            ,string("| & & |")
+                            ,string("|____L|")}
 
-                        ,{   " _____ "
-                            ,"|8    |"
-                            ,"|& & &|"
-                            ,"| & & |"
-                            ,"|& & &|"
-                            ,"|____8|"}
+                        ,{   string(" _____ ")
+                            ,string("|8    |")
+                            ,string("|& & &|")
+                            ,string("| & & |")
+                            ,string("|& & &|")
+                            ,string("|____8|")}
 
-                        ,{   " _____ "
-                            ,"|9    |"
-                            ,"|& & &|"
-                            ,"|& & &|"
-                            ,"|& & &|"
-                            ,"|____6|"}
+                        ,{   string(" _____ ")
+                            ,string("|9    |")
+                            ,string("|& & &|")
+                            ,string("|& & &|")
+                            ,string("|& & &|")
+                            ,string("|____6|")}
 
-                        ,{   " _____ "
-                            ,"|10 & |"
-                            ,"|& & &|"
-                            ,"|& & &|"
-                            ,"|& & &|"
-                            ,"|___0I|"}
+                        ,{   string(" _____ ")
+                            ,string("|10 & |")
+                            ,string("|& & &|")
+                            ,string("|& & &|")
+                            ,string("|& & &|")
+                            ,string("|___0I|")}
 
-                        ,{   " _____ "
-                            ,"|J  ww|"
-                            ,"| o {)|"
-                            ,"|o o% |"
-                            ,"| | % |"
-                            ,"|__%%[|"}
+                        ,{   string(" _____ ")
+                            ,string("|J  ww|")
+                            ,string("| o {)|")
+                            ,string("|o o% |")
+                            ,string("| | % |")
+                            ,string("|__%%[|")}
 
-                        ,{   " _____ "
-                            ,"|Q  ww|"
-                            ,"| o {(|"
-                            ,"|o o%%|"
-                            ,"| |%%%|"
-                            ,"|_%%%O|"}
-                        ,{   " _____ "
-                            ,"|K  WW|"
-                            ,"| o {)|"
-                            ,"|o o%%|"
-                            ,"| |%%%|"
-                            ,"|_%%%>|"}};
+                        ,{   string(" _____ ")
+                            ,string("|Q  ww|")
+                            ,string("| o {(|")
+                            ,string("|o o%%|")
+                            ,string("| |%%%|")
+                            ,string("|_%%%O|")}
 
-string hearts[13][6] = {{    " _____ "
-                            ,"|A_ _ |"
-                            ,"|( v )|"
-                            ,"| \\ / |"
-                            ,"|  .  |"
-                            ,"|____V|"}
-                            
-                        ,{   " _____ "
-                            ,"|2    |"
-                            ,"|  v  |"
-                            ,"|     |"
-                            ,"|  v  |"
-                            ,"|____Z|"}
-                        
-                        ,{   " _____ "
-                            ,"|3    |"
-                            ,"| v v |"
-                            ,"|     |"
-                            ,"|  v  |"
-                            ,"|____E|"}
-                        
-                        ,{   " _____ "
-                            ,"|4    |"
-                            ,"| v v |"
-                            ,"|     |"
-                            ,"| v v |"
-                            ,"|____h|"}
-                        
-                        ,{   " _____ "
-                            ,"|5    |"
-                            ,"| v v |"
-                            ,"|  v  |"
-                            ,"| v v |"
-                            ,"|____S|"}
-                        
-                        ,{   " _____ "
-                            ,"|6    |"
-                            ,"| v v |"
-                            ,"| v v |"
-                            ,"| v v |"
-                            ,"|____9|"}
-                        
-                        ,{   " _____ "
-                            ,"|7    |"
-                            ,"| v v |"
-                            ,"|v v v|"
-                            ,"| v v |"
-                            ,"|____L|"}
-                        
-                        ,{   " _____ "
-                            ,"|8    |"
-                            ,"|v v v|"
-                            ,"| v v |"
-                            ,"|v v v|"
-                            ,"|____8|"}
-                            
-                        ,{   " _____ "
-                            ,"|9    |"
-                            ,"|v v v|"
-                            ,"|v v v|"
-                            ,"|v v v|"
-                            ,"|____6|"}
-                        
-                        ,{   " _____ "
-                            ,"|10 v |"
-                            ,"|v v v|"
-                            ,"|v v v|"
-                            ,"|v v v|"
-                            ,"|___0I|"}
-                        
-                        ,{   " _____ "
-                            ,"|J  ww|"
-                            ,"|   {)|"
-                            ,"|(v)% |"
-                            ,"| v % |"
-                            ,"|__%%[|"}
-                            
-                        ,{   " _____ "
-                            ,"|Q  ww|"
-                            ,"|   {(|"
-                            ,"|(v)%%|"
-                            ,"| v%%%|"
-                            ,"|_%%%O|"}
-                            
-                        ,{   " _____ "
-                            ,"|K  WW|"
-                            ,"|   {)|"
-                            ,"|(v)%%|"
-                            ,"| v%%%|"
-                            ,"|_%%%>|"}   };
+                        ,{   string(" _____ ")
+                            ,string("|K  WW|")
+                            ,string("| o {)|")
+                            ,string("|o o%%|")
+                            ,string("| |%%%|")
+                            ,string("|_%%%>|")}};
 
-string diamonds[13][6] = {{  " _____ "
-                            ,"|A ^  |"
-                            ,"| / \\ |"
-                            ,"| \\ / |"
-                            ,"|  .  |"
-                            ,"|____V|"}
+vector< vector<string> > hearts = {
+                        {    string(" _____ ")
+                            ,string("|A_ _ |")
+                            ,string("|( v )|")
+                            ,string("| \\ / |")
+                            ,string("|  .  |")
+                            ,string("|____V|")}
                             
-                        ,{   " _____ "
-                            ,"|2    |"
-                            ,"|  o  |"
-                            ,"|     |"
-                            ,"|  o  |"
-                            ,"|____Z|"}
-                            
-                        ,{   " _____ "
-                            ,"|3    |"
-                            ,"| o o |"
-                            ,"|     |"
-                            ,"|  o  |"
-                            ,"|____E|"}
+                        ,{   string(" _____ ")
+                            ,string("|2    |")
+                            ,string("|  v  |")
+                            ,string("|     |")
+                            ,string("|  v  |")
+                            ,string("|____Z|")}
                         
-                        ,{   " _____ "
-                            ,"|4    |"
-                            ,"| o o |"
-                            ,"|     |"
-                            ,"| o o |"
-                            ,"|____h|"}
+                        ,{   string(" _____ ")
+                            ,string("|3    |")
+                            ,string("| v v |")
+                            ,string("|     |")
+                            ,string("|  v  |")
+                            ,string("|____E|")}
+                        
+                        ,{   string(" _____ ")
+                            ,string("|4    |")
+                            ,string("| v v |")
+                            ,string("|     |")
+                            ,string("| v v |")
+                            ,string("|____h|")}
+                        
+                        ,{   string(" _____ ")
+                            ,string("|5    |")
+                            ,string("| v v |")
+                            ,string("|  v  |")
+                            ,string("| v v |")
+                            ,string("|____S|")}
+                        
+                        ,{   string(" _____ ")
+                            ,string("|6    |")
+                            ,string("| v v |")
+                            ,string("| v v |")
+                            ,string("| v v |")
+                            ,string("|____9|")}
+                        
+                        ,{   string(" _____ ")
+                            ,string("|7    |")
+                            ,string("| v v |")
+                            ,string("|v v v|")
+                            ,string("| v v |")
+                            ,string("|____L|")}
+                        
+                        ,{   string(" _____ ")
+                            ,string("|8    |")
+                            ,string("|v v v|")
+                            ,string("| v v |")
+                            ,string("|v v v|")
+                            ,string("|____8|")}
                             
-                        ,{   " _____ "
-                            ,"|5    |"
-                            ,"| o o |"
-                            ,"|  o  |"
-                            ,"| o o |"
-                            ,"|____S|"}
+                        ,{   string(" _____ ")
+                            ,string("|9    |")
+                            ,string("|v v v|")
+                            ,string("|v v v|")
+                            ,string("|v v v|")
+                            ,string("|____6|")}
+                        
+                        ,{   string(" _____ ")
+                            ,string("|10 v |")
+                            ,string("|v v v|")
+                            ,string("|v v v|")
+                            ,string("|v v v|")
+                            ,string("|___0I|")}
+                        
+                        ,{   string(" _____ ")
+                            ,string("|J  ww|")
+                            ,string("|   {)|")
+                            ,string("|(v)% |")
+                            ,string("| v % |")
+                            ,string("|__%%[|")}
                             
-                        ,{   " _____ "
-                            ,"|6    |"
-                            ,"| o o |"
-                            ,"| o o |"
-                            ,"| o o |"
-                            ,"|____9|"}
+                        ,{   string(" _____ ")
+                            ,string("|Q  ww|")
+                            ,string("|   {(|")
+                            ,string("|(v)%%|")
+                            ,string("| v%%%|")
+                            ,string("|_%%%O|")}
                             
-                        ,{   " _____ "
-                            ,"|7    |"
-                            ,"| o o |"
-                            ,"|o o o|"
-                            ,"| o o |"
-                            ,"|____L|"}
-                            
-                        ,{   " _____ "
-                            ,"|8    |"
-                            ,"|o o o|"
-                            ,"| o o |"
-                            ,"|o o o|"
-                            ,"|____8|"}
+                        ,{   string(" _____ ")
+                            ,string("|K  WW|")
+                            ,string("|   {)|")
+                            ,string("|(v)%%|")
+                            ,string("| v%%%|")
+                            ,string("|_%%%>|")}   };
 
-                        ,{   " _____ "
-                            ,"|9    |"
-                            ,"|o o o|"
-                            ,"|o o o|"
-                            ,"|o o o|"
-                            ,"|____6|"}
+vector< vector<string> > diamonds = {
+                        {    string(" _____ ")
+                            ,string("|A ^  |")
+                            ,string("| / \\ |")
+                            ,string("| \\ / |")
+                            ,string("|  .  |")
+                            ,string("|____V|")}
                             
-                        ,{   " _____ "
-                            ,"|10 o |"
-                            ,"|o o o|"
-                            ,"|o o o|"
-                            ,"|o o o|"
-                            ,"|___0I|"}
+                        ,{   string(" _____ ")
+                            ,string("|2    |")
+                            ,string("|  o  |")
+                            ,string("|     |")
+                            ,string("|  o  |")
+                            ,string("|____Z|")}
                             
-                        ,{   " _____ "
-                            ,"|J  ww|"
-                            ,"| /\\{)|"
-                            ,"| \\/% |"
-                            ,"|   % |"
-                            ,"|__%%[|"}
+                        ,{   string(" _____ ")
+                            ,string("|3    |")
+                            ,string("| o o |")
+                            ,string("|     |")
+                            ,string("|  o  |")
+                            ,string("|____E|")}
+                        
+                        ,{   string(" _____ ")
+                            ,string("|4    |")
+                            ,string("| o o |")
+                            ,string("|     |")
+                            ,string("| o o |")
+                            ,string("|____h|")}
                             
-                        ,{   " _____ "
-                            ,"|Q  ww|"
-                            ,"| /\\{(|"
-                            ,"| \\/%%|"
-                            ,"|  %%%|"
-                            ,"|_%%%O|"}
+                        ,{   string(" _____ ")
+                            ,string("|5    |")
+                            ,string("| o o |")
+                            ,string("|  o  |")
+                            ,string("| o o |")
+                            ,string("|____S|")}
                             
-                        ,{   " _____ "
-                            ,"|K  WW|"
-                            ,"| /\\{)|"
-                            ,"| \\/%%|"
-                            ,"|  %%%|"
-                            ,"|_%%%>|"}};
+                        ,{   string(" _____ ")
+                            ,string("|6    |")
+                            ,string("| o o |")
+                            ,string("| o o |")
+                            ,string("| o o |")
+                            ,string("|____9|")}
+                            
+                        ,{   string(" _____ ")
+                            ,string("|7    |")
+                            ,string("| o o |")
+                            ,string("|o o o|")
+                            ,string("| o o |")
+                            ,string("|____L|")}
+                            
+                        ,{   string(" _____ ")
+                            ,string("|8    |")
+                            ,string("|o o o|")
+                            ,string("| o o |")
+                            ,string("|o o o|")
+                            ,string("|____8|")}
+
+                        ,{   string(" _____ ")
+                            ,string("|9    |")
+                            ,string("|o o o|")
+                            ,string("|o o o|")
+                            ,string("|o o o|")
+                            ,string("|____6|")}
+                            
+                        ,{   string(" _____ ")
+                            ,string("|10 o |")
+                            ,string("|o o o|")
+                            ,string("|o o o|")
+                            ,string("|o o o|")
+                            ,string("|___0I|")}
+                            
+                        ,{   string(" _____ ")
+                            ,string("|J  ww|")
+                            ,string("| /\\{)|")
+                            ,string("| \\/% |")
+                            ,string("|   % |")
+                            ,string("|__%%[|")}
+                            
+                        ,{   string(" _____ ")
+                            ,string("|Q  ww|")
+                            ,string("| /\\{(|")
+                            ,string("| \\/%%|")
+                            ,string("|  %%%|")
+                            ,string("|_%%%O|")}
+                            
+                        ,{   string(" _____ ")
+                            ,string("|K  WW|")
+                            ,string("| /\\{)|")
+                            ,string("| \\/%%|")
+                            ,string("|  %%%|")
+                            ,string("|_%%%>|")}};
+
+
+
+void printCards(vector<vector<string>>cards) {
+    for (int i = 0; i < CARDHEIGHT; i++) {
+        for (vector<string> j: cards) {
+            cout << j[i];
+        }
+        cout << endl;
+    }
+}
+
+vector< vector<string> > idsToASCII(vector<int> ids) {
+    vector< vector<string> > result;
+    for(int n : ids) {
+        if (n < 0) {
+            return result;
+        }
+        if (n < 13) {
+            result.push_back(spades[n]);
+        }
+        else if (n < 26) {
+            result.push_back(clubs[n%13]);
+        }
+        else if (n < 39) {
+            result.push_back(diamonds[n%13]);
+        }
+        else {
+            result.push_back(hearts[n%13]);
+        }
+    }
+}
