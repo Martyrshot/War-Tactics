@@ -9,6 +9,8 @@ contract Game {
 	uint8 constant PLAYER1 = 0;
 	uint8 constant PLAYER2 = 1;
 
+	uint8 constant HQ_HITPOINTS = 2;
+
 	uint8 constant DECK_SIZE = 52;
 	uint8 constant HAND_SIZE = 5;
 	uint8 constant BOARD_WIDTH = 10;
@@ -34,17 +36,18 @@ contract Game {
 	bool player1_turn;
 
 
-
 	address[2] player;
 	uint8[][2] player_hand;
 	int8[2] player_deck_top;
 	uint8[2] player_hq;
-	uint8[2] player_hq_health;
+	uint8[2] player_hq_damage;
 	bool[2] has_player_deck;
 	bool[2] has_player_hand;
 	bool[2] has_player_hq;
 
 	bool has_player2;
+	bool game_over;
+	bool player1_won;
 
 
 	Helper helper_contract;
@@ -329,17 +332,52 @@ contract Game {
 			return false;
 		}
 
+		if (board[BOARD_STATE][attackX][attackY] == STATE_HQ) {
+			// Inflict damage on HQ
+			player_hq_damage[other]++;
+
+			if (player_hq_damage[other] == HQ_HITPOINTS) {
+				game_over = true;
+				if (sender == PLAYER1) {
+					player1_won = true;
+				}
+				// TODO: emit
+				return true;
+			}
+		}
+
 		attackerCard = board[BOARD_CARD][unitX][unitY] % 13;
 		attackeeCard = board[BOARD_CARD][attackX][attackY] % 13;
 
 		if (attackerCard == attackeeCard) {
 			// Tie, both cards are lost
+			if (board[BOARD_STATE][unitX][unitY] == STATE_HQ_AND_UNIT) {
+				board[BOARD_STATE][unitX][unitY] = STATE_HQ;
+			} else {
+				board[BOARD_STATE][unitX][unitY] = STATE_PATH;
+			}
+
+			if (board[BOARD_STATE][attackX][attackY] == STATE_HQ_AND_UNIT) {
+				board[BOARD_STATE][attackX][attackY] = STATE_HQ;
+			} else {
+				board[BOARD_STATE][attackX][attackY] = STATE_PATH;
+			}
 
 		} else if (attackerCard > attackeeCard) {
 			// Attacker wins (unitX, unitY)
+			if (board[BOARD_STATE][attackX][attackY] == STATE_HQ_AND_UNIT) {
+				board[BOARD_STATE][attackX][attackY] = STATE_HQ;
+			} else {
+				board[BOARD_STATE][attackX][attackY] = STATE_PATH;
+			}
 
 		} else {
 			// Attackee wins (attackX, attackY)
+			if (board[BOARD_STATE][unitX][unitY] == STATE_HQ_AND_UNIT) {
+				board[BOARD_STATE][unitX][unitY] = STATE_HQ;
+			} else {
+				board[BOARD_STATE][unitX][unitY] = STATE_PATH;
+			}
 
 		}
 
