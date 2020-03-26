@@ -14,11 +14,6 @@
 
 #define DECK_SIZE     52
 
-/*
-#define ETH_CONTRACT_SOL "dev_mgmt_contract.sol"
-#define ETH_CONTRACT_BIN "dev_mgmt_contract.bin"
-#define ETH_CONTRACT_ABI "dev_mgmt_contract.abi"
-*/
 
 using namespace eth_interface;
 
@@ -70,6 +65,10 @@ class GameInterface : public EthInterface
 	std::pair<uint8_t, uint8_t>
 	getHqHealth(void);
 
+	// 0 = Game not over, 1 = player 1 won, 2 = player 2 won
+	uint8_t
+	isGameOver(void);
+
 	bool
 	layPath(uint8_t x,
 			uint8_t y,
@@ -91,6 +90,13 @@ class GameInterface : public EthInterface
 			uint8_t unitY,
 			uint8_t attackX,
 			uint8_t attackY);
+
+	void
+	waitPlayerJoined(void);
+
+	void
+	waitNextTurn(void);
+
 
 
 	private:

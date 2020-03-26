@@ -61,7 +61,7 @@ contract Game {
 	event DecksReady();
 
 	// keccak256 signature:
-	event NextTurn(uint8 playerTurn);
+	event NextTurn(address indexed player);
 
 	// keccak256 signature:
 	event CreateDeck(address indexed sender);
@@ -80,9 +80,6 @@ contract Game {
 
 	// keccak256 signature:
 	event Attack(address indexed sender);
-
-	// keccak256 signature:
-	event GameOver(uint8 winner);
 
 
 
@@ -289,7 +286,7 @@ contract Game {
 		draw_cards();
 		player1_turn = !player1_turn;
 		emit LayPath(msg.sender);
-		emit NextTurn(other + 1);
+		emit NextTurn(player[other]);
 		return true;
 	}
 
@@ -324,7 +321,7 @@ contract Game {
 		draw_cards();
 		player1_turn = !player1_turn;
 		emit LayUnit(msg.sender);
-		emit NextTurn(other + 1);
+		emit NextTurn(player[other]);
 		return true;
 	}
 
@@ -368,7 +365,7 @@ contract Game {
 
 		player1_turn = !player1_turn;
 		emit MoveUnit(msg.sender);
-		emit NextTurn(other + 1);
+		emit NextTurn(player[other]);
 		return true;
 	}
 
@@ -456,7 +453,7 @@ contract Game {
 		// No cards were spent from the players hand, so no need to draw, correct?
 		player1_turn = !player1_turn;
 		emit Attack(msg.sender);
-		emit NextTurn(other + 1);
+		emit NextTurn(player[other]);
 		return true;
 	}
 
