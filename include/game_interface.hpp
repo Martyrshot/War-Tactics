@@ -4,6 +4,7 @@
 #include <libconfig.h++>
 #include <mutex>
 #include <thread>
+#include <boost/multi_array.hpp>
 
 #include <eth_interface.hpp>
 #include <eth_interface_except.hpp>
@@ -59,7 +60,8 @@ class GameInterface : public EthInterface
 	uint8_t
 	getPrivateCardFromSeed(uint8_t cardSeed);
 
-	std::vector<std::vector<std::vector<uint8_t>>>
+	// boost::multi_array<uint8_t, 3> (boost::extents[3][10][9])
+	boost::multi_array<uint8_t, 3>
 	getBoardState(void);
 
 	std::pair<uint8_t, uint8_t>
