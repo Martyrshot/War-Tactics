@@ -4,7 +4,7 @@
 #define PRPOMPTSTARTTURN "Press enter to start your turn\n"
 
 #define PROMPTACTION "Please enter the corresponding number to perform an " \
-                        "action.\n0) Print board\n" \
+                        "action.\n" \
                                     "1) Lay a path\n" \
                                     "2) Place a new unit\n" \
                                     "3) Move a unit\n" \

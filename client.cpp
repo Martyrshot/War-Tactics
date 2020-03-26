@@ -2,6 +2,7 @@
 #include <vector>
 #include <iostream>
 #include "include/cards.hpp"
+#include "include/userInput.hpp"
 #include <stdlib.h>
 #include <time.h> // TODO remove this after testing is complete
 using namespace std;
@@ -34,7 +35,7 @@ void printHorizontalBar(int row, vector< vector<int> > points) {
             // way to do it right now
             curTile++;
             bool foundTile = false;
-            for (int j = 0; j < points.size(); j++) {
+            for (size_t j = 0; j < points.size(); j++) {
                 if (points[j][1] == row && points[j][0] == curTile) {
                     foundTile = true;
                     oneMore = true;
@@ -69,7 +70,7 @@ void printBoard(vector< vector<int> > points) {
         for (int j = 0; j < 10; j++) {
             // check state first
             bool foundSquare = false;
-            for (int k = 0; k < points.size(); k++) {
+            for (size_t k = 0; k < points.size(); k++) {
                 if (points[k][0] == j && points[k][1] == i) {
                     foundSquare = true;
                     oneMore = true;
@@ -246,6 +247,14 @@ int main(int argc, char **argv) {
     printOpponentsHand(5);
     printBoard(points);
     printHand(v, 6);
+    promptForEnter("This is a test prompt\n");
+    vector<int> point;
+    do {
+        point = promptForPoint("Please enter a point\n");
+    } while(point.size() != 2);
+    int input = -1;;
+    do {
+        input = promptForAction("Enter 1,2,3 or 4\n");
+    } while(input == -1);
     return 0;
-
 }
