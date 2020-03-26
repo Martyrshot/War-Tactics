@@ -396,7 +396,9 @@ vector< vector<string> > diamonds = {
 
 
 
-void printHand(vector<int> ids) {
+void printHand(vector<int> ids, int idx) {
+    //shift index to start at 0 instead of 1
+    idx = idx - 1;
     vector< vector<string> > cards;
     for(int n : ids) {
         if (n < 0) {
@@ -418,8 +420,15 @@ void printHand(vector<int> ids) {
 
     
     for (int i = 0; i < CARDHEIGHT; i++) {
+        int curCard = 0;
         for (vector<string> j: cards) {
-            cout << j[i];
+            if (idx == curCard){
+                cout << "\033[1;33m" << j[i] << "\033[0m";
+            }
+            else {
+                cout << j[i];
+            }
+            curCard++;
         }
         cout << endl;
     }
@@ -427,6 +436,10 @@ void printHand(vector<int> ids) {
         cout << "   " << i + 1<< "   ";
     }
     cout << endl;
+}
+
+void printHand(vector<int> ids) {
+    printHand(ids, -1);
 }
 
 void printOpponentsHand(int n) {
