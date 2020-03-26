@@ -53,6 +53,8 @@ contract Game {
 	Helper helper_contract;
 
 
+	// keccak256 signature:
+	event JoinGame(address indexed sender);
 
 	// keccak256 signature: 683bd2659be7113b3c0113c3c6d6a2d8a84e09a864bada4a03a67998e041ad24
 	event PlayerJoined();
@@ -121,6 +123,7 @@ contract Game {
 		player[PLAYER2] = msg.sender;
 		game_join_time = helper_contract.uint2str(now);
 
+		emit JoinGame(msg.sender);
 		emit PlayerJoined();
 
 		return true;

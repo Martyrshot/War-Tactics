@@ -11,7 +11,15 @@
 #include <subscription_server.hpp>
 
 
-#define CONFIG_F "game.conf"
+#define CONFIG_F     "game.conf"
+
+#define GAME_SOL     "contracts/game.sol"
+#define GAME_ABI     "contracts/game.abi"
+#define GAME_BIN     "contracts/game.bin"
+
+#define HELPER_SOL   "contracts/helper.sol"
+#define HELPER_ABI   "contracts/helper.abi"
+#define HELPER_BIN   "contracts/helper.bin"
 
 #define DECK_SIZE     52
 
@@ -61,7 +69,7 @@ class GameInterface : public EthInterface
 	getPrivateCardFromSeed(uint8_t cardSeed);
 
 	// boost::multi_array<uint8_t, 3> (boost::extents[3][10][9])
-	boost::multi_array<uint8_t, 3>
+	std::vector<std::vector<std::vector<uint8_t>>>
 	getBoardState(void);
 
 	std::pair<uint8_t, uint8_t>
@@ -105,6 +113,8 @@ class GameInterface : public EthInterface
 
 	libconfig::Config cfg;
 	libconfig::Setting* cfgRoot;
+
+	std::string helperContractAddress;
 
 	std::vector<std::pair<std::string, std::string>> contractEventSignatures(void);
 
