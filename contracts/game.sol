@@ -17,10 +17,9 @@ contract Game {
 
 	uint8 constant STATE_BLANK = 0;
 	uint8 constant STATE_PATH = 1;
-	uint8 constant STATE_UNIT = 2;
-	uint8 constant STATE_PATH_AND_UNIT = 3;
-	uint8 constant STATE_HQ = 4;
-	uint8 constant STATE_HQ_AND_UNIT = 5;
+	uint8 constant STATE_PATH_AND_UNIT = 2;
+	uint8 constant STATE_HQ = 3;
+	uint8 constant STATE_HQ_AND_UNIT = 4;
 
 	struct BoardSpace {
 		uint8 card;
@@ -307,6 +306,46 @@ contract Game {
 
 	function attack(uint8 unitX, uint8 unitY, uint8 attackX, uint8 attackY) external _players_turn returns (bool) {
 		// TODO
+		uint8 sender;
+		uint8 other;
+		uint8 attackerCard;
+		uint8 attackeeCard;
+
+		if (msg.sender == player[PLAYER1]) {
+			sender = PLAYER1;
+			other = PLAYER2;
+		} else {
+			sender = PLAYER2;
+			other = PLAYER1;
+		}
+
+		if (board[unitX][unitY].owner != sender + 1 || board[unitX][unitY].state != STATE_PATH_AND_UNIT {
+			return false;
+		}
+
+		if (board[attackX][attackY].owner != other ||
+			(
+				board[attackX][attackY].state != STATE_HQ &&
+				board[attackX][attackY].state != STATE_HQ_AND_UNIT &&
+				board[attackX][attackY].state != STATE_PATH_AND_UNIT
+			)
+		){
+			return false;
+		}
+
+		attackerCard = board[unitX][unitY].card % 13;
+		attackeeCard = board[attackX][attackY].card % 13;
+
+		if (attackerCard == attackeeCard) {
+			// Tie, both cards are lost
+
+		} else if (attackerCard > attackeeCard) {
+			// Attacker wins (unitX, unitY)
+
+		} else {
+			// Attackee wins (attackX, attackY)
+
+		}
 
 		// No cards were spent from the players hand, so no need to draw, correct?
 		player1_turn = !player1_turn;
