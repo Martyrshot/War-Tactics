@@ -437,7 +437,7 @@ void printHand(vector<int> ids) {
         cout << endl;
     }
     for (int i = 0; i < cards.size(); i++) {
-        cout << "   " << i << "   ";
+        cout << "   " << i + 1<< "   ";
     }
     cout << endl;
 }

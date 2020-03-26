@@ -22,7 +22,7 @@ void printBoard(void) {
         for (int j = 0; j < 10; j++) {
             cout << "|   ";
         }
-        cout << "| " << i << endl << BOARDHORIZONTALBAR << endl;
+        cout << "| " << i + 1 << endl << BOARDHORIZONTALBAR << endl;
     }
     for (int i = 0; i < 10; i++) {
         cout << "  " << (char)(i + 65) << " ";
