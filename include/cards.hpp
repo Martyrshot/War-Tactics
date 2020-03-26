@@ -395,20 +395,7 @@ vector< vector<string> > diamonds = {
                             ,string("|_%%%>|")}};
 
 
-/*
-void printHand(vector<vector<string>>cards) {
-    for (int i = 0; i < cards.size(); i++) {
-        cout << "   " << i << "   ";
-    }
-    cout << endl;
-    for (int i = 0; i < CARDHEIGHT; i++) {
-        for (vector<string> j: cards) {
-            cout << j[i];
-        }
-        cout << endl;
-    }
-}
-*/
+
 void printHand(vector<int> ids) {
     vector< vector<string> > cards;
     for(int n : ids) {
