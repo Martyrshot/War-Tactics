@@ -60,11 +60,29 @@ contract Game {
 	// keccak256 signature: 71f35e93dba038828dc45a6ae7729335a6419de8bb0eb50318b023ce96b2579d
 	event DecksReady();
 
-	// keccak256 signature: f3a2f88f7c3271d9fa4567afa6b0a0b4b791579b3b6c5eeacc1de20699269562
-	event SubmitDeckSignatures(address indexed sender);
+	// keccak256 signature:
+	event NextTurn(uint8 playerTurn);
 
-	// keccak256 signature: 9ca5593cfed860b5d72bc51135525cbf7cf071276e2c1501d8618e9b8e6e6179
-	event SignaturesVerified();
+	// keccak256 signature:
+	event CreateDeck(address indexed sender);
+
+	// keccak256 signature:
+	event DrawHand(address indexed sender);
+
+	// keccak256 signature:
+	event LayPath(address indexed sender);
+
+	// keccak256 signature:
+	event LayUnit(address indexed sender);
+
+	// keccak256 signature:
+	event MoveUnit(address indexed sender);
+
+	// keccak256 signature:
+	event Attack(address indexed sender);
+
+	// keccak256 signature:
+	event GameOver(uint8 winner);
 
 
 
@@ -149,6 +167,8 @@ contract Game {
 		if (has_player_deck[PLAYER1] && has_player_deck[PLAYER2]) {
 			emit DecksReady();
 		}
+
+		emit CreateDeck(msg.sender);
 	}
 
 
@@ -168,6 +188,8 @@ contract Game {
 			has_player_hand[PLAYER2] = true;
 		}
 		draw_cards();
+
+		emit DrawHand(msg.sender);
 	}
 
 
@@ -210,11 +232,14 @@ contract Game {
 
 	function lay_path(uint8 x, uint8 y, uint8 handIndex, uint8 adjacentPathX, uint8 adjacentPathY) external _players_turn returns (bool) {
 		uint8 sender;
+		uint8 other;
 
 		if (msg.sender == player[PLAYER1]) {
 			sender = PLAYER1;
+			other = PLAYER2;
 		} else {
 			sender = PLAYER2;
+			other = PLAYER1;
 		}
 
 		if (handIndex >= player_hand[sender].length) {
@@ -257,18 +282,22 @@ contract Game {
 
 		draw_cards();
 		player1_turn = !player1_turn;
+		emit LayPath(msg.sender);
+		emit NextTurn(other + 1);
 		return true;
 	}
 
 
 	function lay_unit(uint8 handIndex, uint8 card, uint8 v, bytes32 r, bytes32 s) external _players_turn returns (bool) {
 		uint8 sender;
+		uint8 other;
 
 		if (msg.sender == player[PLAYER1]) {
 			sender = PLAYER1;
-
+			other = PLAYER2;
 		} else {
 			sender = PLAYER2;
+			other = PLAYER1;
 		}
 
 		if (handIndex >= player_hand[sender].length) {
@@ -288,17 +317,22 @@ contract Game {
 
 		draw_cards();
 		player1_turn = !player1_turn;
+		emit LayUnit(msg.sender);
+		emit NextTurn(other + 1);
 		return true;
 	}
 
 
 	function move_unit(uint8 unitX, uint8 unitY, uint8 moveX, uint8 moveY) external _players_turn returns (bool) {
 		uint8 sender;
+		uint8 other;
 
 		if (msg.sender == player[PLAYER1]) {
 			sender = PLAYER1;
+			other = PLAYER2;
 		} else {
 			sender = PLAYER2;
+			other = PLAYER1;
 		}
 
 		if (board[BOARD_OWNER][unitX][unitY] != sender + 1 ||
@@ -327,6 +361,8 @@ contract Game {
 		}
 
 		player1_turn = !player1_turn;
+		emit MoveUnit(msg.sender);
+		emit NextTurn(other + 1);
 		return true;
 	}
 
@@ -371,7 +407,7 @@ contract Game {
 				if (sender == PLAYER1) {
 					player1_won = true;
 				}
-				// TODO: emit
+				emit GameOver(sender + 1);
 				return true;
 			}
 		}
@@ -413,6 +449,8 @@ contract Game {
 
 		// No cards were spent from the players hand, so no need to draw, correct?
 		player1_turn = !player1_turn;
+		emit Attack(msg.sender);
+		emit NextTurn(other + 1);
 		return true;
 	}
 
