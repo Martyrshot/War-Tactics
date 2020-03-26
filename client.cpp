@@ -245,7 +245,7 @@ int main(int argc, char **argv) {
     vector< vector<int> > points = getFriendlyEmptyHQ();
     printOpponentsHand(5);
     printBoard(points);
-    printHand(v);
+    printHand(v, 6);
     return 0;
 
 }
