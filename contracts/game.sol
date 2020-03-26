@@ -130,7 +130,7 @@ contract Game {
 	}
 
 
-	function create_deck(uint8[] calldata _deck) external _player {
+	function create_deck(uint8[] calldata _deck) external _player returns (bool) {
 		require(_deck.length == uint256(DECK_SIZE));
 
 		if (player[PLAYER1] == msg.sender) {
@@ -169,6 +169,7 @@ contract Game {
 		}
 
 		emit CreateDeck(msg.sender);
+		return true;
 	}
 
 
@@ -178,7 +179,7 @@ contract Game {
 	}
 
 
-	function draw_hand() external _player {
+	function draw_hand() external _player returns (bool) {
 		require(has_deck());
 		if (player[PLAYER1] == msg.sender) {
 			require(!has_player_hand[PLAYER1]);
