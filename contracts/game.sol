@@ -210,8 +210,6 @@ contract Game {
 
 	function lay_path(uint8 x, uint8 y, uint8 handIndex, uint8 adjacentPathX, uint8 adjacentPathY) external _players_turn returns (bool) {
 		uint8 sender;
-		int8 diffX = int8(adjacentPathX - x);
-		int8 diffY = int8(adjacentPathY - y);
 
 		if (msg.sender == player[PLAYER1]) {
 			sender = PLAYER1;
@@ -231,8 +229,7 @@ contract Game {
 			(
 				(board[BOARD_OWNER][adjacentPathX][adjacentPathY] != sender + 1) ||
 				(board[BOARD_STATE][adjacentPathX][adjacentPathY] != STATE_PATH_AND_UNIT) ||
-				(diffX < -1 || diffX > 1) ||
-				(diffY < -1 || diffY > 1) ||
+				!helper_contract.check_neighbouring(x, y, adjacentPathX, adjacentPathY) ||
 				(board[BOARD_STATE][adjacentPathX][adjacentPathY] == STATE_BLANK)
 			) && !has_player_hq[sender]
 		) {
@@ -296,7 +293,38 @@ contract Game {
 
 
 	function move_unit(uint8 unitX, uint8 unitY, uint8 moveX, uint8 moveY) external _players_turn returns (bool) {
-		// TODO
+		uint8 sender;
+
+		if (msg.sender == player[PLAYER1]) {
+			sender = PLAYER1;
+		} else {
+			sender = PLAYER2;
+		}
+
+		if (board[BOARD_OWNER][unitX][unitY] != sender + 1 ||
+			board[BOARD_STATE][unitX][unitY] != STATE_PATH_AND_UNIT ||
+			!helper_contract.check_neighbouring(unitX, unitY, moveX, moveY) ||
+			(
+				board[BOARD_STATE][moveX][moveY] != STATE_PATH &&
+				(board[BOARD_STATE][moveX][moveY] != STATE_HQ || board[BOARD_OWNER][unitX][unitY] != sender + 1)
+			)
+		) {
+			return false;
+		}
+
+		board[BOARD_CARD][moveX][moveY] = board[BOARD_CARD][unitX][unitY];
+		if (board[BOARD_STATE][moveX][moveY] == STATE_HQ) {
+			board[BOARD_STATE][moveX][moveY] = STATE_HQ_AND_UNIT;
+		} else {
+			board[BOARD_STATE][moveX][moveY] = STATE_PATH_AND_UNIT;
+			board[BOARD_OWNER][moveX][moveY] = sender + 1;
+		}
+
+		if (board[BOARD_STATE][unitX][unitY] == STATE_HQ_AND_UNIT) {
+			board[BOARD_STATE][unitX][unitY] = STATE_HQ;
+		} else {
+			board[BOARD_STATE][unitX][unitY] = STATE_PATH;
+		}
 
 		player1_turn = !player1_turn;
 		return true;
@@ -304,7 +332,6 @@ contract Game {
 
 
 	function attack(uint8 unitX, uint8 unitY, uint8 attackX, uint8 attackY) external _players_turn returns (bool) {
-		// TODO
 		uint8 sender;
 		uint8 other;
 		uint8 attackerCard;
@@ -318,11 +345,14 @@ contract Game {
 			other = PLAYER1;
 		}
 
-		if (board[BOARD_OWNER][unitX][unitY] != sender + 1 || board[BOARD_STATE][unitX][unitY] != STATE_PATH_AND_UNIT) {
+		if (board[BOARD_OWNER][unitX][unitY] != sender + 1 ||
+			board[BOARD_STATE][unitX][unitY] != STATE_PATH_AND_UNIT ||
+			!helper_contract.check_neighbouring(unitX, unitY, attackX, attackY)
+		) {
 			return false;
 		}
 
-		if (board[BOARD_OWNER][attackX][attackY] != other ||
+		if (board[BOARD_OWNER][attackX][attackY] != other + 1 ||
 			(
 				board[BOARD_STATE][attackX][attackY] != STATE_HQ &&
 				board[BOARD_STATE][attackX][attackY] != STATE_HQ_AND_UNIT &&

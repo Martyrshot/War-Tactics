@@ -13,6 +13,18 @@ contract Helper {
 	}
 
 
+	function check_neighbouring(uint8 ax, uint8 ay, uint8 bx, uint8 by) public pure returns (bool) {
+		int8 diffX = int8(ax - bx);
+		int8 diffY = int8(ay - by);
+
+		if ((diffX == -1 || diffX == 1) && diffY == 0) {
+			return true;
+		}
+		if ((diffY == -1 || diffY == 1) && diffX == 0) {
+			return true;
+		}
+		return false;
+	}
 
 
 
