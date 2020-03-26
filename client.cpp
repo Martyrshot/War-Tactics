@@ -10,8 +10,8 @@ using namespace std;
 // etherium address
 string address;
 
-// store the current board so we don't have to keep asking for it
-uint8_t board[3][10][9];
+// Store the latest board so we don't have to keep requesting it
+vector< vector< vector<uint8_t> > > board;
 
 // current hand state
 vector<int> handIDs;
@@ -231,13 +231,36 @@ int main(int argc, char **argv) {
     // Dumby initialization
     playerID = 2;
     srand(time(NULL));
+    cout << "Here\n" << flush;
+    vector< vector<uint8_t> > r0;
+    vector< vector<uint8_t> > r1;
+    vector< vector<uint8_t> > r2;
     for (int i = 0; i < 10; i++) {
+        vector< uint8_t> v0;
+        vector< uint8_t> v1;
+        vector< uint8_t> v2;
         for (int j = 0; j < 9; j++) {
-            board[0][i][j] = rand() % 52;
-            board[1][i][j] = rand() % 5;
-            board[2][i][j] = rand() % 2 + 1;
+            v0.push_back(rand() % 52);
+            v1.push_back(rand() % 5);
+            v2.push_back(rand() % 2 + 1);
         }
+        r0.push_back(v0);
+        r1.push_back(v1);
+        r2.push_back(v2);
     }
+    board.push_back(r0);
+    board.push_back(r1);
+    board.push_back(r2);
+
+    cout << "here\n" << endl;
+    board[0][9][0];
+    cout << "here\n" << endl;
+
+    board[1][9][0];
+    cout << "here\n" << endl;
+
+    board[2][9][0];
+    //cout << board.size() << endl;
 
     //vector< vector<int> > testpoints ={{0,0}, {8,8}, {4,4}, {4,3}, {4,5}, {9,8}, {8,7}};
     //vector< vector<int> > units = getAllUnitsPoints();
@@ -252,9 +275,13 @@ int main(int argc, char **argv) {
     do {
         point = promptForPoint("Please enter a point\n");
     } while(point.size() != 2);
-    int input = -1;;
+    int input = -1;
     do {
         input = promptForAction("Enter 1,2,3 or 4\n");
+    } while(input == -1);
+    input = -1;
+    do {
+        input = promptForCard("Enter 1,2,3 4, or 5\n", 5);
     } while(input == -1);
     return 0;
 }
