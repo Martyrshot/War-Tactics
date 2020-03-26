@@ -395,10 +395,10 @@ vector< vector<string> > diamonds = {
                             ,string("|_%%%>|")}};
 
 
-
+// It is the responsibility of the caller to pass shifted number that starts at
+// 0.
 void printHand(vector<int> ids, int idx) {
-    //shift index to start at 0 instead of 1
-    idx = idx - 1;
+
     vector< vector<string> > cards;
     for(int n : ids) {
         if (n < 0) {
