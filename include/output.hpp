@@ -159,13 +159,25 @@ getAllUnitPoints(vector< vector< vector<uint8_t> > >board, int playerID) {
 }
 
 vector< vector<uint8_t> >
-getPossibleMovementOptionsForUnit(vector<uint8_t> unit) {
+getPossibleMovementOptionsForUnit(vector< vector< vector<uint8_t> > >board,
+                                            vector<uint8_t> unit) {
     uint8_t x = unit[0];
     uint8_t y = unit[1];
-    vector< vector<uint8_t> > points = { {static_cast<unsigned char>(x-1), y},
-                                        {x, static_cast<unsigned char>(y-1)}, 
-                                        {static_cast<unsigned char>(x+1), y}, 
-                                        {x, static_cast<unsigned char>(y+1)}};
+
+    vector< vector<uint8_t> > points;
+    if (x < 9 && board[1][x+1][y] == STATE_PATH) {
+            points.push_back({static_cast<unsigned char>(x+1),y});
+    }
+    if (x > 0 && board[1][x-1][y] == STATE_PATH) {
+                points.push_back({static_cast<unsigned char>(x-1),y});
+    }
+    if (y > 0 && board[1][x][y-1] == STATE_PATH) {
+                points.push_back({x,static_cast<unsigned char>(y-1)});
+    }
+    if (y < 8 && board[1][x][y+1] == STATE_PATH) {
+                points.push_back({x,static_cast<unsigned char>(y+1)});
+    }
+    
     return points;
 }
 
@@ -184,7 +196,6 @@ getAllPathPlacementOptions(vector< vector< vector<uint8_t> > >board,
         if (x < 9 && board[1][x+1][y] == STATE_BLANK) {
                 points.push_back({static_cast<unsigned char>(x+1),y});
         }
-
         if (x > 0 && board[1][x-1][y] == STATE_BLANK) {
                     points.push_back({static_cast<unsigned char>(x-1),y});
         }
@@ -195,7 +206,6 @@ getAllPathPlacementOptions(vector< vector< vector<uint8_t> > >board,
                     points.push_back({x,static_cast<unsigned char>(y+1)});
         }
     }
-    cout << "here!--" << endl;
     return points;
 }
 
@@ -243,5 +253,50 @@ getFriendlyEmptyHQ(vector< vector< vector<uint8_t> > >board, int playerID) {
             }
         }
     }
+    return points;
+}
+
+vector< vector<uint8_t> >
+getFriendlyHQ(vector< vector< vector<uint8_t> > >board, int playerID) {
+    vector <vector<uint8_t> > points;
+    for (uint8_t i = 0; i < 9; i++) {
+        for (uint8_t j = 0; j < 10; j++) {
+            if ((board[1][j][i] == STATE_HQ
+                || board[1][j][i] == STATE_HQ_AND_UNIT)
+                && board[2][j][i] == playerID) {
+                points.push_back({j,i});
+            }
+        }
+    }
+    return points;
+}
+
+vector< vector<uint8_t>>
+getAllTilesInControl(vector< vector< vector<uint8_t> > >board, int playerID) {
+    vector< vector<uint8_t> > result = getAllUnitPoints(board, playerID);
+    result.push_back(getFriendlyHQ(board, playerID)[0]);
+    return result;
+}
+
+vector< vector<uint8_t> >
+getAdjacentTiles(vector< vector< vector<uint8_t> > > board,
+                                                        vector<uint8_t> unit) {
+    uint8_t x = unit[0];
+    uint8_t y = unit[1];
+
+    vector< vector<uint8_t> > points;
+    if (x < 9) {
+            points.push_back({static_cast<unsigned char>(x+1),y});
+    }
+    if (x > 0) {
+                points.push_back({static_cast<unsigned char>(x-1),y});
+    }
+    if (y > 0) {
+                points.push_back({x,static_cast<unsigned char>(y-1)});
+    }
+    if (y < 8) {
+                points.push_back({x,static_cast<unsigned char>(y+1)});
+    }
+    
     return points;
 }
