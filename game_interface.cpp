@@ -179,7 +179,20 @@ GameInterface::joinGame(string const& gameAddress)
 bool
 GameInterface::createDeck(uint8_t deckSeed[DECK_SIZE])
 {
-	// TODO
+	string ethabiEncodeArgs = " -l -v 'uint8[]' '[";
+	unique_ptr<unordered_map<string, string>> eventLog;
+
+	for (uint8_t i = 0; i < DECK_SIZE; i++)
+	{
+		if (i != 0)
+		{
+			ethabiEncodeArgs += ",";
+		}
+		ethabiEncodeArgs += string(deckSeed[i])
+	}
+
+	ethabiEncodeArgs += "]'";
+	return callMutatorContract("create_deck", ethabiEncodeArgs, eventLog);
 }
 
 
@@ -223,7 +236,7 @@ GameInterface::getPlayerSeedHand(uint8_t playerNum)
 	return ethabi_decode_uint8_array(
 		getEthContractABI(),
 		"get_player_seed_hand",
-		getArrayFromContract("get_player_seed_hand", " -l -p " + static_cast<string>(playerNum)));
+		getArrayFromContract("get_player_seed_hand", " -l -p " + string(playerNum)));
 }
 
 
@@ -231,7 +244,7 @@ GameInterface::getPlayerSeedHand(uint8_t playerNum)
 uint8_t
 GameInterface::getPrivateCardFromSeed(uint8_t cardSeed)
 {
-	return getIntFromContract("get_private_card_from_seed", " -l -p " + static_cast<string>(cardSeed));
+	return getIntFromContract("get_private_card_from_seed", " -l -p " + string(cardSeed));
 }
 
 
@@ -239,7 +252,33 @@ GameInterface::getPrivateCardFromSeed(uint8_t cardSeed)
 std::vector<std::vector<std::vector<uint8_t>>>
 GameInterface::getBoardState(void)
 {
+	uint16_t n = 0;
+	vector<vector<vector<uint8_t>>> result;
+	vector<string> vec =  ethabi_decode_uint8_array(
+		getEthContractABI(),
+		"get_board_state",
+		getArrayFromContract("get_board_state"));
+
 	// TODO
+	if (vec.size() != 3 * 10 * 9) {
+		throw ResourceRequestFailedException(
+			"getBoardState(): Did not contain the expected quantity of elements");
+	}
+
+	for (uint8_t i = 0; i < 3; i++)
+	{
+		result.push_back(vector<vector<uint8_t>>());
+		for (uint8_t j = 0; j < 10; i ++)
+		{
+			result.push_back(vector<uint8_t>());
+			for (uint8_t k = 0; k < 9; k++)
+			{
+				result[i][j].push_back(vec[n]);
+				n++;
+			}
+		}
+	}
+	return result;
 }
 
 
@@ -271,7 +310,21 @@ GameInterface::layPath(uint8_t x,
 		uint8_t adjacentPathX,
 		uint8_t adjacentPathY)
 {
-	// TODO
+	string ethabiEncodeArgs;
+	unique_ptr<unordered_map<string, string>> eventLog;
+
+	ethabiEncodeArgs = "-l -p ";
+	ethabiEncodeArgs += x;
+	ethabiEncodeArgs += " -p ";
+	ethabiEncodeArgs += y;
+	ethabiEncodeArgs += " -p ";
+	ethabiEncodeArgs += handIndex;
+	ethabiEncodeArgs += " -p ";
+	ethabiEncodeArgs += adjacentPathX;
+	ethabiEncodeArgs += " -p ";
+	ethabiEncodeArgs += adjacentPathY;
+
+	return callMutatorContract("lay_path", ethabiEncodeArgs, eventLog);
 }
 
 
@@ -279,7 +332,13 @@ GameInterface::layPath(uint8_t x,
 bool
 GameInterface::layUnit(uint8_t handIndex)
 {
-	// TODO
+	string ethabiEncodeArgs;
+	unique_ptr<unordered_map<string, string>> eventLog;
+
+	ethabiEncodeArgs = "-l -p ";
+	ethabiEncodeArgs += handIndex;
+
+	return callMutatorContract("lay_unit", ethabiEncodeArgs, eventLog);
 }
 
 
@@ -290,7 +349,19 @@ GameInterface::moveUnit(uint8_t unitX,
 		uint8_t moveX,
 		uint8_t moveY)
 {
-	// TODO
+	string ethabiEncodeArgs;
+	unique_ptr<unordered_map<string, string>> eventLog;
+
+	ethabiEncodeArgs = "-l -p ";
+	ethabiEncodeArgs += unitX;
+	ethabiEncodeArgs += " -p ";
+	ethabiEncodeArgs += unitY;
+	ethabiEncodeArgs += " -p ";
+	ethabiEncodeArgs += moveX;
+	ethabiEncodeArgs += " -p ";
+	ethabiEncodeArgs += moveY;
+
+	return callMutatorContract("lay_unit", ethabiEncodeArgs, eventLog);
 }
 
 
@@ -301,7 +372,19 @@ GameInterface::attack(uint8_t unitX,
 		uint8_t attackX,
 		uint8_t attackY)
 {
-	// TODO
+	string ethabiEncodeArgs;
+	unique_ptr<unordered_map<string, string>> eventLog;
+
+	ethabiEncodeArgs = "-l -p ";
+	ethabiEncodeArgs += unitX;
+	ethabiEncodeArgs += " -p ";
+	ethabiEncodeArgs += unitY;
+	ethabiEncodeArgs += " -p ";
+	ethabiEncodeArgs += attackX;
+	ethabiEncodeArgs += " -p ";
+	ethabiEncodeArgs += attackY;
+
+	return callMutatorContract("attack", ethabiEncodeArgs, eventLog);
 }
 
 
