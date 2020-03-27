@@ -397,7 +397,7 @@ vector< vector<string> > diamonds = {
 
 // It is the responsibility of the caller to pass shifted number that starts at
 // 0.
-void printHand(vector<int> ids, int idx) {
+void printHand(vector<uint8_t> ids, uint8_t idx) {
 
     vector< vector<string> > cards;
     for(int n : ids) {
@@ -438,11 +438,11 @@ void printHand(vector<int> ids, int idx) {
     cout << endl;
 }
 
-void printHand(vector<int> ids) {
+void printHand(vector<uint8_t> ids) {
     printHand(ids, -1);
 }
 
-void printOpponentsHand(int n) {
+void printOpponentsHand(uint8_t n) {
     for (int i = 0; i < CARDHEIGHT; i++) {
         for (int j = 0; j < n; j++) {
             cout << cardback[i];

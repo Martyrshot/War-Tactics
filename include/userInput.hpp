@@ -9,9 +9,9 @@ void promptForEnter(string stringToPrint) {
     while (cin.get() != '\n');
 }
 
-vector<int> promptForPoint(string stringToPrint) {
+vector<uint8_t> promptForPoint(string stringToPrint) {
     string input;
-    vector<int> result;
+    vector<uint8_t> result;
     cout << stringToPrint << flush;
     cin >> input;
 
@@ -41,8 +41,8 @@ vector<int> promptForPoint(string stringToPrint) {
     return result;
 }
 
-int promptForAction(string stringToPrint) {
-    int input = -1;
+uint8_t promptForAction(string stringToPrint) {
+    uint8_t input = -1;
     cout << stringToPrint << flush;
     cin >> input;
     input = input - 1;
@@ -53,7 +53,7 @@ int promptForAction(string stringToPrint) {
     return input;
 }
 
-int promptForCard(string stringToPrint, int numCards) {
+uint8_t promptForCard(string stringToPrint, int numCards) {
     int input = -1;
     cout << stringToPrint << flush;
     cin >> input;
@@ -66,6 +66,6 @@ int promptForCard(string stringToPrint, int numCards) {
 }
 
 
-int mainMenu(string stringToPrint) {
-    
+uint8_t mainMenu(string stringToPrint) {
+
 }

@@ -15,11 +15,11 @@ string address;
 vector< vector< vector<uint8_t> > > board;
 
 // current hand state
-vector<int> handIDs;
+vector<uint8_t> handIDs;
 
-int numCardsInHand = 0;
+uint8_t numCardsInHand = 0;
 
-int playerID;
+uint8_t playerID;
 
 void testDriver(void);
 
@@ -29,12 +29,13 @@ int main(int argc, char **argv) {
 }
 
 void testDriver(void) {
-    vector<int> v;
-    for (int i = 0; i < 52; i++) {
+    vector<uint8_t> v;
+    for (uint8_t i = 0; i < 52; i++) {
         if (i % 10 == 2) {
             v.push_back(i);
         } 
     }
+
 
     // Dumby initialization
     playerID = 2;
@@ -59,16 +60,18 @@ void testDriver(void) {
     board.push_back(r1);
     board.push_back(r2);
     //vector< vector<int> > testpoints ={{0,0}, {8,8}, {4,4}, {4,3}, {4,5}, {9,8}, {8,7}};
-    //vector< vector<int> > units = getAllUnitsPoints();
+    //vector< vector<uint8_t> > points = getAllUnitPoints(board, playerID);
     //vector<int> unit = {3,3};
     //vector< vector<int> > points = getPossibleAttackOptionsForUnit(unit);
-    vector< vector<int> > points = getFriendlyEmptyHQ(board,playerID);
+    //vector< vector<uint8_t> > points = getFriendlyEmptyHQ(board,playerID);
+    vector< vector<uint8_t> > points = 
+                                    getAllPathPlacementOptions(board, playerID);
     numCardsInHand = 5;
     printOpponentsHand(numCardsInHand);
     printBoard(board, playerID, points);
     printHand(v);
     promptForEnter("This is a test prompt\n");
-    vector<int> point;
+    vector<uint8_t> point;
     do {
         point = promptForPoint("Please enter a point\n");
     } while(point.size() != 2);
@@ -80,5 +83,7 @@ void testDriver(void) {
     do {
         input = promptForCard("Enter 1,2,3 4, or 5\n", 5);
     } while(input == -1);
+
+
 }
 
