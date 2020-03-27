@@ -173,9 +173,14 @@ contract Game {
 	}
 
 
-	function verify_card(uint8 card, uint8 hidden_card, uint8 modulo, address addr, uint8 v, bytes32 r, bytes32 s) public view returns (bool) {
-		bytes32 hash = helper_contract.prefixed(keccak256(abi.encodePacked(game_create_time, game_join_time, hidden_card)));
-		return ecrecover(hash, v, r, s) == addr && helper_contract.get_signed_card(v, r, s, modulo) == card;
+	function get_private_card_from_seed(uint8 v, bytes32 r, bytes32 s) public view returns (uint8) {
+		return helper_contract.get_signed_card(v, r, s, DECK_SIZE);
+	}
+
+
+	function verify_card(uint8 card, uint8 cardSeed, address addr, uint8 v, bytes32 r, bytes32 s) public view returns (bool) {
+		bytes32 hash = helper_contract.prefixed(keccak256(abi.encodePacked(game_create_time, game_join_time, cardSeed)));
+		return ecrecover(hash, v, r, s) == addr && helper_contract.get_signed_card(v, r, s, DECK_SIZE) == card;
 	}
 
 
@@ -216,6 +221,18 @@ contract Game {
 
 	function has_deck() public view returns (bool) {
 		return has_player_deck[PLAYER1] && has_player_deck[PLAYER2];
+	}
+
+
+	function is_game_over() external view returns (uint8) {
+		if (!game_over) {
+			return 0;
+		}
+
+		if (player1_won) {
+			return 1;
+		}
+		return 2;
 	}
 
 
@@ -314,7 +331,7 @@ contract Game {
 			return false;
 		}
 
-		if (!verify_card(card, player_hand[sender][handIndex], DECK_SIZE, msg.sender, v, r, s)) {
+		if (!verify_card(card, player_hand[sender][handIndex], msg.sender, v, r, s)) {
 			return false;
 		}
 
@@ -413,7 +430,7 @@ contract Game {
 				if (sender == PLAYER1) {
 					player1_won = true;
 				}
-				emit GameOver(sender + 1);
+
 				return true;
 			}
 		}

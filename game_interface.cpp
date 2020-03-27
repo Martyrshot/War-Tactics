@@ -69,8 +69,15 @@ GameInterface::GameInterface(void)
 
 	if (!cfg.exists("clientAddress"))
 	{
-		// TODO: Get client address from geth
-		clientAddress = "";
+		vector<string> accounts = this->eth_accounts();
+
+		if (accounts.size() == 0)
+		{
+			throw ResourceRequestFailedException(
+				"eth_accounts was unable to obtain an account address");
+		}
+
+		clientAddress = accounts[0];
 
 		if (cfgRoot->exists("clientAddress"))
 			cfgRoot->remove("clientAddress");
@@ -159,7 +166,12 @@ GameInterface::createGame(void)
 bool
 GameInterface::joinGame(string const& gameAddress)
 {
-	// TODO
+	string ethabiEncodeArgs;
+	unique_ptr<unordered_map<string, string>> eventLog;
+
+	ethabiEncodeArgs = " -l -p '" + gameAddress + "'";
+
+	return callMutatorContract("join_game", ethabiEncodeArgs, eventLog);
 }
 
 
@@ -175,7 +187,12 @@ GameInterface::createDeck(uint8_t deckSeed[DECK_SIZE])
 bool
 GameInterface::drawHand(void)
 {
-	// TODO
+	string ethabiEncodeArgs;
+	unique_ptr<unordered_map<string, string>> eventLog;
+
+	ethabiEncodeArgs = "";
+
+	return callMutatorContract("join_game", ethabiEncodeArgs, eventLog);
 }
 
 
@@ -203,7 +220,10 @@ GameInterface::hasDeck(void)
 vector<uint8_t>
 GameInterface::getPlayerSeedHand(uint8_t playerNum)
 {
-	// TODO
+	return ethabi_decode_uint8_array(
+		getEthContractABI(),
+		"get_player_seed_hand",
+		getArrayFromContract("get_player_seed_hand", " -l -p " + static_cast<string>(playerNum)));
 }
 
 
@@ -211,7 +231,7 @@ GameInterface::getPlayerSeedHand(uint8_t playerNum)
 uint8_t
 GameInterface::getPrivateCardFromSeed(uint8_t cardSeed)
 {
-	// TODO
+	return getIntFromContract("get_private_card_from_seed", " -l -p " + static_cast<string>(cardSeed));
 }
 
 

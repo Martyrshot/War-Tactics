@@ -68,6 +68,7 @@ class EthInterface
 		std::string const& ethabiEncodeArgs,
 		std::unique_ptr<std::unordered_map<std::string, std::string>>& eventLog);
 
+	std::vector<std::string> eth_accounts(void);
 	std::string create_contract(void);
 	std::string getTransactionReceipt(std::string const& transactionHash);
 
