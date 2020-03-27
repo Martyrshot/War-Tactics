@@ -7,8 +7,7 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/trim.hpp>
-
-#include <blockchainsec.hpp>
+#include <ethabi.hpp>
 
 
 using namespace std;
@@ -61,7 +60,6 @@ ethabi(string const& args)
 
 
 
-//TODO: Should I be using unique_ptr<unordered_map<...>> ?
 unordered_map<string, string>
 ethabi_decode_log(
 	string const& abiFile,
@@ -90,7 +88,7 @@ ethabi_decode_log(
 		{
 			continue;
 		}
-		//TODO: What if there is no space to sepatate key and value?
+
 		string key = (*iter).substr(0, (*iter).find_first_of(" "));
 		string value = (*iter).substr((*iter).find_first_of(" ") + 1);
 		parsedLog[key] = value;
@@ -184,6 +182,27 @@ ethabi_decode_uint32_array(string const& abiFile, string const& eventName, strin
 	}
 	return arrayUInt32;
 }
+
+
+
+vector<uint8_t>
+ethabi_decode_uint8_array(string const& abiFile, string const& eventName, string const& data)
+{
+	vector<string> arrayStr;
+	vector<uint8_t> arrayUInt8;
+	string responce;
+
+	responce = boost::trim_copy(ethabi_decode_result(abiFile, eventName, data));
+	responce = responce.substr(1, responce.length() - 2);
+	boost::split(arrayStr, responce, boost::is_any_of(","));
+
+	for (vector<string>::iterator it = arrayStr.begin(); it != arrayStr.end(); ++it)
+	{
+		arrayUInt8.push_back(strtoul(((*it).c_str()), nullptr, 16));
+	}
+	return arrayUInt8;
+}
+
 
 
 } //namespace

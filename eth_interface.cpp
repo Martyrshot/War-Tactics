@@ -125,7 +125,7 @@ EthInterface::getFrom(string const& funcName, string const& ethabiEncodeArgs)
 	string data, result;
 
 	data = ethabi(
-		"encode -l function " + this->ethContractABI + " " + funcName + ethabiEncodeArgs);
+		"encode -l function " + this->ethContractABI + " " + funcName + " " + ethabiEncodeArgs);
 
 #ifdef _DEBUG
 	cout << "getFrom(): " << funcName << "  " << ethabiEncodeArgs << endl;
@@ -143,10 +143,19 @@ EthInterface::getFrom(string const& funcName, string const& ethabiEncodeArgs)
 uint64_t
 EthInterface::getIntFromContract(string const& funcName)
 {
+	return getIntFromContract(funcName, "");
+}
+
+
+
+// Throws ResourceRequestFailedException from ethabi()
+uint64_t
+EthInterface::getIntFromContract(string const& funcName, string const& params)
+{
 	stringstream ss;
 	uint64_t result;
 
-	ss << getFrom(funcName, "");
+	ss << getFrom(funcName, params);
 	ss >> result;
 
 	return result;
@@ -158,8 +167,17 @@ EthInterface::getIntFromContract(string const& funcName)
 string
 EthInterface::getArrayFromContract(string const& funcName)
 {
+	getArrayFromContract(funcName, "");
+}
+
+
+
+// Throws ResourceRequestFailedException from ethabi()
+string
+EthInterface::getArrayFromContract(string const& funcName, string const& params)
+{
 	string arrayStr;
-	arrayStr = getFrom(funcName, "");
+	arrayStr = getFrom(funcName, params);
 	return arrayStr;
 }
 
@@ -224,7 +242,6 @@ EthInterface::callMutatorContract(
 	string const& ethabiEncodeArgs,
 	unique_ptr<unordered_map<string, string>>& eventLog)
 {
-	//unique_ptr<unordered_map<string, string>> eventLog;  // TODO
 	string data;
 
 	data = ethabi(
@@ -264,10 +281,42 @@ EthInterface::callMutatorContract(
 
 
 
+vector<string>
+EthInterface::eth_accounts(void)
+{
+	string jsonRequest = "{\"jsonrpc\":\"2.0\","
+						 "\"method\":\"eth_accounts\","
+						 "\"params\":[],\"id\":1}";
+
+#ifdef _DEBUG
+	cout << "eth_accounts()" << endl;
+#endif //_DEBUG
+
+	Json jsonResponce = this->call_helper(jsonRequest);
+	auto result = jsonResponce.find("result");
+
+	if (result != jsonResponce.end())
+	{
+		throw TransactionFailedException(
+			"eth_accounts(): \"result\" was not "
+			"present in responce to eth_accounts!");
+	}
+
+	vector<string> vec;
+	for (auto& item : result.value().items())
+	{
+		vec.push_back(item.value());
+	}
+
+	return vec;
+}
+
+
+
 // Throws TransactionFailedException from eth_sendTransaction() and locally
 // Throws ResourceRequestFailedException
 string
-EthInterface::create_contract(void)
+EthInterface::create_contract(string const& solFile, string const& abiFile, string const& binFile)
 {
 	string contractBin,
 		transactionJsonStr,
@@ -278,9 +327,9 @@ EthInterface::create_contract(void)
 	Json transactionJsonData, receiptJsonData;
 
 	shellCall = "solc --bin '";
-	shellCall += this->ethContractSOL;
+	shellCall += solFile;
 	shellCall += "' | tail -n +4 > '";
-	shellCall += this->ethContractBIN;
+	shellCall += binFile;
 	shellCall += "'";
 
 #ifdef _DEBUG
@@ -294,9 +343,9 @@ EthInterface::create_contract(void)
 	}
 
 	shellCall = "solc --abi '";
-	shellCall += this->ethContractSOL;
+	shellCall += solFile;
 	shellCall += "' | tail -n +4 > '";
-	shellCall += this->ethContractABI;
+	shellCall += abiFile;
 	shellCall += "'";
 
 #ifdef _DEBUG
@@ -309,7 +358,7 @@ EthInterface::create_contract(void)
 			"solc failed to compile contract to abi format!");
 	}
 
-	contractBin = boost::trim_copy(readFile2(this->ethContractBIN));
+	contractBin = boost::trim_copy(readFile2(binFile));
 
 	transactionJsonStr = this->eth_createContract(contractBin);
 
@@ -324,7 +373,6 @@ EthInterface::create_contract(void)
 #endif //_DEBUG
 
 		// "result" not in JSON responce
-		// TODO: What if "result" is not a string
 		throw TransactionFailedException(
 			"create_contract(): Transaction hash was not "
 			"present in responce to eth_sendTransaction!");
