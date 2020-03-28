@@ -6,7 +6,7 @@
 
 #include <nlohmann/json.hpp>
 #include <eth_interface_except.hpp>
-#include <subscription_server.hpp>
+#include <event_wait_mgr.hpp>
 
 #define ETH_GET_TRANSRECEIPT_MAX_RETRIES 25
 #define ETH_GET_TRANSRECEIPT_RETRY_DELAY 1
