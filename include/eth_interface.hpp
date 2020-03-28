@@ -38,7 +38,7 @@ class EthInterface
 		std::vector<std::pair<std::string, std::string>> contractEventSignatures);
 
 	void setContractAddress(std::string contractAddress);
-	void blockForEvent(string const& event);
+	void blockForEvent(std::string const& event);
 
 	std::string getIPCPath(void);
 	std::string getClientAddress(void);
@@ -65,7 +65,7 @@ class EthInterface
 
 	std::string getFrom(std::string const& funcName, std::string const& ethabiEncodeArgs);
 	uint64_t getIntFromContract(std::string const& funcName);
-	uint64_t getIntFromContract(string const& funcName, string const& params);
+	uint64_t getIntFromContract(std::string const& funcName, std::string const& params);
 	std::string getArrayFromContract(std::string const& funcName);
 	Json call_helper(std::string const& data);
 	std::unique_ptr<std::unordered_map<std::string, std::string>> contract_helper(std::string const& data);

@@ -11,7 +11,6 @@
 #include <unistd.h>
 
 #include <eth_interface.hpp>
-#include <cpp-base64/base64.h>
 #include <ethabi.hpp>
 #include <misc.hpp>
 
