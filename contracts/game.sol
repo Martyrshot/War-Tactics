@@ -53,34 +53,34 @@ contract Game {
 	Helper helper_contract;
 
 
-	// keccak256 signature:
+	// keccak256 signature: 9d148569af2a4ae8c34122247102efb7bb91bf1b595c37c539b852954707d482
 	event JoinGame(address indexed sender);
 
 	// keccak256 signature: 683bd2659be7113b3c0113c3c6d6a2d8a84e09a864bada4a03a67998e041ad24
 	event PlayerJoined();
 
-	// keccak256 signature: 71f35e93dba038828dc45a6ae7729335a6419de8bb0eb50318b023ce96b2579d
+	// keccak256 signature: 858525375c500ca80978906562ef417241555482ba83de63d3fc7fe8e11a2d93
 	event DecksReady();
 
-	// keccak256 signature:
+	// keccak256 signature: c6c2d48c8a994a16a48e9f7d44b32ae365947a6ccdf319f1e1e6cf8565fa56b4
 	event NextTurn();
 
-	// keccak256 signature:
+	// keccak256 signature: 505a777520798d10945a146762a340313d69a0d0948ef094010e3acb756bc39a
 	event CreateDeck(address indexed sender);
 
-	// keccak256 signature:
+	// keccak256 signature: a35c8ba1ade945124a66883ef6a7f1759c50d504956f47cb07abd61b0d42f641
 	event DrawHand(address indexed sender);
 
-	// keccak256 signature:
+	// keccak256 signature: 2688c69b58ee503b249854e32a7292cd26fd8475aff735ea7fa79fb622d1baaa
 	event LayPath(address indexed sender);
 
-	// keccak256 signature:
+	// keccak256 signature: 649e3c66552bba57438a370b0196029a5bec44e46c3d54c098f8cb61be7592b6
 	event LayUnit(address indexed sender);
 
-	// keccak256 signature:
+	// keccak256 signature: 43f643101e992dd5eb86c3e17afc53dd49cae9982bc31be8d92673ac08374ae4
 	event MoveUnit(address indexed sender);
 
-	// keccak256 signature:
+	// keccak256 signature: bc346c9c919fa67d688bb542823110622183cfeb46d3ac3d5119d20c1a52f17d
 	event Attack(address indexed sender);
 
 
