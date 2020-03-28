@@ -1,11 +1,13 @@
 #include <boost/algorithm/string/trim.hpp>
 #include <iostream>
 
+#include <nlohmann/json.hpp>
 #include <ethabi.hpp>
 #include <event_wait_mgr.hpp>
 
 
 using namespace std;
+using Json = nlohmann::json;
 
 namespace eth_interface
 {

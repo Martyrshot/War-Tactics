@@ -34,8 +34,7 @@ class EthInterface
 	void initialize(
 		std::string ipcPath,
 		std::string clientAddress,
-		std::string contractAddress,
-		std::vector<std::pair<std::string, std::string>> contractEventSignatures);
+		std::vector<std::tuple<std::string, std::string, bool>> contractEventSignatures);
 
 	void setContractAddress(std::string contractAddress);
 	void blockForEvent(std::string const& event);
@@ -53,7 +52,7 @@ class EthInterface
 	void joinThreads(void);
 
 	protected:
-	std::vector<std::pair<std::string, std::string>> contractEventSignatures;
+	std::vector<std::tuple<std::string, std::string, bool>> contractEventSignatures;
 	std::string ipcPath;
 	std::string clientAddress;
 	std::string contractAddress;
@@ -84,8 +83,6 @@ class EthInterface
 		std::string const& abiFile,
 		std::string const& binFile,
 		std::string const& params);
-
-	void closeEventLogWaitManager(void);
 
 	std::string getTransactionReceipt(std::string const& transactionHash);
 
