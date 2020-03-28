@@ -69,7 +69,7 @@ GameInterface::GameInterface(void)
 
 	if (!cfg.exists("clientAddress"))
 	{
-		vector<string> accounts = this->eth_accounts();O
+		vector<string> accounts = this->eth_accounts();
 
 		if (accounts.size() == 0)
 		{
