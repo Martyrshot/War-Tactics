@@ -164,6 +164,27 @@ EthInterface::getFrom(string const& funcName, string const& ethabiEncodeArgs)
 
 
 // Throws ResourceRequestFailedException from ethabi()
+string
+EthInterface::getNoArgs(string const& funcName)
+{
+	return getFrom(funcName, "");
+}
+
+
+
+// Throws ResourceRequestFailedException from ethabi()
+uint64_t
+EthInterface::getInt(string const& funcName)
+{
+	string value;
+
+	value = getNoArgs(funcName);
+	return stoul(value, nullptr, 16);
+}
+
+
+
+// Throws ResourceRequestFailedException from ethabi()
 uint64_t
 EthInterface::getIntFromContract(string const& funcName)
 {

@@ -1,5 +1,6 @@
 #include <array>
 #include <boost/algorithm/string/trim.hpp>
+#include <boost/algorithm/string.hpp>
 #include <boost/lexical_cast.hpp>
 #include <iostream>
 #include <sstream>
@@ -142,27 +143,6 @@ GameInterface::contractEventSignatures(void)
 
 
 
-// Throws ResourceRequestFailedException from ethabi()
-string
-GameInterface::getNoArgs(string const& funcName)
-{
-	return getFrom(funcName, "");
-}
-
-
-
-// Throws ResourceRequestFailedException from ethabi()
-uint64_t
-GameInterface::getInt(string const& funcName)
-{
-	string value;
-
-	value = getNoArgs(funcName);
-	return stoul(value, nullptr, 16);
-}
-
-
-
 string
 GameInterface::createGame(void)
 {
@@ -171,6 +151,7 @@ GameInterface::createGame(void)
 	gameContractAddress = this->create_contract(GAME_SOL, GAME_ABI, GAME_BIN, helperContractAddress);
 	setContractAddress(gameContractAddress);
 	createEventLogWaitManager();
+	return gameContractAddress;
 }
 
 
@@ -200,7 +181,7 @@ GameInterface::createDeck(uint8_t deckSeed[DECK_SIZE])
 		{
 			ethabiEncodeArgs += ",";
 		}
-		ethabiEncodeArgs += string(deckSeed[i])
+		ethabiEncodeArgs += deckSeed[i];
 	}
 
 	ethabiEncodeArgs += "]'";
@@ -248,7 +229,7 @@ GameInterface::getPlayerSeedHand(uint8_t playerNum)
 	return ethabi_decode_uint8_array(
 		getEthContractABI(),
 		"get_player_seed_hand",
-		getArrayFromContract("get_player_seed_hand", " -l -p " + string(playerNum)));
+		getArrayFromContract("get_player_seed_hand", " -l -p " + playerNum));
 }
 
 
@@ -256,7 +237,7 @@ GameInterface::getPlayerSeedHand(uint8_t playerNum)
 uint8_t
 GameInterface::getPrivateCardFromSeed(uint8_t cardSeed)
 {
-	return getIntFromContract("get_private_card_from_seed", " -l -p " + string(cardSeed));
+	return getIntFromContract("get_private_card_from_seed", " -l -p " + cardSeed);
 }
 
 
@@ -266,7 +247,7 @@ GameInterface::getBoardState(void)
 {
 	uint16_t n = 0;
 	vector<vector<vector<uint8_t>>> result;
-	vector<string> vec =  ethabi_decode_uint8_array(
+	vector<uint8_t> vec =  ethabi_decode_uint8_array(
 		getEthContractABI(),
 		"get_board_state",
 		getArrayFromContract("get_board_state"));
@@ -282,7 +263,7 @@ GameInterface::getBoardState(void)
 		result.push_back(vector<vector<uint8_t>>());
 		for (uint8_t j = 0; j < 10; i ++)
 		{
-			result.push_back(vector<uint8_t>());
+			result[i].push_back(vector<uint8_t>());
 			for (uint8_t k = 0; k < 9; k++)
 			{
 				result[i][j].push_back(vec[n]);
@@ -297,10 +278,13 @@ GameInterface::getBoardState(void)
 
 // Throws ResourceRequestFailedException from ethabi()
 // Throws InvalidArgumentException
-uint8_t
+vector<uint8_t>
 GameInterface::getHqHealth(void)
 {
-	return getIntFromContract("get_hq_health");
+	return ethabi_decode_uint8_array(
+		getEthContractABI(),
+		"get_hq_health",
+		getArrayFromContract("get_hq_health", ""));
 }
 
 

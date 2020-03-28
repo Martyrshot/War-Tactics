@@ -44,7 +44,7 @@ class GameInterface : public EthInterface
 
 	// gameAddress is an ethereum address (hex), without leading "0x"
 	bool
-	joinGame(std::string gameAddress);
+	joinGame(std::string const& gameAddress);
 
 	bool
 	createDeck(uint8_t deckSeed[DECK_SIZE]);
@@ -72,7 +72,7 @@ class GameInterface : public EthInterface
 	std::vector<std::vector<std::vector<uint8_t>>>
 	getBoardState(void);
 
-	std::pair<uint8_t, uint8_t>
+	std::vector<uint8_t>
 	getHqHealth(void);
 
 	// 0 = Game not over, 1 = player 1 won, 2 = player 2 won
@@ -120,7 +120,7 @@ class GameInterface : public EthInterface
 
 	std::string helperContractAddress;
 
-	std::vector<std::pair<std::string, std::string>> contractEventSignatures(void);
+	std::vector<std::tuple<std::string, std::string, bool>> contractEventSignatures(void);
 
 	std::string getFromDeviceID(std::string const& funcName, uint32_t deviceID);
 	uint64_t getIntFromDeviceID(std::string const& funcName, uint32_t deviceID);
