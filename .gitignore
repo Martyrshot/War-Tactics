@@ -6,3 +6,7 @@ contracts/game.bin
 contracts/helper.bin
 contracts/game.abi
 contracts/helper.abi
+chain/chaindata/history
+chain/testchaindata/history
+chain/testchaindata/geth
+chain/chaindata/geth
