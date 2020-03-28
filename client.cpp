@@ -7,7 +7,6 @@
 #include <stdlib.h>
 #include "include/game_interface.hpp"
 #include "include/prompts.hpp"
-#include <conio.h>
 #include <time.h> // TODO remove this after testing is complete
 using namespace std;
 
@@ -25,11 +24,10 @@ uint8_t numCardsInHand = 0;
 
 uint8_t playerID;
 
-const uint8_t DECK_SIZE = 52;
 
 
 
-GameInterface interface = new GameInterface();
+game_interface::GameInterface interface = game_interface::GameInterface();
 
 void testDriver(void);
 
@@ -42,7 +40,7 @@ bool createGame(void) {
     string address = interface.createGame();
     cout << "Game Address: " << address << endl;
     interface.waitPlayerJoined();
-    if (!interface.hasPlayers) {
+    if (!interface.hasPlayers()) {
         cout << "A player joined, but we don't have players?\n" << endl;
         return false;
     }
@@ -64,12 +62,13 @@ bool createGame(void) {
     return true;
 }
 
-void joinGame(string address) {
+bool joinGame(string address) {
     if (!interface.joinGame(address)) {
         cout << "Failed to join game with address: " << address << endl;
-        return;
+        return false;
     }
     srand(time(NULL));
+    uint8_t deckSeed[DECK_SIZE];
     for (int i = 0; i < DECK_SIZE; i++) {
         deckSeed[i] = rand();
     }
@@ -85,6 +84,8 @@ void joinGame(string address) {
     playerID = 2;
     return true;    
 }
+
+vector<uint8_t> buildHand(vector<uint8_t>);
 
 void playGame(void) {
     while(!interface.isGameOver()) {
@@ -105,11 +106,12 @@ void playGame(void) {
         printOpponentsHand(oppHandSize);
         // printBoard requires points. give it no points to highlight
         vector< vector<uint8_t> > points;
+        points.clear();
         printBoard(board, playerID, points);
         printHand(handIDs);
         promptForEnter(PRPOMPTSTARTTURN);
         // clear screen, and prompt for action
-        clrscr();
+        system("clear");
         printOpponentsHand(oppHandSize);
         // printBoard requires points. give it no points to highlight
         printBoard(board, playerID, points);
@@ -117,15 +119,23 @@ void playGame(void) {
         int action = promptForAction(PROMPTACTION);
         switch (action) {
             case 1:
+                {
                 // lay a path
-                int cardID = promptForCard(PROMPTHANDSELECTION);
+                int8_t cardID = -1;
+                int handSize = handIDs.size();
+                do {
+                    cardID = promptForCard(PROMPTHANDSELECTION, handSize);
+                } while (cardID == -1);
                 vector< vector<uint8_t> > points =
                                     getAllPathPlacementOptions(board,playerID);
-                clrscr();
+                system("clear");
                 printOpponentsHand(oppHandSize);
                 printBoard(board, playerID, points);
                 printHand(handIDs, cardID);
-                vector<uint8_t> point = promptForPoint(PROMPTBOARDSELECTION);
+                vector<uint8_t> point;
+                do {
+                    point = promptForPoint(PROMPTBOARDSELECTION);
+                } while (point.size() == 0);
                 uint8_t adjx = 63; //error val
                 uint8_t adjy = 63; //error val
                 for(vector<uint8_t> tile:
@@ -141,9 +151,24 @@ void playGame(void) {
                 if (interface.layPath(point[0], point[1], cardID, adjx, adjy)) {
                     cout << "Failed to lay a path there!" << endl;
                 }
+                points.clear();
+                point.clear();
+            }
             break;
             case 2:
+            {
                 // Place a new unit
+                int cardID = -1;
+                int handSize = handIDs.size();
+                do {
+                    cardID = promptForCard(PROMPTHANDSELECTION, handSize);
+                } while (cardID == -1);
+                points.clear();
+                system("clear");
+                printOpponentsHand(oppHandSize);
+                printBoard(board, playerID, points);
+                printHand(handIDs, cardID);
+            }
             break;
             case 3:
                 // Move a unit
@@ -153,13 +178,14 @@ void playGame(void) {
             break;
             default:
                 //error
+                cout << "Error!" << endl;
         }
     }
 }
 
 vector<uint8_t> buildHand(vector<uint8_t> handSeeds) {
     vector<uint8_t> result;
-    for (int i = 0; i < handSeeds.size(); i++) {
+    for (unsigned long i = 0; i < handSeeds.size(); i++) {
         result.push_back(interface.getPrivateCardFromSeed(handSeeds[i]));
     }
     return result;
