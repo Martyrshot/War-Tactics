@@ -10,7 +10,6 @@
 #include <unistd.h>
 
 #include <game_interface.hpp>
-#include <cpp-base64/base64.h>
 #include <ethabi.hpp>
 #include <misc.hpp>
 
@@ -18,6 +17,7 @@
 
 
 using namespace std;
+using namespace libconfig;
 
 namespace game_interface
 {
