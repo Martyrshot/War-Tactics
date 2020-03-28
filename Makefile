@@ -10,7 +10,7 @@
 ##               jag190@usask.ca                ##
 ##----------------------------------------------##
 ##                 Ben Haubrich                 ##
-##               @usask.ca                ##
+##               bjh885@usask.ca                ##
 ##################################################
 
 
@@ -19,7 +19,9 @@ CC = g++
 # Disable warnings about future GCC abi changes
 CFLAGS = -Wno-psabi
 CPPFLAGS = -std=gnu++17 -Wall -Wextra -pedantic -g
-LDFLAGS =
+LDFLAGS = -lconfig++ \
+					-lpthread \
+					-lboost_system
 
 JSONINC = ./json/include
 LIBCONFIGINC = ./libconfig/lib
@@ -62,5 +64,5 @@ $(OBJ)/%.o: %.cpp
 
 $(BIN)/client: $(OBJECTS)
 	$(CC) $(CPPFLAGS) -o $@ \
-		-lconfig++ -lpthread -lboost_system $^ 
+		${LDFLAGS} $^ 
 	ln -fs $@ ./client

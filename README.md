@@ -4,6 +4,9 @@
 
 This list is a work in progress and more will be added
 
+This repository contains submodules from other repositories. After cloning, use
+`git submodule update --init --recursive --depth=1`
+
 #### ethabi
 Compile and install the ethabi binary. It MUST use only this one specific commit from the project as listed. This is because of a bug was fixed on one commit, then the commit following that one changed the CLI fairly radically and broke compatibility.
 
