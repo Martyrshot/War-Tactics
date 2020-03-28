@@ -191,7 +191,7 @@ EthInterface::getIntFromContract(string const& funcName, string const& params)
 string
 EthInterface::getArrayFromContract(string const& funcName)
 {
-	getArrayFromContract(funcName, "");
+	return getArrayFromContract(funcName, "");
 }
 
 
