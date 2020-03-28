@@ -211,7 +211,7 @@ getAllPathPlacementOptions(vector< vector< vector<uint8_t> > >board,
 
 vector< vector<uint8_t> >
 getPossibleAttackOptionsForUnit(vector< vector< vector<uint8_t> > >board,
-                                    int playerID, vector<int> unit) {
+                                    int playerID, vector<uint8_t> unit) {
     uint8_t x = unit[0];
     uint8_t y = unit[1];
     vector< vector<uint8_t> > points;
@@ -279,8 +279,7 @@ getAllTilesInControl(vector< vector< vector<uint8_t> > >board, int playerID) {
 }
 
 vector< vector<uint8_t> >
-getAdjacentTiles(vector< vector< vector<uint8_t> > > board,
-                                                        vector<uint8_t> unit) {
+getAdjacentTiles(vector<uint8_t> unit) {
     uint8_t x = unit[0];
     uint8_t y = unit[1];
 

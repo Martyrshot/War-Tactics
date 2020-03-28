@@ -41,7 +41,7 @@ vector<uint8_t> promptForPoint(string stringToPrint) {
     return result;
 }
 
-uint8_t promptForAction(string stringToPrint) {
+int8_t promptForAction(string stringToPrint) {
     uint8_t input = -1;
     cout << stringToPrint << flush;
     cin >> input;
@@ -53,7 +53,7 @@ uint8_t promptForAction(string stringToPrint) {
     return input;
 }
 
-uint8_t promptForCard(string stringToPrint, int numCards) {
+int8_t promptForCard(string stringToPrint, int numCards) {
     int input = -1;
     cout << stringToPrint << flush;
     cin >> input;
