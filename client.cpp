@@ -141,7 +141,7 @@ void playGame(void) {
                 for(vector<uint8_t> tile:
                                         getAllTilesInControl(board, playerID)) {
                     for(vector<uint8_t> adjtile:
-                                               getAdjacentTiles(board, point)) {
+                                               getAdjacentTiles(point)) {
                         if (tile[0] == adjtile[0] && tile[1] == adjtile[1]) {
                             adjx = tile[0];
                             adjy = tile[0];
@@ -151,8 +151,6 @@ void playGame(void) {
                 if (interface.layPath(point[0], point[1], cardID, adjx, adjy)) {
                     cout << "Failed to lay a path there!" << endl;
                 }
-                points.clear();
-                point.clear();
             }
             break;
             case 2:
@@ -164,23 +162,70 @@ void playGame(void) {
                     cardID = promptForCard(PROMPTHANDSELECTION, handSize);
                 } while (cardID == -1);
                 points.clear();
-                system("clear");
-                printOpponentsHand(oppHandSize);
-                printBoard(board, playerID, points);
-                printHand(handIDs, cardID);
+                interface.layUnit(cardID);
             }
             break;
             case 3:
+            {
                 // Move a unit
+                vector<uint8_t> dest;
+                vector<uint8_t> source;
+                do {
+                    source = promptForPoint(PROMPTBOARDSELECTION);
+                } while (source.size() == 0);
+                points =
+                       getPossibleMovementOptionsForUnit(board, source);
+                system("clear");
+                printOpponentsHand(oppHandSize);
+                printBoard(board, playerID, points);
+                printHand(handIDs);
+                do {
+                    dest = promptForPoint(PROMPTSECONDARYBOARDSELECTION);
+                } while (dest.size() == 0);
+                interface.moveUnit(source[0], source[1], dest[0], dest[1]);
+            }
             break;
             case 4:
-                //Attack
+            {
+                // Attack
+                vector<uint8_t> dest;
+                vector<uint8_t> source;
+                do {
+                    source = promptForPoint(PROMPTBOARDSELECTION);
+                } while (source.size() == 0);
+                points =
+                       getPossibleAttackOptionsForUnit(board, playerID, source);
+                system("clear");
+                printOpponentsHand(oppHandSize);
+                printBoard(board, playerID, points);
+                printHand(handIDs);
+                do {
+                    dest = promptForPoint(PROMPTSECONDARYBOARDSELECTION);
+                } while (dest.size() == 0);
+                interface.attack(source[0], source[1], dest[0], dest[1]);
+            }
             break;
             default:
                 //error
                 cout << "Error!" << endl;
         }
+        points.clear();
+        
+        system("clear");
+        board = interface.getBoardState();
+        printOpponentsHand(oppHandSize);
+        printBoard(board, playerID, points);
+        printHand(handIDs);
     }
+    //TODO
+    // Having a nicer printout would be ideal, but for now this is fine
+    if (interface.isGameOver() == playerID) {
+        cout << "You win!" << endl;
+    }
+    else {
+        cout << "You lost!" << endl;
+    }
+    interface.endGame();
 }
 
 vector<uint8_t> buildHand(vector<uint8_t> handSeeds) {
