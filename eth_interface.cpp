@@ -472,7 +472,8 @@ EthInterface::create_contract(string const& solFile, string const& abiFile, stri
 			"solc failed to compile contract to abi format!");
 	}
 
-	contractBin = boost::trim_copy(readFile2(binFile)) + params;
+	contractBin = boost::trim_copy(readFile2(binFile));
+	contractBin = contractBin.substr(0, contractBin.find_first_of('\n', 0)) + params;
 
 	transactionJsonStr = this->eth_createContract(contractBin);
 
