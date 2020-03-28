@@ -121,6 +121,7 @@ class GameInterface : public EthInterface
 	std::string helperContractAddress;
 
 	std::vector<std::tuple<std::string, std::string, bool>> contractEventSignatures(void);
+	std::string getCardHash(uint8_t cardSeed);
 
 	std::string getFromDeviceID(std::string const& funcName, uint32_t deviceID);
 	uint64_t getIntFromDeviceID(std::string const& funcName, uint32_t deviceID);

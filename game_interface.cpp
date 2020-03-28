@@ -233,10 +233,30 @@ GameInterface::getPlayerSeedHand(uint8_t playerNum)
 
 
 
+string
+GameInterface::getCardHash(uint8_t cardSeed)
+{
+	return ethabi_decode_result(
+		getEthContractABI(),
+		"get_card_hash",
+		getFrom("get_card_hash", " -p '" + boost::lexical_cast<string>(cardSeed) + "'"));
+}
+
+
+
 uint8_t
 GameInterface::getPrivateCardFromSeed(uint8_t cardSeed)
 {
-	return getIntFromContract("get_private_card_from_seed", " -l -p " + cardSeed);
+	string hash = getCardHash(cardSeed);
+	while (hash.length() < 130) {
+		hash = "0" + hash;
+	}
+
+	return getIntFromContract(
+		"get_private_card_from_seed",
+		" -l -p " + hash.substr(0, 2) +
+		" -p " + hash.substr(2, 64) +
+		" -p " + hash.substr(66, 64));
 }
 
 
