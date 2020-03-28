@@ -27,7 +27,7 @@ uint8_t playerID;
 
 
 
-game_interface::GameInterface interface = game_interface::GameInterface();
+game_interface::GameInterface interface;
 
 void testDriver(void);
 
@@ -82,7 +82,7 @@ bool joinGame(string address) {
         return false;
     }
     playerID = 2;
-    return true;    
+    return true;
 }
 
 vector<uint8_t> buildHand(vector<uint8_t>);
@@ -198,7 +198,7 @@ void testDriver(void) {
     for (uint8_t i = 0; i < 52; i++) {
         if (i % 10 == 2) {
             v.push_back(i);
-        } 
+        }
     }
 
 
@@ -229,7 +229,7 @@ void testDriver(void) {
     //vector<int> unit = {3,3};
     //vector< vector<int> > points = getPossibleAttackOptionsForUnit(unit);
     //vector< vector<uint8_t> > points = getFriendlyEmptyHQ(board,playerID);
-    vector< vector<uint8_t> > points = 
+    vector< vector<uint8_t> > points =
                                     getAllPathPlacementOptions(board, playerID);
     numCardsInHand = 5;
     printOpponentsHand(numCardsInHand);
