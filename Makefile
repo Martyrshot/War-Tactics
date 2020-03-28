@@ -50,17 +50,17 @@ debug_flag:
 clean:
 	rm -rf ./build ./client
 
-OBJECTS := eth_interface.o \
-			game_interface.o \
-			event_wait_mgr.o \
-			ethabi.o \
-			misc.o \
-			client.o
+OBJECTS := $(OBJ)/eth_interface.o \
+			$(OBJ)/game_interface.o \
+			$(OBJ)/event_wait_mgr.o \
+			$(OBJ)/ethabi.o \
+			$(OBJ)/misc.o \
+			$(OBJ)/client.o
 
 $(OBJ)/%.o: %.cpp
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $(DEBUG) -o $@ $(INCLUDE) $<
 
-$(BIN)/client: $(OBJ)/$(OBJECTS)
+$(BIN)/client: $(OBJECTS)
 	$(CC) $(CPPFLAGS) -o $@ \
 		-lconfig++ -lpthread -lboost_system
 	ln -fs $@ ./client
