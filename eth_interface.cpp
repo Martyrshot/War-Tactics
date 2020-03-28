@@ -350,7 +350,7 @@ EthInterface::eth_sign(string const& data)
 	cout << "eth_sign()" << endl;
 #endif //_DEBUG
 
-	Json jsonResponce = this->call_helper(jsonRequest);
+	Json jsonResponce = this->eth_ipc_request(jsonRequest);
 	auto result = jsonResponce.find("result");
 
 	if (result != jsonResponce.end())
@@ -368,6 +368,7 @@ EthInterface::eth_sign(string const& data)
 vector<string>
 EthInterface::eth_accounts(void)
 {
+	Json jsonResponce;
 	string jsonRequest = "{\"jsonrpc\":\"2.0\","
 						 "\"method\":\"eth_accounts\","
 						 "\"params\":[],\"id\":1}";
@@ -380,12 +381,11 @@ EthInterface::eth_accounts(void)
 		 << endl;
 #endif //_DEBUG
 
-	Json jsonResponce;
-	auto result = jsonResponce.find("result");
+	string jsonStr;
 
 	try
 	{
-		jsonResponce = this->call_helper(jsonRequest);
+		jsonStr = this->eth_ipc_request(jsonRequest);
 	}
 	catch(ResourceRequestFailedException const& e)
 	{
@@ -396,7 +396,10 @@ EthInterface::eth_accounts(void)
 		exit(EXIT_FAILURE);
 	}
 
-	if (result != jsonResponce.end())
+	jsonResponce = Json::parse(jsonStr);
+	auto result = jsonResponce.find("result");
+
+	if (result == jsonResponce.end())
 	{
 		throw TransactionFailedException(
 			"eth_accounts(): \"result\" was not "
@@ -419,7 +422,7 @@ EthInterface::eth_accounts(void)
 string
 EthInterface::create_contract(string const& solFile, string const& abiFile, string const& binFile)
 {
-	return create_contract(solFile, abiFile, binFile);
+	return create_contract(solFile, abiFile, binFile, "");
 }
 
 

@@ -10,3 +10,5 @@ chain/chaindata/history
 chain/testchaindata/history
 chain/testchaindata/geth
 chain/chaindata/geth
+game.conf
+chain/local_chain.sh
