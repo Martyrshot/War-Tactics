@@ -66,6 +66,21 @@ int8_t promptForCard(string stringToPrint, int numCards) {
 }
 
 
-uint8_t mainMenu(string stringToPrint) {
+int8_t mainMenu(string stringToPrint) {
+    int input = -1;
+    cout << stringToPrint << endl << endl << endl << "Selection an option:";
+    cout << endl << "1) make a game" << endl << "2) join a game" << endl;
+    cin >> input;
+    if (input > 2 || input < 1) {
+        cout << "Bad input!" << endl;
+        return -1;
+    }
+    return input - 1;
+}
 
+string promptAddress(void) {
+    string input;
+    cout << "Please enter the address of the game you wish to join:" << endl;
+    cin >> input;
+    return input;
 }

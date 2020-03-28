@@ -31,8 +31,29 @@ game_interface::GameInterface interface;
 
 void testDriver(void);
 
+bool createGame(void);
+
+bool joinGame(string address);
+
+void playGame(void);
+
 int main(int argc, char **argv) {
-    testDriver();
+    int8_t selection = -1;
+    do {
+        selection = mainMenu(TITLE);
+    } while (selection == -1);
+    if (selection == 0) {
+        if (!createGame()) {
+            return -1;
+        }
+    }
+    else {
+        string addr = promptAddress();
+        if (!joinGame(addr)) {
+            return -1;
+        }
+    }
+    playGame();
     return 0;
 }
 
