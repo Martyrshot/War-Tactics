@@ -2,3 +2,7 @@ client
 .vscode
 .vscode/settings.json
 build
+contracts/game.bin
+contracts/helper.bin
+contracts/game.abi
+contracts/helper.abi
