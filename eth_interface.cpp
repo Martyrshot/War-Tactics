@@ -37,12 +37,23 @@ EthInterface::EthInterface(
 
 
 void
+EthInterface::setContractAddress(string contractAddress)
+{
+	this->contractAddress = boost::to_lower_copy(boost::trim_copy(contractAddress));
+
+	if (this->contractAddress.substr(0, 2) == "0x")
+	{
+		this->contractAddress = this->contractAddress.substr(2);
+	}
+}
+
+
+
+void
 EthInterface::initialize(
 	string ipcPath,
 	string clientAddress,
-	string contractAddress,
-	vector<pair<string, string>> contractEventSignatures,
-	bool createEventLogWaitManager)
+	vector<tuple<string, string, bool>> contractEventSignatures)
 {
 	this->ipcPath = boost::trim_copy(ipcPath);
 
@@ -52,20 +63,34 @@ EthInterface::initialize(
 		this->clientAddress = this->clientAddress.substr(2);
 	}
 
-	this->contractAddress = boost::to_lower_copy(boost::trim_copy(contractAddress));
-	if (this->contractAddress.substr(0, 2) == "0x")
-	{
-		this->contractAddress = this->contractAddress.substr(2);
-	}
+	this->contractEventSignatures = contractEventSignatures;
+}
 
-	if (createEventLogWaitManager)
+void
+EthInterface::createEventLogWaitManager(void)
+{
+	if (eventLogWaitManager != nullptr)
 	{
-		eventLogWaitManager = new EventLogWaitManager(
-			this->clientAddress,
-			this->contractAddress,
-			ipcPath,
-			contractEventSignatures);
+		delete eventLogWaitManager;
 	}
+	eventLogWaitManager = new EventLogWaitManager(
+		this->clientAddress,
+		this->contractAddress,
+		this->ipcPath,
+		this->contractEventSignatures,
+		this->ethContractABI);
+}
+
+
+
+void
+EthInterface::closeEventLogWaitManager(void)
+{
+	if (eventLogWaitManager != nullptr)
+	{
+		delete eventLogWaitManager;
+	}
+	eventLogWaitManager = nullptr;
 }
 
 
@@ -199,6 +224,15 @@ EthInterface::call_helper(string const& data)
 
 
 
+void
+EthInterface::blockForEvent(string const& event)
+{
+	eventLogWaitManager->getEventLog(event);
+	return;
+}
+
+
+
 unique_ptr<unordered_map<string, string>>
 EthInterface::contract_helper(string const& data)
 {
@@ -318,6 +352,16 @@ EthInterface::eth_accounts(void)
 string
 EthInterface::create_contract(string const& solFile, string const& abiFile, string const& binFile)
 {
+	return create_contract(solFile, abiFile, binFile);
+}
+
+
+
+// Throws TransactionFailedException from eth_sendTransaction() and locally
+// Throws ResourceRequestFailedException
+string
+EthInterface::create_contract(string const& solFile, string const& abiFile, string const& binFile, string const& params)
+{
 	string contractBin,
 		transactionJsonStr,
 		transactionHash,
@@ -358,7 +402,7 @@ EthInterface::create_contract(string const& solFile, string const& abiFile, stri
 			"solc failed to compile contract to abi format!");
 	}
 
-	contractBin = boost::trim_copy(readFile2(binFile));
+	contractBin = boost::trim_copy(readFile2(binFile)) + params;
 
 	transactionJsonStr = this->eth_createContract(contractBin);
 

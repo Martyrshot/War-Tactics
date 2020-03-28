@@ -1,9 +1,9 @@
-#ifndef __SUBSCRIPTION_SERVER_HPP
-#define __SUBSCRIPTION_SERVER_HPP
+#ifndef __EVENT_WAIT_MGR_HPP
+#define __EVENT_WAIT_MGR_HPP
 
 #include <boost/asio.hpp>
 #include <condition_variable>
-#include <map>
+#include <unordered_map>
 #include <mutex>
 #include <string>
 #include <thread>
@@ -21,7 +21,9 @@ class EventLogWaitManager
 		std::string const& clientAddress,
 		std::string const& contractAddress,
 		std::string const& ipcPath,
-		std::vector<std::pair<std::string, std::string>> const& contractLogSignatures);
+		std::vector<std::tuple<std::string, std::string, bool>> const& contractLogSignatures,
+		std::string const& contractABI);
+
 	std::unique_ptr<std::unordered_map<std::string, std::string>> getEventLog(std::string const& logID);
 	void setEventLog(std::string const& logID, std::unordered_map<std::string, std::string> const& eventLog);
 	void joinThreads(void);
@@ -32,13 +34,14 @@ class EventLogWaitManager
 	private:
 	std::thread* subscriptionListener = NULL;
 
-	std::vector<std::pair<std::string, std::string>> contractLogSignatures;
-	std::map<std::string, std::string> subscriptionToEventName;
+	std::vector<std::tuple<std::string, std::string, bool>> contractLogSignatures;
+	std::map<std::string, std::tuple<std::string, std::string, bool>> subscriptionToEventName;
 	std::string receiveParse;
 
 	std::string contractAddress;
 	std::string clientAddress;
 	std::string ipcPath;
+	std::string contractABI;
 
 	struct EventLogWaitElement
 	{
@@ -81,4 +84,4 @@ class EventLogWaitManager
 } //namespace
 
 
-#endif //__SUBSCRIPTION_SERVER_HPP
+#endif //__EVENT_WAIT_MGR_HPP

@@ -27,8 +27,8 @@ namespace game_interface
 GameInterface::GameInterface(void)
 	: EthInterface(GAME_SOL, GAME_ABI, GAME_BIN)
 {
-	std::string ipcPath;
-	std::string clientAddress;
+	string ipcPath;
+	string clientAddress;
 
 	cfg.setOptions(Config::OptionFsync
 		| Config::OptionSemicolonSeparators
@@ -65,11 +65,11 @@ GameInterface::GameInterface(void)
 	}
 
 	cfg.lookupValue("ipcPath", ipcPath);
-
+	this->ipcPath = ipcPath;
 
 	if (!cfg.exists("clientAddress"))
 	{
-		vector<string> accounts = this->eth_accounts();
+		vector<string> accounts = this->eth_accounts();O
 
 		if (accounts.size() == 0)
 		{
@@ -87,9 +87,9 @@ GameInterface::GameInterface(void)
 	} else {
 		cfg.lookupValue("clientAddress", clientAddress);
 	}
+	this->clientAddress = clientAddress;
 
-
-	cfg.lookupValue("helperContractAddress", helperContractAddress);
+	initialize(ipcPath, clientAddress, contractEventSignatures());
 
 	if (!cfg.exists("helperContractAddress"))
 	{
@@ -102,33 +102,41 @@ GameInterface::GameInterface(void)
 			if (cfgRoot->exists("helperContractAddress"))
 				cfgRoot->remove("helperContractAddress");
 			cfgRoot->add("helperContractAddress", Setting::TypeString) = helperContractAddress;
-			cfg.writeFile(BLOCKCHAINSEC_CONFIG_F);
+			cfg.writeFile(CONFIG_F);
 		}
 		catch (const TransactionFailedException& e)
 		{
 			cerr << "Failed to create helper contract!" << endl;
 			exit(EXIT_FAILURE);
 		}
+	} else {
+		cfg.lookupValue("helperContractAddress", helperContractAddress);
 	}
+	this->helperContractAddress = boost::to_lower_copy(boost::trim_copy(helperContractAddress));
 
-	// TODO
-	initialize(ipcPath, clientAddress, contractEventSignatures());
+	if (this->helperContractAddress.substr(0, 2) == "0x")
+	{
+		this->helperContractAddress = this->helperContractAddress.substr(2);
+	}
 }
 
 
 // TODO
-vector<pair<string, string>>
+vector<tuple<string, string, bool>>
 GameInterface::contractEventSignatures(void)
 {
-	vector<pair<string, string>> vecLogSigs;
-	vecLogSigs.push_back(pair<string, string>("JoinGame", ""));
-	vecLogSigs.push_back(pair<string, string>("NextTurn", ""));
-	vecLogSigs.push_back(pair<string, string>("CreateDeck", ""));
-	vecLogSigs.push_back(pair<string, string>("DrawHand", ""));
-	vecLogSigs.push_back(pair<string, string>("LayPath", ""));
-	vecLogSigs.push_back(pair<string, string>("LayUnit", ""));
-	vecLogSigs.push_back(pair<string, string>("MoveUnit", ""));
-	vecLogSigs.push_back(pair<string, string>("Attack", ""));
+	vector<tuple<string, string, bool>> vecLogSigs;
+	vecLogSigs.push_back(make_tuple("JoinGame", "", true));
+	vecLogSigs.push_back(make_tuple("NextTurn", "", true));
+	vecLogSigs.push_back(make_tuple("CreateDeck", "", true));
+	vecLogSigs.push_back(make_tuple("DrawHand", "", true));
+	vecLogSigs.push_back(make_tuple("LayPath", "", true));
+	vecLogSigs.push_back(make_tuple("LayUnit", "", true));
+	vecLogSigs.push_back(make_tuple("MoveUnit", "", true));
+	vecLogSigs.push_back(make_tuple("Attack", "", true));
+	vecLogSigs.push_back(make_tuple("PlayerJoined", "", false));
+	vecLogSigs.push_back(make_tuple("DecksReady", "", false));
+	vecLogSigs.push_back(make_tuple("NextTurn", "", false));
 	return vecLogSigs;
 }
 
@@ -158,7 +166,11 @@ GameInterface::getInt(string const& funcName)
 string
 GameInterface::createGame(void)
 {
-	// TODO
+	string gameContractAddress;
+
+	gameContractAddress = this->create_contract(GAME_SOL, GAME_ABI, GAME_BIN, helperContractAddress);
+	setContractAddress(gameContractAddress);
+	createEventLogWaitManager();
 }
 
 
@@ -303,6 +315,16 @@ GameInterface::isGameOver(void)
 
 
 
+// Throws ResourceRequestFailedException from ethabi()
+// Throws InvalidArgumentException
+bool
+GameInterface::myTurn(void)
+{
+	return getIntFromContract("my_turn") == 1;
+}
+
+
+
 bool
 GameInterface::layPath(uint8_t x,
 		uint8_t y,
@@ -392,7 +414,7 @@ GameInterface::attack(uint8_t unitX,
 void
 GameInterface::waitPlayerJoined(void)
 {
-	// TODO
+	blockForEvent("PlayerJoined");
 }
 
 
@@ -400,7 +422,19 @@ GameInterface::waitPlayerJoined(void)
 void
 GameInterface::waitNextTurn(void)
 {
-	// TODO
+	if (myTurn())
+	{
+		return;
+	}
+	blockForEvent("NextTurn");
+}
+
+
+
+void
+GameInterface::endGame(void)
+{
+	closeEventLogWaitManager();
 }
 
 

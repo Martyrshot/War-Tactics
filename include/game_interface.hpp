@@ -8,7 +8,7 @@
 
 #include <eth_interface.hpp>
 #include <eth_interface_except.hpp>
-#include <subscription_server.hpp>
+#include <event_wait_mgr.hpp>
 
 
 #define CONFIG_F     "game.conf"
@@ -80,6 +80,9 @@ class GameInterface : public EthInterface
 	isGameOver(void);
 
 	bool
+	myTurn(void);
+
+	bool
 	layPath(uint8_t x,
 			uint8_t y,
 			uint8_t handIndex,
@@ -107,7 +110,8 @@ class GameInterface : public EthInterface
 	void
 	waitNextTurn(void);
 
-
+	void
+	endGame(void);
 
 	private:
 

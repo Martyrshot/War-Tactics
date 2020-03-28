@@ -63,7 +63,7 @@ contract Game {
 	event DecksReady();
 
 	// keccak256 signature:
-	event NextTurn(address indexed player);
+	event NextTurn();
 
 	// keccak256 signature:
 	event CreateDeck(address indexed sender);
@@ -233,6 +233,14 @@ contract Game {
 			return 1;
 		}
 		return 2;
+	}
+
+
+	function my_turn() external view returns (bool) {
+		if ((player1_turn && player[PLAYER1] == msg.sender) || (!player1_turn && player[PLAYER2] == msg.sender)) {
+			return true;
+		}
+		return false;
 	}
 
 

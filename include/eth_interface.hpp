@@ -35,9 +35,10 @@ class EthInterface
 		std::string ipcPath,
 		std::string clientAddress,
 		std::string contractAddress,
-		std::vector<std::pair<std::string, std::string>> contractEventSignatures,
-		bool createEventLogWaitManager);
+		std::vector<std::pair<std::string, std::string>> contractEventSignatures);
 
+	void setContractAddress(std::string contractAddress);
+	void blockForEvent(string const& event);
 
 	std::string getIPCPath(void);
 	std::string getClientAddress(void);
@@ -46,9 +47,13 @@ class EthInterface
 	std::string getEthContractABI(void);
 	std::string getEthContractBIN(void);
 
+	void createEventLogWaitManager(void);
+	void closeEventLogWaitManager(void);
+
 	void joinThreads(void);
 
 	protected:
+	std::vector<std::pair<std::string, std::string>> contractEventSignatures;
 	std::string ipcPath;
 	std::string clientAddress;
 	std::string contractAddress;
@@ -56,7 +61,7 @@ class EthInterface
 	std::string ethContractABI;
 	std::string ethContractBIN;
 
-	EventLogWaitManager* eventLogWaitManager;
+	EventLogWaitManager* eventLogWaitManager = nullptr;
 
 	std::string getFrom(std::string const& funcName, std::string const& ethabiEncodeArgs);
 	uint64_t getIntFromContract(std::string const& funcName);
@@ -70,7 +75,18 @@ class EthInterface
 		std::unique_ptr<std::unordered_map<std::string, std::string>>& eventLog);
 
 	std::vector<std::string> eth_accounts(void);
-	std::string create_contract(void);
+
+	std::string create_contract(std::string const& solFile,
+		std::string const& abiFile,
+		std::string const& binFile);
+
+	std::string create_contract(std::string const& solFile,
+		std::string const& abiFile,
+		std::string const& binFile,
+		std::string const& params);
+
+	void closeEventLogWaitManager(void);
+
 	std::string getTransactionReceipt(std::string const& transactionHash);
 
 	std::string eth_ipc_request(std::string const& jsonRequest);
