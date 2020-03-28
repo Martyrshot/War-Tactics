@@ -373,7 +373,11 @@ EthInterface::eth_accounts(void)
 						 "\"params\":[],\"id\":1}";
 
 #ifdef _DEBUG
-	cout << "eth_accounts()" << endl;
+	cout << "eth_accounts()"
+		 << endl
+		 << "jsonRequest: "
+		 << jsonRequest
+		 << endl;
 #endif //_DEBUG
 
 	Json jsonResponce;

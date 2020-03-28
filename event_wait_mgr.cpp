@@ -404,7 +404,7 @@ begin:
 			 << endl
 			 << "[\"" << transactionHash
 			 << "\" (\""
-			 << subscriptionToEventName[subscription]
+			 << get<0>(subscriptionToEventName[subscription])
 			 << "\")] = "
 			 << eventLogMap[transactionHash].get()->toString()
 			 << endl
