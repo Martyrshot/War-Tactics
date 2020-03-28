@@ -178,8 +178,13 @@ contract Game {
 	}
 
 
+	function get_card_hash(uint8 cardSeed) public view returns (bytes32) {
+		return helper_contract.prefixed(keccak256(abi.encodePacked(game_create_time, game_join_time, cardSeed)));
+	}
+
+
 	function verify_card(uint8 card, uint8 cardSeed, address addr, uint8 v, bytes32 r, bytes32 s) public view returns (bool) {
-		bytes32 hash = helper_contract.prefixed(keccak256(abi.encodePacked(game_create_time, game_join_time, cardSeed)));
+		bytes32 hash = get_card_hash(cardSeed);
 		return ecrecover(hash, v, r, s) == addr && helper_contract.get_signed_card(v, r, s, DECK_SIZE) == card;
 	}
 
@@ -314,7 +319,7 @@ contract Game {
 		draw_cards();
 		player1_turn = !player1_turn;
 		emit LayPath(msg.sender);
-		emit NextTurn(player[other]);
+		emit NextTurn();
 		return true;
 	}
 
@@ -349,7 +354,7 @@ contract Game {
 		draw_cards();
 		player1_turn = !player1_turn;
 		emit LayUnit(msg.sender);
-		emit NextTurn(player[other]);
+		emit NextTurn();
 		return true;
 	}
 
@@ -393,7 +398,7 @@ contract Game {
 
 		player1_turn = !player1_turn;
 		emit MoveUnit(msg.sender);
-		emit NextTurn(player[other]);
+		emit NextTurn();
 		return true;
 	}
 
@@ -481,7 +486,7 @@ contract Game {
 		// No cards were spent from the players hand, so no need to draw, correct?
 		player1_turn = !player1_turn;
 		emit Attack(msg.sender);
-		emit NextTurn(player[other]);
+		emit NextTurn();
 		return true;
 	}
 

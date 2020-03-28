@@ -335,6 +335,36 @@ EthInterface::callMutatorContract(
 
 
 
+string
+EthInterface::eth_sign(string const& data)
+{
+	string jsonRequest = "{\"jsonrpc\":\"2.0\","
+						 "\"method\":\"eth_sign\","
+						 "\"params\":[\"0x" +
+						 clientAddress +
+						 "\",\"" +
+						 data +
+						 "\"],\"id\":1}";
+
+#ifdef _DEBUG
+	cout << "eth_sign()" << endl;
+#endif //_DEBUG
+
+	Json jsonResponce = this->call_helper(jsonRequest);
+	auto result = jsonResponce.find("result");
+
+	if (result != jsonResponce.end())
+	{
+		throw TransactionFailedException(
+			"eth_sign(): \"result\" was not "
+			"present in responce to eth_sign!");
+	}
+
+	return result.value();
+}
+
+
+
 vector<string>
 EthInterface::eth_accounts(void)
 {

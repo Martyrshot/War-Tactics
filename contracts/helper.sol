@@ -30,9 +30,6 @@ contract Helper {
 
 
 
-
-
-
 	// Functions not specific to the game
 
 

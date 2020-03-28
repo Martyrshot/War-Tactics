@@ -77,6 +77,7 @@ class EthInterface
 		std::string const& ethabiEncodeArgs,
 		std::unique_ptr<std::unordered_map<std::string, std::string>>& eventLog);
 
+	std::string eth_sign(std::string const& data);
 	std::vector<std::string> eth_accounts(void);
 
 	std::string create_contract(std::string const& solFile,
