@@ -62,5 +62,5 @@ $(OBJ)/%.o: %.cpp
 
 $(BIN)/client: $(OBJECTS)
 	$(CC) $(CPPFLAGS) -o $@ \
-		-lconfig++ -lpthread -lboost_system
+		-lconfig++ -lpthread -lboost_system $^ 
 	ln -fs $@ ./client
