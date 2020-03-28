@@ -376,8 +376,21 @@ EthInterface::eth_accounts(void)
 	cout << "eth_accounts()" << endl;
 #endif //_DEBUG
 
-	Json jsonResponce = this->call_helper(jsonRequest);
+	Json jsonResponce;
 	auto result = jsonResponce.find("result");
+
+	try
+	{
+		jsonResponce = this->call_helper(jsonRequest);
+	}
+	catch(ResourceRequestFailedException const& e)
+	{
+		cerr << "Geth IPC file does not exist!"
+			 << endl
+			 << "Ensure Geth is running and \"ipcPath\" in game.conf is correct!"
+			 << endl;
+		exit(EXIT_FAILURE);
+	}
 
 	if (result != jsonResponce.end())
 	{
