@@ -55,7 +55,6 @@ int main(int argc, char **argv) {
         }
     }
     playGame();
-    
     //testDriver();
     return 0;
 }
@@ -125,7 +124,9 @@ void playGame(void) {
     } while (point.size() == 0);
     system("clear");
     vector< vector<uint8_t> > points = getPossibleHQLocations(playerID);
-    printBoard(board, playerID, points);
+    vector<uint8_t> healths = interface.getHqHealth();
+    // TODO confirm which health is which
+    printBoard(board, playerID, points, healths[0], healths[1]);
     points.clear();
 
 
@@ -147,14 +148,19 @@ void playGame(void) {
         printOpponentsHand(oppHandSize);
         
         points.clear();
-        printBoard(board, playerID, points);
+        healths = interface.getHqHealth();
+        // TODO confirm which health is which
+        printBoard(board, playerID, points, healths[0], healths[1]);
         printHand(handIDs);
         promptForEnter(PRPOMPTSTARTTURN);
         // clear screen, and prompt for action
         system("clear");
         printOpponentsHand(oppHandSize);
         // printBoard requires points. give it no points to highlight
-        printBoard(board, playerID, points);
+
+        healths = interface.getHqHealth();
+        // TODO confirm which health is which
+        printBoard(board, playerID, points, healths[0], healths[1]);
         printHand(handIDs);
         int action = promptForAction(PROMPTACTION);
         switch (action) {
@@ -170,7 +176,9 @@ void playGame(void) {
                                     getAllPathPlacementOptions(board,playerID);
                 system("clear");
                 printOpponentsHand(oppHandSize);
-                printBoard(board, playerID, points);
+                healths = interface.getHqHealth();
+                // TODO confirm which health is which
+                printBoard(board, playerID, points, healths[0], healths[1]);
                 printHand(handIDs, cardID);
                 vector<uint8_t> point;
                 do {
@@ -217,7 +225,9 @@ void playGame(void) {
                        getPossibleMovementOptionsForUnit(board, source);
                 system("clear");
                 printOpponentsHand(oppHandSize);
-                printBoard(board, playerID, points);
+                healths = interface.getHqHealth();
+                // TODO confirm which health is which
+                printBoard(board, playerID, points, healths[0], healths[1]);
                 printHand(handIDs);
                 do {
                     dest = promptForPoint(PROMPTSECONDARYBOARDSELECTION);
@@ -237,7 +247,9 @@ void playGame(void) {
                        getPossibleAttackOptionsForUnit(board, playerID, source);
                 system("clear");
                 printOpponentsHand(oppHandSize);
-                printBoard(board, playerID, points);
+                healths = interface.getHqHealth();
+                // TODO confirm which health is which
+                printBoard(board, playerID, points, healths[0], healths[1]);
                 printHand(handIDs);
                 do {
                     dest = promptForPoint(PROMPTSECONDARYBOARDSELECTION);
@@ -254,7 +266,9 @@ void playGame(void) {
         system("clear");
         board = interface.getBoardState();
         printOpponentsHand(oppHandSize);
-        printBoard(board, playerID, points);
+        healths = interface.getHqHealth();
+        // TODO confirm which health is which
+        printBoard(board, playerID, points, healths[0], healths[1]);
         printHand(handIDs);
     }
     //TODO
@@ -318,10 +332,12 @@ void testDriver(void) {
                                     getAllPathPlacementOptions(board, playerID);
     numCardsInHand = 5;
     printOpponentsHand(numCardsInHand);
-    printBoard(board, 1, points);
+    vector<uint8_t> healths = {1,2};
+    printBoard(board, 1, points, healths[0], healths[1]);
     printHand(v);
     printOpponentsHand(numCardsInHand);
-    printBoard(board, 2, points);
+    healths = {2,1};
+    printBoard(board, 2, points, healths[0], healths[1]);
     printHand(v);
     promptForEnter("This is a test prompt\n");
 

@@ -49,7 +49,12 @@ void printHorizontalBar(int row, vector< vector<uint8_t> > points) {
 
 
 void printBoard(vector< vector< vector<uint8_t> > >board, int playerID,
-                                            vector< vector<uint8_t> > points) {
+                                            vector< vector<uint8_t> > points,
+                                            uint8_t friendlyHQLife,
+                                            uint8_t enemyHqLife) {
+    cout << BOARDHANDSEPARATER << endl;
+    cout << "       "; // spacing
+    cout << "Enemy's HQ Health Points: "<< (int)enemyHqLife << endl;
     cout << BOARDHANDSEPARATER << endl;
     if (playerID == 1) {
         printHorizontalBar(0,points);
@@ -228,6 +233,9 @@ void printBoard(vector< vector< vector<uint8_t> > >board, int playerID,
         cout << "  " << (char)(i + 65) << " ";
     }
     cout << endl << BOARDHANDSEPARATER << endl;
+    cout << "       "; // spacing
+    cout << "Your HQ's Health Points: "<< (int)friendlyHQLife << endl;
+    cout << BOARDHANDSEPARATER << endl;
 }
 
 vector< vector<uint8_t> >
