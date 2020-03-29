@@ -145,7 +145,7 @@ GameInterface::joinGame(string const& gameAddress)
 bool
 GameInterface::createDeck(uint8_t deckSeed[DECK_SIZE])
 {
-	string ethabiEncodeArgs = " -v 'uint8[]' '[";
+	string ethabiEncodeArgs = " -p '[";
 	unique_ptr<unordered_map<string, string>> eventLog;
 
 	for (uint8_t i = 0; i < DECK_SIZE; i++)
