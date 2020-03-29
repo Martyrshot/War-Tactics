@@ -409,7 +409,13 @@ begin:
 		 << endl;
 #endif //_DEBUG
 
-		unordered_map<string, string> log = ethabi_decode_log(contractABI, get<0>(subscriptionToEventName[subscription]), topics, data.substr(2));
+		unordered_map<string, string> log;
+
+		if (topics.size() > 1 || data.length() > 2)
+		{
+			log = ethabi_decode_log(contractABI, get<0>(subscriptionToEventName[subscription]), topics, data.substr(2));
+		}
+
 		log["EventName"] = get<0>(subscriptionToEventName[subscription]);
 
 		if (get<2>(subscriptionToEventName[subscription]))
