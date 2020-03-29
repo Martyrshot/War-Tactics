@@ -457,10 +457,16 @@ begin:
 			 << "[\"" << transactionHash
 			 << "\" (\""
 			 << get<0>(subscriptionToEventName[subscription])
-			 << "\")] = "
-			 << eventLogMap[transactionHash].get()->toString()
-			 << endl
-			 << endl;
+			 << "\")] = ";
+		if (topics.size() > 1 || data.length() > 2)
+		{
+			cout << eventLogMap[transactionHash].get()->toString();
+		}
+		else
+		{
+			cout << eventLogMap[get<0>(subscriptionToEventName[subscription])].get()->toString();
+		}
+		cout << endl << endl;
 		mtx.unlock();
 #endif //_DEBUG
 	}
