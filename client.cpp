@@ -94,7 +94,7 @@ bool joinGame(string address) {
             cout << "Failed to join game with address: " << address << endl;
             return false;
         }
-    } catch(ResourceRequestFailedException) {
+    } catch(ResourceRequestFailedException const& e) {
         cout << "Exception: Failed to join game with address: " << address << endl;
         return false;
     }
