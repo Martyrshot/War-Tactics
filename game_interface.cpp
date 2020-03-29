@@ -239,13 +239,12 @@ std::vector<std::vector<std::vector<uint8_t>>>
 GameInterface::getBoardState(void)
 {
 	uint16_t n = 0;
-	vector<vector<vector<uint8_t>>> result;
+	vector<vector<vector<uint8_t>>> result(3, vector<vector<uint8_t>> (10, vector<uint8_t> (9, 0)));
 	vector<uint8_t> vec =  ethabi_decode_uint8_array(
 		getEthContractABI(),
 		"get_board_state",
 		getArrayFromContract("get_board_state"));
 
-	// TODO
 	if (vec.size() != 3 * 10 * 9) {
 		throw ResourceRequestFailedException(
 			"getBoardState(): Did not contain the expected quantity of elements");
@@ -253,10 +252,8 @@ GameInterface::getBoardState(void)
 
 	for (uint8_t i = 0; i < 3; i++)
 	{
-		result.push_back(vector<vector<uint8_t>>());
 		for (uint8_t j = 0; j < 10; i ++)
 		{
-			result[i].push_back(vector<uint8_t>());
 			for (uint8_t k = 0; k < 9; k++)
 			{
 				result[i][j].push_back(vec[n]);
