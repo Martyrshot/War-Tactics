@@ -256,7 +256,7 @@ GameInterface::getBoardState(void)
 		{
 			for (uint8_t k = 0; k < 9; k++)
 			{
-				result[i][j].push_back(vec[n]);
+				result[i][j][k] = vec[n];
 				n++;
 			}
 		}
