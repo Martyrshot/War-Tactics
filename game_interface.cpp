@@ -122,7 +122,7 @@ GameInterface::GameInterface(void)
 }
 
 
-// TODO
+
 vector<tuple<string, string, bool>>
 GameInterface::contractEventSignatures(void)
 {
@@ -161,7 +161,8 @@ GameInterface::joinGame(string const& gameAddress)
 	string ethabiEncodeArgs;
 	unique_ptr<unordered_map<string, string>> eventLog;
 
-	ethabiEncodeArgs = " -l -p '" + gameAddress + "'";
+	setContractAddress(gameAddress);
+	ethabiEncodeArgs = "";
 
 	return callMutatorContract("join_game", ethabiEncodeArgs, eventLog);
 }
@@ -171,7 +172,7 @@ GameInterface::joinGame(string const& gameAddress)
 bool
 GameInterface::createDeck(uint8_t deckSeed[DECK_SIZE])
 {
-	string ethabiEncodeArgs = " -l -v 'uint8[]' '[";
+	string ethabiEncodeArgs = " -v 'uint8[]' '[";
 	unique_ptr<unordered_map<string, string>> eventLog;
 
 	for (uint8_t i = 0; i < DECK_SIZE; i++)
@@ -228,7 +229,7 @@ GameInterface::getPlayerSeedHand(uint8_t playerNum)
 	return ethabi_decode_uint8_array(
 		getEthContractABI(),
 		"get_player_seed_hand",
-		getArrayFromContract("get_player_seed_hand", " -l -p " + playerNum));
+		getArrayFromContract("get_player_seed_hand", " -p " + playerNum));
 }
 
 
@@ -254,7 +255,7 @@ GameInterface::getPrivateCardFromSeed(uint8_t cardSeed)
 
 	return getIntFromContract(
 		"get_private_card_from_seed",
-		" -l -p " + hash.substr(0, 2) +
+		" -p " + hash.substr(0, 2) +
 		" -p " + hash.substr(2, 64) +
 		" -p " + hash.substr(66, 64));
 }
@@ -338,7 +339,7 @@ GameInterface::layPath(uint8_t x,
 	string ethabiEncodeArgs;
 	unique_ptr<unordered_map<string, string>> eventLog;
 
-	ethabiEncodeArgs = "-l -p ";
+	ethabiEncodeArgs = " -p ";
 	ethabiEncodeArgs += x;
 	ethabiEncodeArgs += " -p ";
 	ethabiEncodeArgs += y;
@@ -360,7 +361,7 @@ GameInterface::layUnit(uint8_t handIndex)
 	string ethabiEncodeArgs;
 	unique_ptr<unordered_map<string, string>> eventLog;
 
-	ethabiEncodeArgs = "-l -p ";
+	ethabiEncodeArgs = " -p ";
 	ethabiEncodeArgs += handIndex;
 
 	return callMutatorContract("lay_unit", ethabiEncodeArgs, eventLog);
@@ -377,7 +378,7 @@ GameInterface::moveUnit(uint8_t unitX,
 	string ethabiEncodeArgs;
 	unique_ptr<unordered_map<string, string>> eventLog;
 
-	ethabiEncodeArgs = "-l -p ";
+	ethabiEncodeArgs = "-p ";
 	ethabiEncodeArgs += unitX;
 	ethabiEncodeArgs += " -p ";
 	ethabiEncodeArgs += unitY;
@@ -400,7 +401,7 @@ GameInterface::attack(uint8_t unitX,
 	string ethabiEncodeArgs;
 	unique_ptr<unordered_map<string, string>> eventLog;
 
-	ethabiEncodeArgs = "-l -p ";
+	ethabiEncodeArgs = "-p ";
 	ethabiEncodeArgs += unitX;
 	ethabiEncodeArgs += " -p ";
 	ethabiEncodeArgs += unitY;
