@@ -79,7 +79,10 @@ bool createGame(void) {
         cout << "Error creating deck!" << endl;
         return false;
     }
-    while(!interface.hasDeck());
+    while(!interface.hasDeck())
+    {
+        sleep(1);
+    }
     if (!interface.drawHand()) {
         cout << "Error drawing initial hand!" << endl;
         return false;
