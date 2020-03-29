@@ -415,15 +415,34 @@ begin:
 		{
 			log = ethabi_decode_log(contractABI, get<0>(subscriptionToEventName[subscription]), topics, data.substr(2));
 		}
+		else
+		{
+			log["transactionHash"] = transactionHash;
+		}
+
 
 		log["EventName"] = get<0>(subscriptionToEventName[subscription]);
 
 		if (get<2>(subscriptionToEventName[subscription]))
 		{
+
+#ifdef _DEBUG
+			cout << "ipc_subscription_listener_thread(): setEventLog() by transactionHash \""
+				 << transactionHash
+				 << "\""
+				 << endl;
+#endif
 			setEventLog(transactionHash, log);
 		}
 		else
 		{
+
+#ifdef _DEBUG
+			cout << "ipc_subscription_listener_thread(): setEventLog() by event name \""
+				 << get<0>(subscriptionToEventName[subscription])
+				 << "\"" << endl;
+#endif
+
 			setEventLog(get<0>(subscriptionToEventName[subscription]), log);
 		}
 
