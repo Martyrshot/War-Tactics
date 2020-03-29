@@ -133,6 +133,7 @@ GameInterface::joinGame(string const& gameAddress)
 	string ethabiEncodeArgs;
 	unique_ptr<unordered_map<string, string>> eventLog;
 
+	createEventLogWaitManager();
 	setContractAddress(gameAddress);
 	ethabiEncodeArgs = "";
 
