@@ -154,7 +154,7 @@ GameInterface::createDeck(uint8_t deckSeed[DECK_SIZE])
 		{
 			ethabiEncodeArgs += ",";
 		}
-		ethabiEncodeArgs += boost::lexical_cast<string>(deckSeed[i]);
+		ethabiEncodeArgs += to_string(deckSeed[i]);
 	}
 
 	ethabiEncodeArgs += "]'";
