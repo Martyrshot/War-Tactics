@@ -10,14 +10,14 @@
 ##               jag190@usask.ca                ##
 ##----------------------------------------------##
 ##                 Ben Haubrich                 ##
-##               @usask.ca                ##
+##               bjh885@usask.ca                ##
 ##################################################
 
 
 CC = g++
 
 # Disable warnings about future GCC abi changes
-CFLAGS = -Wno-psabi
+CFLAGS =
 CPPFLAGS = -std=gnu++17 -Wall -Wextra -pedantic -g
 LDFLAGS =
 
@@ -62,5 +62,5 @@ $(OBJ)/%.o: %.cpp
 
 $(BIN)/client: $(OBJECTS)
 	$(CC) $(CPPFLAGS) -o $@ \
-		-lconfig++ -lpthread -lboost_system $^ 
+		-lconfig++ -lpthread -lboost_system $^
 	ln -fs $@ ./client
