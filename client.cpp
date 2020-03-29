@@ -38,6 +38,7 @@ bool joinGame(string address);
 void playGame(void);
 
 int main(int argc, char **argv) {
+
     int8_t selection = -1;
     do {
         selection = mainMenu(TITLE);
@@ -54,6 +55,7 @@ int main(int argc, char **argv) {
         }
     }
     playGame();
+    //testDriver();
     return 0;
 }
 
@@ -90,7 +92,7 @@ bool joinGame(string address) {
             return false;
         }
     } catch(ResourceRequestFailedException) {
-        cout << "Failed to join game with address: " << address << endl;
+        cout << "Exception: Failed to join game with address: " << address << endl;
         return false;
     }
     srand(time(NULL));
@@ -114,6 +116,20 @@ bool joinGame(string address) {
 vector<uint8_t> buildHand(vector<uint8_t>);
 
 void playGame(void) {
+    interface.waitNextTurn();
+
+    vector<uint8_t> point;
+    do {
+        point = promptForPoint(PROMPTHQPLACE);
+    } while (point.size() == 0);
+    system("clear");
+    vector< vector<uint8_t> > points = getPossibleHQLocations(playerID);
+    vector<uint8_t> healths = interface.getHqHealth();
+    // TODO confirm which health is which
+    printBoard(board, playerID, points, healths[0], healths[1]);
+    points.clear();
+
+
     while(!interface.isGameOver()) {
         interface.waitNextTurn();
         board = interface.getBoardState();
@@ -130,17 +146,21 @@ void playGame(void) {
 
         // Print initial turn state
         printOpponentsHand(oppHandSize);
-        // printBoard requires points. give it no points to highlight
-        vector< vector<uint8_t> > points;
+        
         points.clear();
-        printBoard(board, playerID, points);
+        healths = interface.getHqHealth();
+        // TODO confirm which health is which
+        printBoard(board, playerID, points, healths[0], healths[1]);
         printHand(handIDs);
         promptForEnter(PRPOMPTSTARTTURN);
         // clear screen, and prompt for action
         system("clear");
         printOpponentsHand(oppHandSize);
         // printBoard requires points. give it no points to highlight
-        printBoard(board, playerID, points);
+
+        healths = interface.getHqHealth();
+        // TODO confirm which health is which
+        printBoard(board, playerID, points, healths[0], healths[1]);
         printHand(handIDs);
         int action = promptForAction(PROMPTACTION);
         switch (action) {
@@ -156,7 +176,9 @@ void playGame(void) {
                                     getAllPathPlacementOptions(board,playerID);
                 system("clear");
                 printOpponentsHand(oppHandSize);
-                printBoard(board, playerID, points);
+                healths = interface.getHqHealth();
+                // TODO confirm which health is which
+                printBoard(board, playerID, points, healths[0], healths[1]);
                 printHand(handIDs, cardID);
                 vector<uint8_t> point;
                 do {
@@ -203,7 +225,9 @@ void playGame(void) {
                        getPossibleMovementOptionsForUnit(board, source);
                 system("clear");
                 printOpponentsHand(oppHandSize);
-                printBoard(board, playerID, points);
+                healths = interface.getHqHealth();
+                // TODO confirm which health is which
+                printBoard(board, playerID, points, healths[0], healths[1]);
                 printHand(handIDs);
                 do {
                     dest = promptForPoint(PROMPTSECONDARYBOARDSELECTION);
@@ -223,7 +247,9 @@ void playGame(void) {
                        getPossibleAttackOptionsForUnit(board, playerID, source);
                 system("clear");
                 printOpponentsHand(oppHandSize);
-                printBoard(board, playerID, points);
+                healths = interface.getHqHealth();
+                // TODO confirm which health is which
+                printBoard(board, playerID, points, healths[0], healths[1]);
                 printHand(handIDs);
                 do {
                     dest = promptForPoint(PROMPTSECONDARYBOARDSELECTION);
@@ -240,7 +266,9 @@ void playGame(void) {
         system("clear");
         board = interface.getBoardState();
         printOpponentsHand(oppHandSize);
-        printBoard(board, playerID, points);
+        healths = interface.getHqHealth();
+        // TODO confirm which health is which
+        printBoard(board, playerID, points, healths[0], healths[1]);
         printHand(handIDs);
     }
     //TODO
@@ -304,9 +332,15 @@ void testDriver(void) {
                                     getAllPathPlacementOptions(board, playerID);
     numCardsInHand = 5;
     printOpponentsHand(numCardsInHand);
-    printBoard(board, playerID, points);
+    vector<uint8_t> healths = {1,2};
+    printBoard(board, 1, points, healths[0], healths[1]);
+    printHand(v);
+    printOpponentsHand(numCardsInHand);
+    healths = {2,1};
+    printBoard(board, 2, points, healths[0], healths[1]);
     printHand(v);
     promptForEnter("This is a test prompt\n");
+
     vector<uint8_t> point;
     do {
         point = promptForPoint("Please enter a point\n");
@@ -321,4 +355,5 @@ void testDriver(void) {
     } while(input == -1);
 
 }
+
 
