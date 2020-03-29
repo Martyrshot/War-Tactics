@@ -416,7 +416,9 @@ begin:
 
 		if (topics.size() > 1 || data.length() > 2)
 		{
-			log = ethabi_decode_log(contractABI, get<0>(subscriptionToEventName[subscription]), topics, data.substr(2));
+			// log = ethabi_decode_log(contractABI, get<0>(subscriptionToEventName[subscription]), topics, data.substr(2));
+			log["transactionHash"] = transactionHash;
+			log["sender"] = topics[1].substr(topics[1].length() - 40);
 		}
 		else
 		{
