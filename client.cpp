@@ -129,6 +129,7 @@ void playGame(void) {
     vector< vector<uint8_t> > points = getPossibleHQLocations(playerID);
     vector<uint8_t> healths = interface.getHqHealth();
     // TODO confirm which health is which
+    board = interface.getBoardState();
     printBoard(board, playerID, points, healths[0], healths[1]);
     points.clear();
 
