@@ -133,8 +133,8 @@ GameInterface::joinGame(string const& gameAddress)
 	string ethabiEncodeArgs;
 	unique_ptr<unordered_map<string, string>> eventLog;
 
-	createEventLogWaitManager();
 	setContractAddress(gameAddress);
+	createEventLogWaitManager();
 	ethabiEncodeArgs = "";
 
 	return callMutatorContract("join_game", ethabiEncodeArgs, eventLog);
