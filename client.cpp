@@ -38,8 +38,11 @@ bool joinGame(string address);
 void playGame(void);
 
 int main(int argc, char **argv) {
-
     int8_t selection = -1;
+
+    (void) argc;
+    (void) argv;
+
     do {
         selection = mainMenu(TITLE);
     } while (selection == -1);
@@ -146,7 +149,7 @@ void playGame(void) {
 
         // Print initial turn state
         printOpponentsHand(oppHandSize);
-        
+
         points.clear();
         healths = interface.getHqHealth();
         // TODO confirm which health is which
