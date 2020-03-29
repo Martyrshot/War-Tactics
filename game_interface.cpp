@@ -1,7 +1,6 @@
 #include <array>
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string.hpp>
-#include <boost/lexical_cast.hpp>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -202,7 +201,7 @@ GameInterface::getPlayerSeedHand(uint8_t playerNum)
 	return ethabi_decode_uint8_array(
 		getEthContractABI(),
 		"get_player_seed_hand",
-		getArrayFromContract("get_player_seed_hand", " -p " + playerNum));
+		getArrayFromContract("get_player_seed_hand", " -p " + to_string(playerNum)));
 }
 
 
@@ -213,7 +212,7 @@ GameInterface::getCardHash(uint8_t cardSeed)
 	return ethabi_decode_result(
 		getEthContractABI(),
 		"get_card_hash",
-		getFrom("get_card_hash", " -p '" + boost::lexical_cast<string>(cardSeed) + "'"));
+		getFrom("get_card_hash", " -p '" + to_string(cardSeed) + "'"));
 }
 
 
