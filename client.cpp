@@ -38,7 +38,7 @@ bool joinGame(string address);
 void playGame(void);
 
 int main(int argc, char **argv) {
-    /*
+
     int8_t selection = -1;
     do {
         selection = mainMenu(TITLE);
@@ -55,8 +55,8 @@ int main(int argc, char **argv) {
         }
     }
     playGame();
-    */
-    testDriver();
+    
+    //testDriver();
     return 0;
 }
 
