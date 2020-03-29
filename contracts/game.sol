@@ -118,6 +118,7 @@ contract Game {
 
 		player[PLAYER2] = msg.sender;
 		game_join_time = uint2str(now);
+		has_player2 = true;
 
 		emit JoinGame(msg.sender);
 		emit PlayerJoined();
