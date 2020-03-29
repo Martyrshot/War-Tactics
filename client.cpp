@@ -38,7 +38,7 @@ bool joinGame(string address);
 void playGame(void);
 
 int main(int argc, char **argv) {
-    
+    /*
     int8_t selection = -1;
     do {
         selection = mainMenu(TITLE);
@@ -55,8 +55,8 @@ int main(int argc, char **argv) {
         }
     }
     playGame();
-    
-    // testDriver();
+    */
+    testDriver();
     return 0;
 }
 
@@ -318,9 +318,13 @@ void testDriver(void) {
                                     getAllPathPlacementOptions(board, playerID);
     numCardsInHand = 5;
     printOpponentsHand(numCardsInHand);
-    printBoard(board, playerID, points);
+    printBoard(board, 1, points);
+    printHand(v);
+    printOpponentsHand(numCardsInHand);
+    printBoard(board, 2, points);
     printHand(v);
     promptForEnter("This is a test prompt\n");
+
     vector<uint8_t> point;
     do {
         point = promptForPoint("Please enter a point\n");
@@ -335,4 +339,5 @@ void testDriver(void) {
     } while(input == -1);
 
 }
+
 
