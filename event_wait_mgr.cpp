@@ -134,18 +134,21 @@ EventLogWaitManager::setEventLog(string const& logID, unordered_map<string, stri
 	}
 #endif //_DEBUG
 
-	if (eventLogMap[logID].get()->hasEventLog)
+	if (!eventLogMap[logID].get()->hasEventLog)
 	{
-		mtx.unlock();
-		// throw ResourceRequestFailedException("logID \"" + logID + "\" already has an associated event log.");
+		eventLogMap[logID].get()->eventLog = unique_ptr<unordered_map<string, string>>(new unordered_map<string, string>(eventLog));
+		eventLogMap[logID].get()->hasEventLog = true;
+
+	}
+#ifdef _DEBUG
+	else
+	{
 		cerr << "logID \""
 			 << logID
 			 << "\" already has an associated event log."
 			 << endl;
 	}
-
-	eventLogMap[logID].get()->eventLog = unique_ptr<unordered_map<string, string>>(new unordered_map<string, string>(eventLog));
-	eventLogMap[logID].get()->hasEventLog = true;
+#endif
 
 	if (eventLogMap[logID].get()->hasWaitingThread)
 	{
