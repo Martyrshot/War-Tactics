@@ -84,7 +84,12 @@ bool createGame(void) {
 }
 
 bool joinGame(string address) {
-    if (!interface.joinGame(address)) {
+    try {
+        if (!interface.joinGame(address)) {
+            cout << "Failed to join game with address: " << address << endl;
+            return false;
+        }
+    } catch(ResourceRequestFailedException) {
         cout << "Failed to join game with address: " << address << endl;
         return false;
     }
@@ -231,7 +236,7 @@ void playGame(void) {
                 cout << "Error!" << endl;
         }
         points.clear();
-        
+
         system("clear");
         board = interface.getBoardState();
         printOpponentsHand(oppHandSize);
