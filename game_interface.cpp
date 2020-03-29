@@ -171,7 +171,7 @@ GameInterface::drawHand(void)
 
 	ethabiEncodeArgs = "";
 
-	return callMutatorContract("join_game", ethabiEncodeArgs, eventLog);
+	return callMutatorContract("draw_hand", ethabiEncodeArgs, eventLog);
 }
 
 
