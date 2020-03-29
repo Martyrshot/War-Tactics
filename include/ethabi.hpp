@@ -5,7 +5,7 @@
 #include <unordered_map>
 #include <eth_interface_except.hpp>
 
-#define IPC_BUFFER_LENGTH    128
+#define IPC_BUFFER_LENGTH    256
 
 
 namespace eth_interface
