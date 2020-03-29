@@ -134,13 +134,15 @@ EventLogWaitManager::setEventLog(string const& logID, unordered_map<string, stri
 	}
 #endif //_DEBUG
 
-	/*
 	if (eventLogMap[logID].get()->hasEventLog)
 	{
 		mtx.unlock();
-		throw ResourceRequestFailedException("logID \"" + logID + "\" already has an associated event log.");
+		// throw ResourceRequestFailedException("logID \"" + logID + "\" already has an associated event log.");
+		cerr << "logID \""
+			 << logID
+			 << "\" already has an associated event log."
+			 << endl;
 	}
-	*/
 
 	eventLogMap[logID].get()->eventLog = unique_ptr<unordered_map<string, string>>(new unordered_map<string, string>(eventLog));
 	eventLogMap[logID].get()->hasEventLog = true;
@@ -229,14 +231,13 @@ restart: // TODO: Get rid of this
 		message = subscribeParse.substr(0, subscribeParse.find_first_of('\n', 0));
 		subscribeParse = subscribeParse.substr(subscribeParse.find_first_of('\n', 0) + 1);
 
-		// TODO: Should this be in a try catch? What to do if fails?
 		try
 		{
 			jsonResponce = Json::parse(message);
 		}
 		catch (const Json::exception& e)
 		{
-			cerr << "ipc_subscription_listener_thread(): JSON responce error in responce while subscribing:"
+			cerr << "ipc_subscription_listener_setup(): JSON responce error in responce while subscribing:"
 				 << endl
 				 << "\t"
 				 << message
@@ -249,7 +250,7 @@ restart: // TODO: Get rid of this
 		if (jsonResponce.count("error") > 0)
 		{
 			throw ResourceRequestFailedException(
-				"ipc_subscription_listener_thread(): Got an error responce to eth_subscribe!\n"
+				"ipc_subscription_listener_setup(): Got an error responce to eth_subscribe!\n"
 				"Signature: "
 				+ get<1>(contractLogSignatures[i]) + "\n"
 													"Request: "
@@ -267,7 +268,7 @@ restart: // TODO: Get rid of this
 		if (jsonResponce.count("result") == 0 || !jsonResponce["result"].is_string())
 		{
 			throw ResourceRequestFailedException(
-				"ipc_subscription_listener_thread(): Unexpected responce to eth_subscribe received!");
+				"ipc_subscription_listener_setup(): Unexpected responce to eth_subscribe received!");
 		}
 		string result = jsonResponce["result"];
 
@@ -384,6 +385,29 @@ begin:
 			socket.close();
 			ipc_subscription_listener_setup(socket, ep);
 		}
+
+#ifdef _DEBUG
+	cout << "ipc_subscription_listener_thread():"
+		 << endl
+		 << "\tcalling ethabi_decode_log(\""
+		 << contractABI
+		 << "\", \""
+		 << get<0>(subscriptionToEventName[subscription])
+		 << "\", [";
+	uint16_t i = 0;
+	for (auto& x : topics)
+	{
+		if (i > 0)
+		{
+			cout << ", ";
+		}
+		cout << x;
+	}
+	cout << "], \""
+		 << data.substr(2)
+		 << "\")"
+		 << endl;
+#endif //_DEBUG
 
 		unordered_map<string, string> log = ethabi_decode_log(contractABI, get<0>(subscriptionToEventName[subscription]), topics, data.substr(2));
 		log["EventName"] = get<0>(subscriptionToEventName[subscription]);
