@@ -299,3 +299,22 @@ getAdjacentTiles(vector<uint8_t> unit) {
     
     return points;
 }
+
+vector< vector<uint8_t> > getPossibleHQLocations(uint8_t playerID) {
+    vector< vector<uint8_t> > points;
+    if (playerID == 1) {
+        for (uint8_t i = 0; i < 10; i++) {
+            vector<uint8_t> point = {i, 9};
+            points.push_back(point);
+            point.clear();
+        }
+    }
+    else {
+        for (uint8_t i = 0; i < 10; i++) {
+            vector<uint8_t> point = {i, 0};
+            points.push_back(point);
+            point.clear();
+        }
+    }
+    return points;
+}

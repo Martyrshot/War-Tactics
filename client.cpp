@@ -38,6 +38,7 @@ bool joinGame(string address);
 void playGame(void);
 
 int main(int argc, char **argv) {
+    
     int8_t selection = -1;
     do {
         selection = mainMenu(TITLE);
@@ -54,6 +55,8 @@ int main(int argc, char **argv) {
         }
     }
     playGame();
+    
+    // testDriver();
     return 0;
 }
 
@@ -90,7 +93,7 @@ bool joinGame(string address) {
             return false;
         }
     } catch(ResourceRequestFailedException) {
-        cout << "Failed to join game with address: " << address << endl;
+        cout << "Exception: Failed to join game with address: " << address << endl;
         return false;
     }
     srand(time(NULL));
@@ -114,6 +117,18 @@ bool joinGame(string address) {
 vector<uint8_t> buildHand(vector<uint8_t>);
 
 void playGame(void) {
+    interface.waitNextTurn();
+
+    vector<uint8_t> point;
+    do {
+        point = promptForPoint(PROMPTHQPLACE);
+    } while (point.size() == 0);
+    system("clear");
+    vector< vector<uint8_t> > points = getPossibleHQLocations(playerID);
+    printBoard(board, playerID, points);
+    points.clear();
+
+
     while(!interface.isGameOver()) {
         interface.waitNextTurn();
         board = interface.getBoardState();
@@ -130,8 +145,7 @@ void playGame(void) {
 
         // Print initial turn state
         printOpponentsHand(oppHandSize);
-        // printBoard requires points. give it no points to highlight
-        vector< vector<uint8_t> > points;
+        
         points.clear();
         printBoard(board, playerID, points);
         printHand(handIDs);

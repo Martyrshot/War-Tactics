@@ -23,13 +23,14 @@
 
 #define PROMPTBATTLEWON "You won the battle\n"
 
+#define PROMPTHQPLACE "Please enter where you want your HQ to be located\n"
 
 #define TITLE    "██╗    ██╗ █████╗ ██████╗\n"\
                  "██║    ██║██╔══██╗██╔══██╗              A Game By:\n"\
                  "██║ █╗ ██║███████║██████╔╝             Ben Haubrich\n"\
                  "██║███╗██║██╔══██║██╔══██╗            Jason Goertzen\n"\
                  "╚███╔███╔╝██║  ██║██║  ██║              Kale Yuzik\n"\
-                 "╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝\n"\
+                 " ╚══╝╚══╝ ╚═╝  ╚═╝╚═╝  ╚═╝\n"\
                  "████████╗ █████╗  ██████╗████████╗██╗ ██████╗███████╗\n"\
                  "╚══██╔══╝██╔══██╗██╔════╝╚══██╔══╝██║██╔════╝██╔════╝\n"\
                  "   ██║   ███████║██║        ██║   ██║██║     ███████╗\n"\
