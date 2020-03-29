@@ -91,34 +91,6 @@ GameInterface::GameInterface(void)
 	this->clientAddress = clientAddress;
 
 	initialize(ipcPath, clientAddress, contractEventSignatures());
-
-	if (!cfg.exists("helperContractAddress"))
-	{
-		/* We will compile the helper contract with solc, upload it
-		 * to the chain and save the address to the config file */
-		try
-		{
-			helperContractAddress = this->create_contract(HELPER_SOL, HELPER_ABI, HELPER_BIN);
-
-			if (cfgRoot->exists("helperContractAddress"))
-				cfgRoot->remove("helperContractAddress");
-			cfgRoot->add("helperContractAddress", Setting::TypeString) = helperContractAddress;
-			cfg.writeFile(CONFIG_F);
-		}
-		catch (const TransactionFailedException& e)
-		{
-			cerr << "Failed to create helper contract!" << endl;
-			exit(EXIT_FAILURE);
-		}
-	} else {
-		cfg.lookupValue("helperContractAddress", helperContractAddress);
-	}
-	this->helperContractAddress = boost::to_lower_copy(boost::trim_copy(helperContractAddress));
-
-	if (this->helperContractAddress.substr(0, 2) == "0x")
-	{
-		this->helperContractAddress = this->helperContractAddress.substr(2);
-	}
 }
 
 
@@ -147,7 +119,7 @@ GameInterface::createGame(void)
 {
 	string gameContractAddress;
 
-	gameContractAddress = this->create_contract(GAME_SOL, GAME_ABI, GAME_BIN, helperContractAddress);
+	gameContractAddress = this->create_contract(GAME_SOL, GAME_ABI, GAME_BIN, "");
 	setContractAddress(gameContractAddress);
 	createEventLogWaitManager();
 	return gameContractAddress;

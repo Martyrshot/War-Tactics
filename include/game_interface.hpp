@@ -17,10 +17,6 @@
 #define GAME_ABI     "contracts/game.abi"
 #define GAME_BIN     "contracts/game.bin"
 
-#define HELPER_SOL   "contracts/helper.sol"
-#define HELPER_ABI   "contracts/helper.abi"
-#define HELPER_BIN   "contracts/helper.bin"
-
 #define DECK_SIZE     52
 
 
@@ -28,7 +24,6 @@ using namespace eth_interface;
 
 namespace game_interface
 {
-
 
 
 class GameInterface : public EthInterface
@@ -117,8 +112,6 @@ class GameInterface : public EthInterface
 
 	libconfig::Config cfg;
 	libconfig::Setting* cfgRoot;
-
-	std::string helperContractAddress;
 
 	std::vector<std::tuple<std::string, std::string, bool>> contractEventSignatures(void);
 	std::string getCardHash(uint8_t cardSeed);
