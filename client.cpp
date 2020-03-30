@@ -123,18 +123,26 @@ vector<uint8_t> buildHand(vector<uint8_t>);
 
 void playGame(void) {
     interface.waitNextTurn();
+    bool hqPlaced = false;
+    vector< vector<uint8_t> >points;
+    vector<uint8_t> healths;
 
-    vector<uint8_t> point;
     do {
-        point = promptForPoint(PROMPTHQPLACE);
-    } while (point.size() == 0);
-    system("clear");
-    vector< vector<uint8_t> > points = getPossibleHQLocations(playerID);
-    vector<uint8_t> healths = interface.getHqHealth();
-    board = interface.getBoardState();
-    printBoard(board, playerID, points, healths[0], healths[1]);
-    points.clear();
+        system("clear");
+        points = getPossibleHQLocations(playerID);
+        healths = interface.getHqHealth();
+        board = interface.getBoardState();
+        printBoard(board, playerID, points, healths[0], healths[1]);
+        points.clear();
+        vector<uint8_t> point;
+        do {
+            point = promptForPoint(PROMPTHQPLACE);
+        } while (point.size() == 0);
 
+        // using 54 as a type checking error. WE DON'T NEED HAND INDEX
+        // ajdX OR ajdY
+        hqPlaced = interface.layPath(point[0], point[1], 54, 54, 54);
+    } while (!hqPlaced);
 
     while(!interface.isGameOver()) {
         interface.waitNextTurn();
