@@ -656,7 +656,7 @@ EthInterface::eth_call(string const& abiData)
 	string jsonRequest = "{\"jsonrpc\":\"2.0\","
 						 "\"method\":\"eth_call\","
 						 "\"params\":[{"
-						 //"\"from\":\"0x" + clientAddress + "\","
+						 "\"from\":\"0x" + clientAddress + "\","
 						 "\"to\":\"0x"
 		+ contractAddress + "\","
 							"\"data\":\"0x"
