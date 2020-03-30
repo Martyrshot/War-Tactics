@@ -182,6 +182,10 @@ contract Game {
 			has_player_deck[PLAYER2] = true;
 		}
 
+		if (has_player_deck[PLAYER1] && has_player_deck[PLAYER2]) {
+			emit DecksReady();
+		}
+
 		emit CreateDeck(msg.sender);
 
 		if (has_player_hq[PLAYER1] &&
@@ -317,9 +321,6 @@ contract Game {
 		player_hq[sender] = x;
 		has_player_hq[sender] = true;
 
-		if (has_player_deck[PLAYER1] && has_player_deck[PLAYER2]) {
-			emit DecksReady();
-		}
 		check_game_start();
 		emit PlaceHq(msg.sender);
 		return true;
