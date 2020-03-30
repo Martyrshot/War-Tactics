@@ -313,16 +313,11 @@ GameInterface::layPath(uint8_t x,
 	string ethabiEncodeArgs;
 	unique_ptr<unordered_map<string, string>> eventLog;
 
-	ethabiEncodeArgs = " -p ";
-	ethabiEncodeArgs += x;
-	ethabiEncodeArgs += " -p ";
-	ethabiEncodeArgs += y;
-	ethabiEncodeArgs += " -p ";
-	ethabiEncodeArgs += handIndex;
-	ethabiEncodeArgs += " -p ";
-	ethabiEncodeArgs += adjacentPathX;
-	ethabiEncodeArgs += " -p ";
-	ethabiEncodeArgs += adjacentPathY;
+	ethabiEncodeArgs = " -p " + to_string(x) +
+		" -p " + to_string(y) +
+		" -p " + to_string(handIndex) +
+		" -p " + to_string(adjacentPathX) +
+		" -p " + to_string(adjacentPathY);
 
 	return callMutatorContract("lay_path", ethabiEncodeArgs, eventLog);
 }
@@ -352,14 +347,10 @@ GameInterface::moveUnit(uint8_t unitX,
 	string ethabiEncodeArgs;
 	unique_ptr<unordered_map<string, string>> eventLog;
 
-	ethabiEncodeArgs = "-p ";
-	ethabiEncodeArgs += unitX;
-	ethabiEncodeArgs += " -p ";
-	ethabiEncodeArgs += unitY;
-	ethabiEncodeArgs += " -p ";
-	ethabiEncodeArgs += moveX;
-	ethabiEncodeArgs += " -p ";
-	ethabiEncodeArgs += moveY;
+	ethabiEncodeArgs = "-p " + to_string(unitX) +
+		" -p " + to_string(unitY) +
+		" -p " + to_string(moveX) +
+		" -p " + to_string(moveY);
 
 	return callMutatorContract("lay_unit", ethabiEncodeArgs, eventLog);
 }
@@ -375,14 +366,10 @@ GameInterface::attack(uint8_t unitX,
 	string ethabiEncodeArgs;
 	unique_ptr<unordered_map<string, string>> eventLog;
 
-	ethabiEncodeArgs = "-p ";
-	ethabiEncodeArgs += unitX;
-	ethabiEncodeArgs += " -p ";
-	ethabiEncodeArgs += unitY;
-	ethabiEncodeArgs += " -p ";
-	ethabiEncodeArgs += attackX;
-	ethabiEncodeArgs += " -p ";
-	ethabiEncodeArgs += attackY;
+	ethabiEncodeArgs = "-p " + to_string(unitX) +
+		" -p " + to_string(unitY) +
+		" -p " + to_string(attackX) +
+		" -p " + to_string(attackY);
 
 	return callMutatorContract("attack", ethabiEncodeArgs, eventLog);
 }
