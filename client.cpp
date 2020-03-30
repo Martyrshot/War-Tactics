@@ -83,6 +83,7 @@ bool createGame(void) {
     {
         sleep(1);
     }
+    interface.waitDecksReady();
     if (!interface.drawHand()) {
         cout << "Error drawing initial hand!" << endl;
         return false;
@@ -110,7 +111,7 @@ bool joinGame(string address) {
         cout << "Error creating deck!" << endl;
         return false;
     }
-    while(!interface.hasDeck());
+    interface.waitDecksReady();
     if (!interface.drawHand()) {
         cout << "Error drawing initial hand!" << endl;
         return false;
@@ -122,7 +123,6 @@ bool joinGame(string address) {
 vector<uint8_t> buildHand(vector<uint8_t>);
 
 void playGame(void) {
-    interface.waitNextTurn();
     bool hqPlaced = false;
     vector< vector<uint8_t> >points;
     vector<uint8_t> healths;
@@ -139,11 +139,11 @@ void playGame(void) {
             point = promptForPoint(PROMPTHQPLACE);
         } while (point.size() == 0);
 
-        // using 54 as a type checking error. WE DON'T NEED HAND INDEX
-        // ajdX OR ajdY
-        hqPlaced = interface.layPath(point[0], point[1], 54, 54, 54);
+        // we only need the x coord, but ask for both for consistency
+        hqPlaced = interface.placeHq(point[0]);
     } while (!hqPlaced);
 
+    interface.waitGameStart();
     while(!interface.isGameOver()) {
         interface.waitNextTurn();
         board = interface.getBoardState();
