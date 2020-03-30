@@ -270,10 +270,15 @@ GameInterface::getBoardState(void)
 vector<uint8_t>
 GameInterface::getHqHealth(void)
 {
-	return ethabi_decode_uint8_array(
+	vector<string> strVec = ethabi_decode_results(
 		getEthContractABI(),
 		"get_hq_health",
-		getArrayFromContract("get_hq_health", ""));
+		getFrom("get_hq_health", ""));
+	vector<uint8_t> uintVec(2);
+
+	uintVec[0] = stoi(strVec[0]);
+	uintVec[1] = stoi(strVec[1]);
+	return uintVec;
 }
 
 
