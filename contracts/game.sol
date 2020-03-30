@@ -45,13 +45,11 @@ contract Game {
 	bool[2] has_player_hq;
 
 	bool has_player2;
+	bool game_started;
 	bool game_over;
 	bool player1_won;
 
 
-
-	// keccak256 signature: 9d148569af2a4ae8c34122247102efb7bb91bf1b595c37c539b852954707d482
-	event JoinGame(address indexed sender);
 
 	// keccak256 signature: 683bd2659be7113b3c0113c3c6d6a2d8a84e09a864bada4a03a67998e041ad24
 	event PlayerJoined();
@@ -59,14 +57,23 @@ contract Game {
 	// keccak256 signature: 858525375c500ca80978906562ef417241555482ba83de63d3fc7fe8e11a2d93
 	event DecksReady();
 
+	// keccak256 signature: 4cf2e2dcdeacb2322843921968cb0e6a97a686594cb0a4f29abb65a7ed651952
+	event GameStart();
+
 	// keccak256 signature: c6c2d48c8a994a16a48e9f7d44b32ae365947a6ccdf319f1e1e6cf8565fa56b4
 	event NextTurn();
+
+	// keccak256 signature: 9d148569af2a4ae8c34122247102efb7bb91bf1b595c37c539b852954707d482
+	event JoinGame(address indexed sender);
 
 	// keccak256 signature: 505a777520798d10945a146762a340313d69a0d0948ef094010e3acb756bc39a
 	event CreateDeck(address indexed sender);
 
 	// keccak256 signature: a35c8ba1ade945124a66883ef6a7f1759c50d504956f47cb07abd61b0d42f641
 	event DrawHand(address indexed sender);
+
+	// keccak256 signature: 0cddd9acc67eae0a5558aacde6ad4a139545c9581a0de12909cc100524e2d81f
+	event PlaceHq(address indexed sender);
 
 	// keccak256 signature: 2688c69b58ee503b249854e32a7292cd26fd8475aff735ea7fa79fb622d1baaa
 	event LayPath(address indexed sender);
@@ -113,6 +120,19 @@ contract Game {
 	}
 
 
+	function check_game_start() internal {
+		if (has_player_hq[PLAYER1] &&
+			has_player_hq[PLAYER2] &&
+			has_player_hand[PLAYER1] &&
+			has_player_hand[PLAYER2] &&
+			has_deck()
+		) {
+			game_started = true;
+			emit GameStart();
+		}
+	}
+
+
 	function join_game() external returns(bool) {
 		require(!has_player2);
 
@@ -128,6 +148,7 @@ contract Game {
 
 
 	function create_deck(uint8[] calldata _deck) external _player returns (bool) {
+		require(has_player2 && !game_over);
 		require(_deck.length == uint256(DECK_SIZE));
 
 		if (player[PLAYER1] == msg.sender) {
@@ -161,11 +182,15 @@ contract Game {
 			has_player_deck[PLAYER2] = true;
 		}
 
-		if (has_player_deck[PLAYER1] && has_player_deck[PLAYER2]) {
-			emit DecksReady();
+		emit CreateDeck(msg.sender);
+
+		if (has_player_hq[PLAYER1] &&
+			has_player_hq[PLAYER2] &&
+			has_deck()
+		) {
+			emit GameStart();
 		}
 
-		emit CreateDeck(msg.sender);
 		return true;
 	}
 
@@ -191,7 +216,7 @@ contract Game {
 
 
 	function draw_hand() external _player returns (bool) {
-		require(has_deck());
+		require(has_deck() && !game_over);
 		if (player[PLAYER1] == msg.sender) {
 			require(!has_player_hand[PLAYER1]);
 			has_player_hand[PLAYER1] = true;
@@ -200,7 +225,7 @@ contract Game {
 			has_player_hand[PLAYER2] = true;
 		}
 		draw_cards();
-
+		check_game_start();
 		emit DrawHand(msg.sender);
 	}
 
@@ -267,9 +292,45 @@ contract Game {
 	}
 
 
+	function place_hq(uint8 x) external _player returns (bool) {
+		uint8 sender;
+		uint8 other;
+
+		if (msg.sender == player[PLAYER1]) {
+			sender = PLAYER1;
+			other = PLAYER2;
+		} else {
+			sender = PLAYER2;
+			other = PLAYER1;
+		}
+
+		require(!has_player_hq[sender]);
+		require (x < BOARD_WIDTH);
+
+		if (sender == PLAYER1) {
+			board[BOARD_OWNER][x][0] = PLAYER1 + 1;
+		}
+		else
+		{
+			board[BOARD_OWNER][x][BOARD_HEIGHT - 1] = PLAYER2 + 1;
+		}
+		player_hq[sender] = x;
+		has_player_hq[sender] = true;
+
+		if (has_player_deck[PLAYER1] && has_player_deck[PLAYER2]) {
+			emit DecksReady();
+		}
+		check_game_start();
+		emit PlaceHq(msg.sender);
+		return true;
+	}
+
+
 	function lay_path(uint8 x, uint8 y, uint8 handIndex, uint8 adjacentPathX, uint8 adjacentPathY) external _players_turn returns (bool) {
 		uint8 sender;
 		uint8 other;
+
+		require(game_started && !game_over);
 
 		if (msg.sender == player[PLAYER1]) {
 			sender = PLAYER1;
@@ -288,31 +349,17 @@ contract Game {
 		}
 
 		if (
-			(
-				(board[BOARD_OWNER][adjacentPathX][adjacentPathY] != sender + 1) ||
-				(board[BOARD_STATE][adjacentPathX][adjacentPathY] != STATE_PATH_AND_UNIT) ||
-				!check_neighbouring(x, y, adjacentPathX, adjacentPathY) ||
-				(board[BOARD_STATE][adjacentPathX][adjacentPathY] == STATE_BLANK)
-			) && has_player_hq[sender]
+			(board[BOARD_OWNER][adjacentPathX][adjacentPathY] != sender + 1) ||
+			(board[BOARD_STATE][adjacentPathX][adjacentPathY] != STATE_PATH_AND_UNIT) ||
+			!check_neighbouring(x, y, adjacentPathX, adjacentPathY) ||
+			(board[BOARD_STATE][adjacentPathX][adjacentPathY] == STATE_BLANK)
 		) {
 			require(false);
 		}
 
-		if (!has_player_hq[sender] && ((sender == PLAYER1 && y != 0) || (sender == PLAYER2 && y != BOARD_HEIGHT - 1))) {
-			require(false);
-		}
-
-		if (!has_player_hq[sender]) {
-			board[BOARD_STATE][x][y] = STATE_HQ;
-			player_hq[sender] = x;
-			has_player_hq[sender] = true;
-
-		} else {
-			board[BOARD_STATE][x][y] = STATE_PATH;
-		}
-
-		// The card value of board is irrelavent so just ignore it
+		// The card value is irrelavent so just ignore it
 		board[BOARD_OWNER][x][y] = sender + 1;
+		board[BOARD_STATE][x][y] = STATE_PATH;
 
 		player_hand[sender][handIndex] = player_hand[sender][player_hand[sender].length - 1];
 		player_hand[sender].pop();
@@ -328,6 +375,8 @@ contract Game {
 	function lay_unit(uint8 handIndex, uint8 card, uint8 v, bytes32 r, bytes32 s) external _players_turn returns (bool) {
 		uint8 sender;
 		uint8 other;
+
+		require(game_started && !game_over);
 
 		if (msg.sender == player[PLAYER1]) {
 			sender = PLAYER1;
@@ -363,6 +412,8 @@ contract Game {
 	function move_unit(uint8 unitX, uint8 unitY, uint8 moveX, uint8 moveY) external _players_turn returns (bool) {
 		uint8 sender;
 		uint8 other;
+
+		require(game_started && !game_over);
 
 		if (msg.sender == player[PLAYER1]) {
 			sender = PLAYER1;
@@ -409,6 +460,8 @@ contract Game {
 		uint8 other;
 		uint8 attackerCard;
 		uint8 attackeeCard;
+
+		require(game_started && !game_over);
 
 		if (msg.sender == player[PLAYER1]) {
 			sender = PLAYER1;

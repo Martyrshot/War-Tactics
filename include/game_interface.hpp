@@ -48,6 +48,9 @@ class GameInterface : public EthInterface
 	bool
 	drawHand(void);
 
+	bool
+	placeHq(uint8_t x);
+
 	// Has player2 joined the game?
 	bool
 	hasPlayers(void);
@@ -101,6 +104,12 @@ class GameInterface : public EthInterface
 
 	void
 	waitPlayerJoined(void);
+
+	void
+	waitDecksReady(void);
+
+	void
+	waitGameStart(void);
 
 	void
 	waitNextTurn(void);

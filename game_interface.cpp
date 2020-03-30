@@ -97,13 +97,18 @@ GameInterface::GameInterface(void)
 vector<tuple<string, string, bool>>
 GameInterface::contractEventSignatures(void)
 {
+	// First element of tuple:  Ethereum event name
+	// Second element of tuple: Ethereum event signature keccak256 hash
+	// Third element of tuple:  Event indexed by sender address
 	vector<tuple<string, string, bool>> vecLogSigs;
-	vecLogSigs.push_back(make_tuple("JoinGame", "9d148569af2a4ae8c34122247102efb7bb91bf1b595c37c539b852954707d482", true));
 	vecLogSigs.push_back(make_tuple("PlayerJoined", "683bd2659be7113b3c0113c3c6d6a2d8a84e09a864bada4a03a67998e041ad24", false));
 	vecLogSigs.push_back(make_tuple("DecksReady", "858525375c500ca80978906562ef417241555482ba83de63d3fc7fe8e11a2d93", false));
+	vecLogSigs.push_back(make_tuple("GameStart", "4cf2e2dcdeacb2322843921968cb0e6a97a686594cb0a4f29abb65a7ed651952", false));
 	vecLogSigs.push_back(make_tuple("NextTurn", "c6c2d48c8a994a16a48e9f7d44b32ae365947a6ccdf319f1e1e6cf8565fa56b4", false));
+	vecLogSigs.push_back(make_tuple("JoinGame", "9d148569af2a4ae8c34122247102efb7bb91bf1b595c37c539b852954707d482", true));
 	vecLogSigs.push_back(make_tuple("CreateDeck", "505a777520798d10945a146762a340313d69a0d0948ef094010e3acb756bc39a", true));
 	vecLogSigs.push_back(make_tuple("DrawHand", "a35c8ba1ade945124a66883ef6a7f1759c50d504956f47cb07abd61b0d42f641", true));
+	vecLogSigs.push_back(make_tuple("PlaceHq", "0cddd9acc67eae0a5558aacde6ad4a139545c9581a0de12909cc100524e2d81f", true));
 	vecLogSigs.push_back(make_tuple("LayPath", "2688c69b58ee503b249854e32a7292cd26fd8475aff735ea7fa79fb622d1baaa", true));
 	vecLogSigs.push_back(make_tuple("LayUnit", "649e3c66552bba57438a370b0196029a5bec44e46c3d54c098f8cb61be7592b6", true));
 	vecLogSigs.push_back(make_tuple("MoveUnit", "43f643101e992dd5eb86c3e17afc53dd49cae9982bc31be8d92673ac08374ae4", true));
@@ -171,6 +176,19 @@ GameInterface::drawHand(void)
 	ethabiEncodeArgs = "";
 
 	return callMutatorContract("draw_hand", ethabiEncodeArgs, eventLog);
+}
+
+
+
+bool
+GameInterface::placeHq(uint8_t x)
+{
+	string ethabiEncodeArgs;
+	unique_ptr<unordered_map<string, string>> eventLog;
+
+	ethabiEncodeArgs = " -p " + to_string(x);
+
+	return callMutatorContract("place_hq", ethabiEncodeArgs, eventLog);
 }
 
 
@@ -380,6 +398,22 @@ void
 GameInterface::waitPlayerJoined(void)
 {
 	blockForEvent("PlayerJoined");
+}
+
+
+
+void
+GameInterface::waitDecksReady(void)
+{
+	blockForEvent("DecksReady");
+}
+
+
+
+void
+GameInterface::waitGameStart(void)
+{
+	blockForEvent("GameStart");
 }
 
 
