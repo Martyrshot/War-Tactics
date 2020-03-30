@@ -298,7 +298,7 @@ contract Game {
 			require(false);
 		}
 
-		if (!has_player_hq[sender] && ((sender == PLAYER1 && y == 0) || (sender == PLAYER2 && y == BOARD_HEIGHT - 1))) {
+		if (!has_player_hq[sender] && ((sender == PLAYER1 && y != 0) || (sender == PLAYER2 && y != BOARD_HEIGHT - 1))) {
 			require(false);
 		}
 
