@@ -141,7 +141,7 @@ void playGame(void) {
 
         // using 54 as a type checking error. WE DON'T NEED HAND INDEX
         // ajdX OR ajdY
-        hqPlaced = interface.layPath(point[0], point[1], 54, 54, 54);
+        hqPlaced = interface.layPath(point[0], point[1], 0, 54, 54);
     } while (!hqPlaced);
 
     while(!interface.isGameOver()) {
