@@ -101,7 +101,7 @@ GameInterface::contractEventSignatures(void)
 	vecLogSigs.push_back(make_tuple("JoinGame", "9d148569af2a4ae8c34122247102efb7bb91bf1b595c37c539b852954707d482", true));
 	vecLogSigs.push_back(make_tuple("PlayerJoined", "683bd2659be7113b3c0113c3c6d6a2d8a84e09a864bada4a03a67998e041ad24", false));
 	vecLogSigs.push_back(make_tuple("DecksReady", "858525375c500ca80978906562ef417241555482ba83de63d3fc7fe8e11a2d93", false));
-	vecLogSigs.push_back(make_tuple("NextTurn", "c6c2d48c8a994a16a48e9f7d44b32ae365947a6ccdf319f1e1e6cf8565fa56b4", true));
+	vecLogSigs.push_back(make_tuple("NextTurn", "c6c2d48c8a994a16a48e9f7d44b32ae365947a6ccdf319f1e1e6cf8565fa56b4", false));
 	vecLogSigs.push_back(make_tuple("CreateDeck", "505a777520798d10945a146762a340313d69a0d0948ef094010e3acb756bc39a", true));
 	vecLogSigs.push_back(make_tuple("DrawHand", "a35c8ba1ade945124a66883ef6a7f1759c50d504956f47cb07abd61b0d42f641", true));
 	vecLogSigs.push_back(make_tuple("LayPath", "2688c69b58ee503b249854e32a7292cd26fd8475aff735ea7fa79fb622d1baaa", true));

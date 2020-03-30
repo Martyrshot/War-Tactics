@@ -280,11 +280,11 @@ contract Game {
 		}
 
 		if (handIndex >= player_hand[sender].length) {
-			return false;
+			require(false);
 		}
 
 		if (board[BOARD_STATE][x][y] != STATE_BLANK) {
-			return false;
+			require(false);
 		}
 
 		if (
@@ -295,11 +295,11 @@ contract Game {
 				(board[BOARD_STATE][adjacentPathX][adjacentPathY] == STATE_BLANK)
 			) && !has_player_hq[sender]
 		) {
-			return false;
+			require(false);
 		}
 
 		if (!has_player_hq[sender] && ((sender == PLAYER1 && y == 0) || (sender == PLAYER2 && y == BOARD_HEIGHT - 1))) {
-			return false;
+			require(false);
 		}
 
 		if (!has_player_hq[sender]) {
@@ -338,15 +338,15 @@ contract Game {
 		}
 
 		if (handIndex >= player_hand[sender].length) {
-			return false;
+			require(false);
 		}
 
 		if (!has_player_hq[sender] || board[BOARD_STATE][player_hq[sender]][0] != STATE_HQ) {
-			return false;
+			require(false);
 		}
 
 		if (!verify_card(card, player_hand[sender][handIndex], msg.sender, v, r, s)) {
-			return false;
+			require(false);
 		}
 
 		player_hand[sender][handIndex] = player_hand[sender][player_hand[sender].length - 1];
@@ -380,7 +380,7 @@ contract Game {
 				(board[BOARD_STATE][moveX][moveY] != STATE_HQ || board[BOARD_OWNER][unitX][unitY] != sender + 1)
 			)
 		) {
-			return false;
+			require(false);
 		}
 
 		board[BOARD_CARD][moveX][moveY] = board[BOARD_CARD][unitX][unitY];
@@ -422,7 +422,7 @@ contract Game {
 			board[BOARD_STATE][unitX][unitY] != STATE_PATH_AND_UNIT ||
 			!check_neighbouring(unitX, unitY, attackX, attackY)
 		) {
-			return false;
+			require(false);
 		}
 
 		if (board[BOARD_OWNER][attackX][attackY] != other + 1 ||
@@ -432,7 +432,7 @@ contract Game {
 				board[BOARD_STATE][attackX][attackY] != STATE_PATH_AND_UNIT
 			)
 		){
-			return false;
+			require(false);
 		}
 
 		if (board[BOARD_STATE][attackX][attackY] == STATE_HQ) {
