@@ -15,7 +15,7 @@
 #define IPC_BUFFER_LENGTH 256
 #endif
 
-#define ETH_DEFAULT_GAS "0xFFFFFF"
+#define ETH_DEFAULT_GAS "0x7FFFFF"
 
 
 using Json = nlohmann::json;

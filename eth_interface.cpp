@@ -624,8 +624,9 @@ EthInterface::eth_ipc_request(string const& jsonRequest)
 	ipcFdFlags |= O_NONBLOCK;
 	fcntl(ipcFd, F_SETFL, ipcFdFlags);
 
-	while (fgets(ipcBuffer.data(), IPC_BUFFER_LENGTH, ipc) != NULL)
+	while (json.find_first_of('\n', 0) == string::npos)
 	{
+		fgets(ipcBuffer.data(), IPC_BUFFER_LENGTH, ipc);
 		json += ipcBuffer.data();
 	}
 
