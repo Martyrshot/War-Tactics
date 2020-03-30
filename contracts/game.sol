@@ -293,7 +293,7 @@ contract Game {
 				(board[BOARD_STATE][adjacentPathX][adjacentPathY] != STATE_PATH_AND_UNIT) ||
 				!check_neighbouring(x, y, adjacentPathX, adjacentPathY) ||
 				(board[BOARD_STATE][adjacentPathX][adjacentPathY] == STATE_BLANK)
-			) && !has_player_hq[sender]
+			) && has_player_hq[sender]
 		) {
 			require(false);
 		}
