@@ -141,6 +141,7 @@ void playGame(void) {
 
         // we only need the x coord, but ask for both for consistency
         hqPlaced = interface.placeHq(point[0]);
+
     } while (!hqPlaced);
 
     interface.waitGameStart();
