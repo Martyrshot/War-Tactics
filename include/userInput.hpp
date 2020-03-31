@@ -50,7 +50,6 @@ int8_t promptForAction(string stringToPrint) {
     cin.clear();
     cin >> input;
     input = input - 49;
-    cout << (int)input << endl;
     if (input > 3 || input < 0) {
         cout << "Bad input!\n" << flush;
         return -1;
