@@ -56,7 +56,7 @@ void printBoard(vector< vector< vector<uint8_t> > >board, int playerID,
     cout << "       "; // spacing
     cout << "Enemy's HQ Health Points: "<< (int)enemyHqLife << endl;
     cout << BOARDHANDSEPARATER << endl;
-    if (playerID == 1) {
+    if (playerID == 2) {
         printHorizontalBar(0,points);
         for (int i = 0; i < 9; i++) {
             bool oneMore = false;
@@ -398,9 +398,9 @@ getAdjacentTiles(vector<uint8_t> unit) {
 
 vector< vector<uint8_t> > getPossibleHQLocations(uint8_t playerID) {
     vector< vector<uint8_t> > points;
-    if (playerID == 1) {
+    if (playerID == 2) {
         for (uint8_t i = 0; i < 10; i++) {
-            vector<uint8_t> point = {i, 9};
+            vector<uint8_t> point = {i, 8};
             points.push_back(point);
             point.clear();
         }
