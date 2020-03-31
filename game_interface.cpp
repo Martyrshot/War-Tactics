@@ -257,7 +257,7 @@ GameInterface::getBoardState(void)
 {
 	uint16_t n = 0;
 	vector<vector<vector<uint8_t>>> result(3, vector<vector<uint8_t>> (10, vector<uint8_t> (9, 0)));
-	vector<uint8_t> vec =  ethabi_decode_uint8_array(
+	vector<uint8_t> vec =  ethabi_decode_3d_uint8_array(
 		getEthContractABI(),
 		"get_board_state",
 		getArrayFromContract("get_board_state"));
