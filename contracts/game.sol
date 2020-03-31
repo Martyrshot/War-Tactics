@@ -36,7 +36,7 @@ contract Game {
 
 
 	address[2] player;
-	uint8[2][] player_hand;
+	uint8[][2] player_hand;
 	int8[2] player_deck_top;
 	uint8[2] player_hq;
 	uint8[2] player_hq_damage;
@@ -286,7 +286,7 @@ contract Game {
 	}
 
 
-	function get_board_state() public view returns (uint8[3][10][9] memory) {
+	function get_board_state() public view returns (uint8[9][10][3] memory) {
 		return board;
 	}
 
