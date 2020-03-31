@@ -15,8 +15,8 @@ vector<uint8_t> promptForPoint(string stringToPrint) {
     string input;
     vector<uint8_t> result;
     cout << stringToPrint << flush;
-    cin >> input;
     cin.clear();
+    cin >> input;
 
     if (input.size() != 2) {
         cout << "Bad input!\n" << flush;
@@ -45,11 +45,11 @@ vector<uint8_t> promptForPoint(string stringToPrint) {
 }
 
 int8_t promptForAction(string stringToPrint) {
-    int8_t input = -1;
+    int input = -1;
     cout << stringToPrint << flush;
     cin.clear();
     cin >> input;
-    input = input - 49;
+    input = input - 1;
     if (input > 3 || input < 0) {
         cout << "Bad input!\n" << flush;
         return -1;

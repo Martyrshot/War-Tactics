@@ -378,19 +378,18 @@ vector< vector<uint8_t> >
 getAdjacentTiles(vector<uint8_t> unit) {
     uint8_t x = unit[0];
     uint8_t y = unit[1];
-
     vector< vector<uint8_t> > points;
     if (x < 9) {
             points.push_back({static_cast<unsigned char>(x+1),y});
     }
     if (x > 0) {
-                points.push_back({static_cast<unsigned char>(x-1),y});
+            points.push_back({static_cast<unsigned char>(x-1),y});
     }
     if (y > 0) {
-                points.push_back({x,static_cast<unsigned char>(y-1)});
+            points.push_back({x,static_cast<unsigned char>(y-1)});
     }
     if (y < 8) {
-                points.push_back({x,static_cast<unsigned char>(y+1)});
+            points.push_back({x,static_cast<unsigned char>(y+1)});
     }
     
     return points;
