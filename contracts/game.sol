@@ -26,7 +26,7 @@ contract Game {
 	uint8 constant BOARD_OWNER = 2;
 
 
-	uint8[3][BOARD_WIDTH][BOARD_HEIGHT] board;
+	uint8[BOARD_HEIGHT][BOARD_WIDTH][3] board;
 
 	string game_create_time;
 	string game_join_time;
@@ -36,7 +36,7 @@ contract Game {
 
 
 	address[2] player;
-	uint8[][2] player_hand;
+	uint8[2][] player_hand;
 	int8[2] player_deck_top;
 	uint8[2] player_hq;
 	uint8[2] player_hq_damage;
@@ -298,14 +298,11 @@ contract Game {
 
 	function place_hq(uint8 x) external _player returns (bool) {
 		uint8 sender;
-		uint8 other;
 
 		if (msg.sender == player[PLAYER1]) {
 			sender = PLAYER1;
-			other = PLAYER2;
 		} else {
 			sender = PLAYER2;
-			other = PLAYER1;
 		}
 
 		require(!has_player_hq[sender]);
