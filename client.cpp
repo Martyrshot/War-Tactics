@@ -38,7 +38,7 @@ bool joinGame(string address);
 void playGame(void);
 
 int main(int argc, char **argv) {
-    
+
     int8_t selection = -1;
 
     (void) argc;
@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
         }
     }
     playGame();
-    
+
     //testDriver();
     return 0;
 }
@@ -130,7 +130,7 @@ void playGame(void) {
     vector<uint8_t> healths;
 
     do {
-        system("clear");
+        //system\("clear");
         points = getPossibleHQLocations(playerID);
         healths = interface.getHqHealth();
         board = interface.getBoardState();
@@ -171,7 +171,7 @@ void playGame(void) {
         printHand(handIDs);
         promptForEnter(PRPOMPTSTARTTURN);
         // clear screen, and prompt for action
-        system("clear");
+        //system\("clear");
         printOpponentsHand(oppHandSize);
         // printBoard requires points. give it no points to highlight
 
@@ -181,7 +181,7 @@ void playGame(void) {
         printHand(handIDs);
         int action = promptForAction(PROMPTACTION);
         switch (action) {
-            case 1:
+            case 0:
                 {
                 // lay a path
                 int8_t cardID = -1;
@@ -191,7 +191,7 @@ void playGame(void) {
                 } while (cardID == -1);
                 vector< vector<uint8_t> > points =
                                     getAllPathPlacementOptions(board,playerID);
-                system("clear");
+                //system\("clear");
                 printOpponentsHand(oppHandSize);
                 healths = interface.getHqHealth();
                 // TODO confirm which health is which
@@ -218,7 +218,7 @@ void playGame(void) {
                 }
             }
             break;
-            case 2:
+            case 1:
             {
                 // Place a new unit
                 int cardID = -1;
@@ -230,7 +230,7 @@ void playGame(void) {
                 interface.layUnit(cardID);
             }
             break;
-            case 3:
+            case 2:
             {
                 // Move a unit
                 vector<uint8_t> dest;
@@ -240,7 +240,7 @@ void playGame(void) {
                 } while (source.size() == 0);
                 points =
                        getPossibleMovementOptionsForUnit(board, source);
-                system("clear");
+                //system\("clear");
                 printOpponentsHand(oppHandSize);
                 healths = interface.getHqHealth();
                 // TODO confirm which health is which
@@ -252,7 +252,7 @@ void playGame(void) {
                 interface.moveUnit(source[0], source[1], dest[0], dest[1]);
             }
             break;
-            case 4:
+            case 3:
             {
                 // Attack
                 vector<uint8_t> dest;
@@ -262,7 +262,7 @@ void playGame(void) {
                 } while (source.size() == 0);
                 points =
                        getPossibleAttackOptionsForUnit(board, playerID, source);
-                system("clear");
+                //system\("clear");
                 printOpponentsHand(oppHandSize);
                 healths = interface.getHqHealth();
                 // TODO confirm which health is which
@@ -280,7 +280,7 @@ void playGame(void) {
         }
         points.clear();
 
-        system("clear");
+        //system\("clear");
         board = interface.getBoardState();
         printOpponentsHand(oppHandSize);
         healths = interface.getHqHealth();
