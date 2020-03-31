@@ -377,17 +377,9 @@ contract Game {
 			other = PLAYER1;
 		}
 
-		if (handIndex >= player_hand[sender].length) {
-			require(false);
-		}
-
-		if (!has_player_hq[sender] || board[BOARD_STATE][player_hq[sender]][0] != STATE_HQ) {
-			require(false);
-		}
-
-		if (!verify_card(card, player_hand[sender][handIndex], msg.sender, v, r, s)) {
-			require(false);
-		}
+		require(handIndex < player_hand[sender].length);
+		require(has_player_hq[sender] || board[BOARD_STATE][player_hq[sender]][sender * BOARD_HEIGHT] == STATE_HQ);
+		require(verify_card(card, player_hand[sender][handIndex], msg.sender, v, r, s));
 
 		player_hand[sender][handIndex] = player_hand[sender][player_hand[sender].length - 1];
 		player_hand[sender].pop();
@@ -402,28 +394,29 @@ contract Game {
 
 	function move_unit(uint8 unitX, uint8 unitY, uint8 moveX, uint8 moveY) external _players_turn returns (bool) {
 		uint8 sender;
-		uint8 other;
 
 		require(game_started && !game_over);
 
 		if (msg.sender == player[PLAYER1]) {
 			sender = PLAYER1;
-			other = PLAYER2;
 		} else {
 			sender = PLAYER2;
-			other = PLAYER1;
 		}
 
-		if (board[BOARD_OWNER][unitX][unitY] != sender + 1 ||
-			board[BOARD_STATE][unitX][unitY] != STATE_PATH_AND_UNIT ||
-			!check_neighbouring(unitX, unitY, moveX, moveY) ||
+		require(
+			board[BOARD_OWNER][unitX][unitY] == sender + 1 &&
 			(
-				board[BOARD_STATE][moveX][moveY] != STATE_PATH &&
-				(board[BOARD_STATE][moveX][moveY] != STATE_HQ || board[BOARD_OWNER][unitX][unitY] != sender + 1)
-			)
-		) {
-			require(false);
-		}
+				board[BOARD_STATE][unitX][unitY] == STATE_PATH_AND_UNIT ||
+				board[BOARD_STATE][unitX][unitY] == STATE_HQ_AND_UNIT
+			) && (
+				board[BOARD_STATE][moveX][moveY] == STATE_PATH ||
+				(
+					board[BOARD_STATE][moveX][moveY] == STATE_HQ &&
+					board[BOARD_OWNER][moveX][moveY] == sender + 1
+				)
+			) &&
+			check_neighbouring(unitX, unitY, moveX, moveY)
+		);
 
 		board[BOARD_CARD][moveX][moveY] = board[BOARD_CARD][unitX][unitY];
 		if (board[BOARD_STATE][moveX][moveY] == STATE_HQ) {
@@ -462,22 +455,19 @@ contract Game {
 			other = PLAYER1;
 		}
 
-		if (board[BOARD_OWNER][unitX][unitY] != sender + 1 ||
-			board[BOARD_STATE][unitX][unitY] != STATE_PATH_AND_UNIT ||
-			!check_neighbouring(unitX, unitY, attackX, attackY)
-		) {
-			require(false);
-		}
-
-		if (board[BOARD_OWNER][attackX][attackY] != other + 1 ||
+		require(
+			board[BOARD_OWNER][unitX][unitY] == sender + 1 &&
+			board[BOARD_STATE][unitX][unitY] == STATE_PATH_AND_UNIT &&
+			check_neighbouring(unitX, unitY, attackX, attackY)
+		);
+		require(
+			board[BOARD_OWNER][attackX][attackY] == other + 1 &&
 			(
-				board[BOARD_STATE][attackX][attackY] != STATE_HQ &&
-				board[BOARD_STATE][attackX][attackY] != STATE_HQ_AND_UNIT &&
-				board[BOARD_STATE][attackX][attackY] != STATE_PATH_AND_UNIT
+				board[BOARD_STATE][attackX][attackY] == STATE_HQ ||
+				board[BOARD_STATE][attackX][attackY] == STATE_HQ_AND_UNIT ||
+				board[BOARD_STATE][attackX][attackY] == STATE_PATH_AND_UNIT
 			)
-		){
-			require(false);
-		}
+		);
 
 		if (board[BOARD_STATE][attackX][attackY] == STATE_HQ) {
 			// Inflict damage on HQ
