@@ -6,7 +6,9 @@ using namespace std;
 
 void promptForEnter(string stringToPrint) {
     cout << stringToPrint << flush;
+    cin.clear();
     while (cin.get() != '\n');
+    
 }
 
 vector<uint8_t> promptForPoint(string stringToPrint) {
@@ -14,6 +16,7 @@ vector<uint8_t> promptForPoint(string stringToPrint) {
     vector<uint8_t> result;
     cout << stringToPrint << flush;
     cin >> input;
+    cin.clear();
 
     if (input.size() != 2) {
         cout << "Bad input!\n" << flush;
@@ -44,8 +47,10 @@ vector<uint8_t> promptForPoint(string stringToPrint) {
 int8_t promptForAction(string stringToPrint) {
     int8_t input = -1;
     cout << stringToPrint << flush;
+    cin.clear();
     cin >> input;
-    input = input - 1;
+    input = input - 49;
+    cout << (int)input << endl;
     if (input > 3 || input < 0) {
         cout << "Bad input!\n" << flush;
         return -1;
@@ -57,6 +62,8 @@ int8_t promptForCard(string stringToPrint, int numCards) {
     int input = -1;
     cout << stringToPrint << flush;
     cin >> input;
+    cin.clear();
+
     input = input - 1;
     if (input > numCards - 1 || input < 0) {
         cout << "Bad input!\n" << flush;
