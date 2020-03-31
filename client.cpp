@@ -38,6 +38,7 @@ bool joinGame(string address);
 void playGame(void);
 
 int main(int argc, char **argv) {
+    /*
     int8_t selection = -1;
 
     (void) argc;
@@ -58,7 +59,8 @@ int main(int argc, char **argv) {
         }
     }
     playGame();
-    //testDriver();
+    */
+    testDriver();
     return 0;
 }
 
@@ -343,8 +345,9 @@ void testDriver(void) {
     //vector<int> unit = {3,3};
     //vector< vector<int> > points = getPossibleAttackOptionsForUnit(unit);
     //vector< vector<uint8_t> > points = getFriendlyEmptyHQ(board,playerID);
-    vector< vector<uint8_t> > points =
-                                    getAllPathPlacementOptions(board, playerID);
+    //vector< vector<uint8_t> > points =
+    //                                getAllPathPlacementOptions(board, playerID);
+    vector< vector<uint8_t> > points = getPossibleHQLocations(2);
     numCardsInHand = 5;
     printOpponentsHand(numCardsInHand);
     vector<uint8_t> healths = {1,2};
@@ -355,6 +358,7 @@ void testDriver(void) {
     printBoard(board, 2, points, healths[0], healths[1]);
     printHand(v);
     promptForEnter("This is a test prompt\n");
+
 
     vector<uint8_t> point;
     do {
