@@ -38,7 +38,7 @@ bool joinGame(string address);
 void playGame(void);
 
 int main(int argc, char **argv) {
-
+    
     int8_t selection = -1;
 
     (void) argc;
@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
         }
     }
     playGame();
-
+    
     //testDriver();
     return 0;
 }
@@ -209,7 +209,7 @@ void playGame(void) {
                                                getAdjacentTiles(point)) {
                         if (tile[0] == adjtile[0] && tile[1] == adjtile[1]) {
                             adjx = tile[0];
-                            adjy = tile[0];
+                            adjy = tile[1];
                         }
                     }
                 }
@@ -361,9 +361,29 @@ void testDriver(void) {
 
 
     vector<uint8_t> point;
+    points = getAllTilesInControl(board, 2);
+    printBoard(board, 2, points, healths[0], healths[1]);
+
     do {
         point = promptForPoint("Please enter a point\n");
     } while(point.size() != 2);
+    printBoard(board, 2, points, healths[0], healths[1]);
+    uint8_t adjx = 63; //error val
+    uint8_t adjy = 63; //error val
+    for(vector<uint8_t> tile:
+                            getAllTilesInControl(board, playerID)) {
+        for(vector<uint8_t> adjtile:
+                                   getAdjacentTiles(point)) {
+            if (tile[0] == adjtile[0] && tile[1] == adjtile[1]) {
+                adjx = tile[0];
+                adjy = tile[1];
+
+            }
+        }
+    }
+    points.clear();
+    points.push_back({adjx, adjy});
+    printBoard(board, 2, points, healths[0], healths[1]);
     int input = -1;
     do {
         input = promptForAction("Enter 1,2,3 or 4\n");
