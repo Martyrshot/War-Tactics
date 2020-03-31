@@ -6,7 +6,10 @@ using namespace std;
 
 void promptForEnter(string stringToPrint) {
     cout << stringToPrint << flush;
-    cin.clear();
+    if (!cin) {
+        cin.clear();
+        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
     while (cin.get() != '\n');
     
 }
@@ -15,7 +18,10 @@ vector<uint8_t> promptForPoint(string stringToPrint) {
     string input;
     vector<uint8_t> result;
     cout << stringToPrint << flush;
-    cin.clear();
+    if (!cin) {
+        cin.clear();
+        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
     cin >> input;
 
     if (input.size() != 2) {
@@ -47,7 +53,10 @@ vector<uint8_t> promptForPoint(string stringToPrint) {
 int8_t promptForAction(string stringToPrint) {
     int input = -1;
     cout << stringToPrint << flush;
-    cin.clear();
+    if (!cin) {
+        cin.clear();
+        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
     cin >> input;
     input = input - 1;
     if (input > 3 || input < 0) {
@@ -60,8 +69,12 @@ int8_t promptForAction(string stringToPrint) {
 int8_t promptForCard(string stringToPrint, int numCards) {
     int input = -1;
     cout << stringToPrint << flush;
+    if (!cin) {
+        cin.clear();
+        cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    }
     cin >> input;
-    cin.clear();
+    
 
     input = input - 1;
     if (input > numCards - 1 || input < 0) {
