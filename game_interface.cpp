@@ -1,7 +1,6 @@
 #include <array>
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string.hpp>
-#include <boost/lexical_cast.hpp>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -91,48 +90,25 @@ GameInterface::GameInterface(void)
 	this->clientAddress = clientAddress;
 
 	initialize(ipcPath, clientAddress, contractEventSignatures());
-
-	if (!cfg.exists("helperContractAddress"))
-	{
-		/* We will compile the helper contract with solc, upload it
-		 * to the chain and save the address to the config file */
-		try
-		{
-			helperContractAddress = this->create_contract(HELPER_SOL, HELPER_ABI, HELPER_BIN);
-
-			if (cfgRoot->exists("helperContractAddress"))
-				cfgRoot->remove("helperContractAddress");
-			cfgRoot->add("helperContractAddress", Setting::TypeString) = helperContractAddress;
-			cfg.writeFile(CONFIG_F);
-		}
-		catch (const TransactionFailedException& e)
-		{
-			cerr << "Failed to create helper contract!" << endl;
-			exit(EXIT_FAILURE);
-		}
-	} else {
-		cfg.lookupValue("helperContractAddress", helperContractAddress);
-	}
-	this->helperContractAddress = boost::to_lower_copy(boost::trim_copy(helperContractAddress));
-
-	if (this->helperContractAddress.substr(0, 2) == "0x")
-	{
-		this->helperContractAddress = this->helperContractAddress.substr(2);
-	}
 }
 
 
-// TODO
+
 vector<tuple<string, string, bool>>
 GameInterface::contractEventSignatures(void)
 {
+	// First element of tuple:  Ethereum event name
+	// Second element of tuple: Ethereum event signature keccak256 hash
+	// Third element of tuple:  Event indexed by sender address
 	vector<tuple<string, string, bool>> vecLogSigs;
-	vecLogSigs.push_back(make_tuple("JoinGame", "9d148569af2a4ae8c34122247102efb7bb91bf1b595c37c539b852954707d482", true));
 	vecLogSigs.push_back(make_tuple("PlayerJoined", "683bd2659be7113b3c0113c3c6d6a2d8a84e09a864bada4a03a67998e041ad24", false));
 	vecLogSigs.push_back(make_tuple("DecksReady", "858525375c500ca80978906562ef417241555482ba83de63d3fc7fe8e11a2d93", false));
-	vecLogSigs.push_back(make_tuple("NextTurn", "c6c2d48c8a994a16a48e9f7d44b32ae365947a6ccdf319f1e1e6cf8565fa56b4", true));
+	vecLogSigs.push_back(make_tuple("GameStart", "4cf2e2dcdeacb2322843921968cb0e6a97a686594cb0a4f29abb65a7ed651952", false));
+	vecLogSigs.push_back(make_tuple("NextTurn", "c6c2d48c8a994a16a48e9f7d44b32ae365947a6ccdf319f1e1e6cf8565fa56b4", false));
+	vecLogSigs.push_back(make_tuple("JoinGame", "9d148569af2a4ae8c34122247102efb7bb91bf1b595c37c539b852954707d482", true));
 	vecLogSigs.push_back(make_tuple("CreateDeck", "505a777520798d10945a146762a340313d69a0d0948ef094010e3acb756bc39a", true));
 	vecLogSigs.push_back(make_tuple("DrawHand", "a35c8ba1ade945124a66883ef6a7f1759c50d504956f47cb07abd61b0d42f641", true));
+	vecLogSigs.push_back(make_tuple("PlaceHq", "0cddd9acc67eae0a5558aacde6ad4a139545c9581a0de12909cc100524e2d81f", true));
 	vecLogSigs.push_back(make_tuple("LayPath", "2688c69b58ee503b249854e32a7292cd26fd8475aff735ea7fa79fb622d1baaa", true));
 	vecLogSigs.push_back(make_tuple("LayUnit", "649e3c66552bba57438a370b0196029a5bec44e46c3d54c098f8cb61be7592b6", true));
 	vecLogSigs.push_back(make_tuple("MoveUnit", "43f643101e992dd5eb86c3e17afc53dd49cae9982bc31be8d92673ac08374ae4", true));
@@ -147,7 +123,7 @@ GameInterface::createGame(void)
 {
 	string gameContractAddress;
 
-	gameContractAddress = this->create_contract(GAME_SOL, GAME_ABI, GAME_BIN, helperContractAddress);
+	gameContractAddress = this->create_contract(GAME_SOL, GAME_ABI, GAME_BIN, "");
 	setContractAddress(gameContractAddress);
 	createEventLogWaitManager();
 	return gameContractAddress;
@@ -161,7 +137,9 @@ GameInterface::joinGame(string const& gameAddress)
 	string ethabiEncodeArgs;
 	unique_ptr<unordered_map<string, string>> eventLog;
 
-	ethabiEncodeArgs = " -l -p '" + gameAddress + "'";
+	setContractAddress(gameAddress);
+	createEventLogWaitManager();
+	ethabiEncodeArgs = "";
 
 	return callMutatorContract("join_game", ethabiEncodeArgs, eventLog);
 }
@@ -171,7 +149,7 @@ GameInterface::joinGame(string const& gameAddress)
 bool
 GameInterface::createDeck(uint8_t deckSeed[DECK_SIZE])
 {
-	string ethabiEncodeArgs = " -l -v 'uint8[]' '[";
+	string ethabiEncodeArgs = " -p '[";
 	unique_ptr<unordered_map<string, string>> eventLog;
 
 	for (uint8_t i = 0; i < DECK_SIZE; i++)
@@ -180,7 +158,7 @@ GameInterface::createDeck(uint8_t deckSeed[DECK_SIZE])
 		{
 			ethabiEncodeArgs += ",";
 		}
-		ethabiEncodeArgs += deckSeed[i];
+		ethabiEncodeArgs += to_string(deckSeed[i]);
 	}
 
 	ethabiEncodeArgs += "]'";
@@ -197,7 +175,20 @@ GameInterface::drawHand(void)
 
 	ethabiEncodeArgs = "";
 
-	return callMutatorContract("join_game", ethabiEncodeArgs, eventLog);
+	return callMutatorContract("draw_hand", ethabiEncodeArgs, eventLog);
+}
+
+
+
+bool
+GameInterface::placeHq(uint8_t x)
+{
+	string ethabiEncodeArgs;
+	unique_ptr<unordered_map<string, string>> eventLog;
+
+	ethabiEncodeArgs = " -p " + to_string(x);
+
+	return callMutatorContract("place_hq", ethabiEncodeArgs, eventLog);
 }
 
 
@@ -228,7 +219,7 @@ GameInterface::getPlayerSeedHand(uint8_t playerNum)
 	return ethabi_decode_uint8_array(
 		getEthContractABI(),
 		"get_player_seed_hand",
-		getArrayFromContract("get_player_seed_hand", " -l -p " + playerNum));
+		getArrayFromContract("get_player_seed_hand", " -p " + to_string(playerNum)));
 }
 
 
@@ -239,7 +230,7 @@ GameInterface::getCardHash(uint8_t cardSeed)
 	return ethabi_decode_result(
 		getEthContractABI(),
 		"get_card_hash",
-		getFrom("get_card_hash", " -p '" + boost::lexical_cast<string>(cardSeed) + "'"));
+		getFrom("get_card_hash", " -p '" + to_string(cardSeed) + "'"));
 }
 
 
@@ -254,7 +245,7 @@ GameInterface::getPrivateCardFromSeed(uint8_t cardSeed)
 
 	return getIntFromContract(
 		"get_private_card_from_seed",
-		" -l -p " + hash.substr(0, 2) +
+		" -p " + hash.substr(0, 2) +
 		" -p " + hash.substr(2, 64) +
 		" -p " + hash.substr(66, 64));
 }
@@ -265,13 +256,12 @@ std::vector<std::vector<std::vector<uint8_t>>>
 GameInterface::getBoardState(void)
 {
 	uint16_t n = 0;
-	vector<vector<vector<uint8_t>>> result;
+	vector<vector<vector<uint8_t>>> result(3, vector<vector<uint8_t>> (10, vector<uint8_t> (9, 0)));
 	vector<uint8_t> vec =  ethabi_decode_uint8_array(
 		getEthContractABI(),
 		"get_board_state",
 		getArrayFromContract("get_board_state"));
 
-	// TODO
 	if (vec.size() != 3 * 10 * 9) {
 		throw ResourceRequestFailedException(
 			"getBoardState(): Did not contain the expected quantity of elements");
@@ -279,13 +269,11 @@ GameInterface::getBoardState(void)
 
 	for (uint8_t i = 0; i < 3; i++)
 	{
-		result.push_back(vector<vector<uint8_t>>());
-		for (uint8_t j = 0; j < 10; i ++)
+		for (uint8_t j = 0; j < 10; j++)
 		{
-			result[i].push_back(vector<uint8_t>());
 			for (uint8_t k = 0; k < 9; k++)
 			{
-				result[i][j].push_back(vec[n]);
+				result[i][j][k] = vec[n];
 				n++;
 			}
 		}
@@ -300,10 +288,15 @@ GameInterface::getBoardState(void)
 vector<uint8_t>
 GameInterface::getHqHealth(void)
 {
-	return ethabi_decode_uint8_array(
+	vector<string> strVec = ethabi_decode_results(
 		getEthContractABI(),
 		"get_hq_health",
-		getArrayFromContract("get_hq_health", ""));
+		getFrom("get_hq_health", ""));
+	vector<uint8_t> uintVec(2);
+
+	uintVec[0] = stoi(strVec[0]);
+	uintVec[1] = stoi(strVec[1]);
+	return uintVec;
 }
 
 
@@ -338,16 +331,11 @@ GameInterface::layPath(uint8_t x,
 	string ethabiEncodeArgs;
 	unique_ptr<unordered_map<string, string>> eventLog;
 
-	ethabiEncodeArgs = "-l -p ";
-	ethabiEncodeArgs += x;
-	ethabiEncodeArgs += " -p ";
-	ethabiEncodeArgs += y;
-	ethabiEncodeArgs += " -p ";
-	ethabiEncodeArgs += handIndex;
-	ethabiEncodeArgs += " -p ";
-	ethabiEncodeArgs += adjacentPathX;
-	ethabiEncodeArgs += " -p ";
-	ethabiEncodeArgs += adjacentPathY;
+	ethabiEncodeArgs = " -p " + to_string(x) +
+		" -p " + to_string(y) +
+		" -p " + to_string(handIndex) +
+		" -p " + to_string(adjacentPathX) +
+		" -p " + to_string(adjacentPathY);
 
 	return callMutatorContract("lay_path", ethabiEncodeArgs, eventLog);
 }
@@ -360,7 +348,7 @@ GameInterface::layUnit(uint8_t handIndex)
 	string ethabiEncodeArgs;
 	unique_ptr<unordered_map<string, string>> eventLog;
 
-	ethabiEncodeArgs = "-l -p ";
+	ethabiEncodeArgs = " -p ";
 	ethabiEncodeArgs += handIndex;
 
 	return callMutatorContract("lay_unit", ethabiEncodeArgs, eventLog);
@@ -377,14 +365,10 @@ GameInterface::moveUnit(uint8_t unitX,
 	string ethabiEncodeArgs;
 	unique_ptr<unordered_map<string, string>> eventLog;
 
-	ethabiEncodeArgs = "-l -p ";
-	ethabiEncodeArgs += unitX;
-	ethabiEncodeArgs += " -p ";
-	ethabiEncodeArgs += unitY;
-	ethabiEncodeArgs += " -p ";
-	ethabiEncodeArgs += moveX;
-	ethabiEncodeArgs += " -p ";
-	ethabiEncodeArgs += moveY;
+	ethabiEncodeArgs = "-p " + to_string(unitX) +
+		" -p " + to_string(unitY) +
+		" -p " + to_string(moveX) +
+		" -p " + to_string(moveY);
 
 	return callMutatorContract("lay_unit", ethabiEncodeArgs, eventLog);
 }
@@ -400,14 +384,10 @@ GameInterface::attack(uint8_t unitX,
 	string ethabiEncodeArgs;
 	unique_ptr<unordered_map<string, string>> eventLog;
 
-	ethabiEncodeArgs = "-l -p ";
-	ethabiEncodeArgs += unitX;
-	ethabiEncodeArgs += " -p ";
-	ethabiEncodeArgs += unitY;
-	ethabiEncodeArgs += " -p ";
-	ethabiEncodeArgs += attackX;
-	ethabiEncodeArgs += " -p ";
-	ethabiEncodeArgs += attackY;
+	ethabiEncodeArgs = "-p " + to_string(unitX) +
+		" -p " + to_string(unitY) +
+		" -p " + to_string(attackX) +
+		" -p " + to_string(attackY);
 
 	return callMutatorContract("attack", ethabiEncodeArgs, eventLog);
 }
@@ -418,6 +398,22 @@ void
 GameInterface::waitPlayerJoined(void)
 {
 	blockForEvent("PlayerJoined");
+}
+
+
+
+void
+GameInterface::waitDecksReady(void)
+{
+	blockForEvent("DecksReady");
+}
+
+
+
+void
+GameInterface::waitGameStart(void)
+{
+	blockForEvent("GameStart");
 }
 
 

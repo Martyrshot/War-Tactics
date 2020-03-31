@@ -472,7 +472,8 @@ EthInterface::create_contract(string const& solFile, string const& abiFile, stri
 			"solc failed to compile contract to abi format!");
 	}
 
-	contractBin = boost::trim_copy(readFile2(binFile)) + params;
+	contractBin = boost::trim_copy(readFile2(binFile));
+	contractBin = contractBin.substr(0, contractBin.find_first_of('\n', 0)) + params;
 
 	transactionJsonStr = this->eth_createContract(contractBin);
 
@@ -623,8 +624,9 @@ EthInterface::eth_ipc_request(string const& jsonRequest)
 	ipcFdFlags |= O_NONBLOCK;
 	fcntl(ipcFd, F_SETFL, ipcFdFlags);
 
-	while (fgets(ipcBuffer.data(), IPC_BUFFER_LENGTH, ipc) != NULL)
+	while (json.find_first_of('\n', 0) == string::npos)
 	{
+		fgets(ipcBuffer.data(), IPC_BUFFER_LENGTH, ipc);
 		json += ipcBuffer.data();
 	}
 
@@ -654,7 +656,7 @@ EthInterface::eth_call(string const& abiData)
 	string jsonRequest = "{\"jsonrpc\":\"2.0\","
 						 "\"method\":\"eth_call\","
 						 "\"params\":[{"
-						 //"\"from\":\"0x" + clientAddress + "\","
+						 "\"from\":\"0x" + clientAddress + "\","
 						 "\"to\":\"0x"
 		+ contractAddress + "\","
 							"\"data\":\"0x"

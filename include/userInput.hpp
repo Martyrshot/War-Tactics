@@ -18,7 +18,7 @@ vector<uint8_t> promptForPoint(string stringToPrint) {
     if (input.size() != 2) {
         cout << "Bad input!\n" << flush;
         return result;
-    } 
+    }
     // first try uppercase
     int x = input[0] - 65;
     if (x > 9 || x < 0) {
@@ -42,7 +42,7 @@ vector<uint8_t> promptForPoint(string stringToPrint) {
 }
 
 int8_t promptForAction(string stringToPrint) {
-    uint8_t input = -1;
+    int8_t input = -1;
     cout << stringToPrint << flush;
     cin >> input;
     input = input - 1;

@@ -49,97 +49,193 @@ void printHorizontalBar(int row, vector< vector<uint8_t> > points) {
 
 
 void printBoard(vector< vector< vector<uint8_t> > >board, int playerID,
-                                            vector< vector<uint8_t> > points) {
+                                            vector< vector<uint8_t> > points,
+                                            uint8_t friendlyHQLife,
+                                            uint8_t enemyHqLife) {
     cout << BOARDHANDSEPARATER << endl;
-    printHorizontalBar(0,points);
-    for (int i = 0; i < 9; i++) {
-        bool oneMore = false;
-        for (int j = 0; j < 10; j++) {
-            // check state first
-            bool foundSquare = false;
-            for (size_t k = 0; k < points.size(); k++) {
-                if (points[k][0] == j && points[k][1] == i) {
-                    foundSquare = true;
-                    oneMore = true;
-                    cout << "\033[1;33m";
+    cout << "       "; // spacing
+    cout << "Enemy's HQ Health Points: "<< (int)enemyHqLife << endl;
+    cout << BOARDHANDSEPARATER << endl;
+    if (playerID == 1) {
+        printHorizontalBar(0,points);
+        for (int i = 0; i < 9; i++) {
+            bool oneMore = false;
+            for (int j = 0; j < 10; j++) {
+                // check state first
+                bool foundSquare = false;
+                for (size_t k = 0; k < points.size(); k++) {
+                    if (points[k][0] == j && points[k][1] == i) {
+                        foundSquare = true;
+                        oneMore = true;
+                        cout << "\033[1;33m";
+                    }
+                }
+                cout << "|";
+                if (oneMore && !foundSquare) {
+                    cout << "\033[1;0m";
+                    oneMore = false;
+                }
+                switch (board[1][j][i]){
+                    case (STATE_BLANK):
+                        cout << "   ";
+                    break;
+                    case (STATE_PATH):
+                        if (foundSquare) {
+                            cout << "\033[1;0m" << " = " << "\033[1;33m";
+                        }
+                        else {
+                            cout << " = ";
+                        }
+                    break;
+                    case (STATE_HQ):
+                        if (playerID == board[2][j][i]) {
+                            cout << "\033[1;32m";
+                        }
+                        else {
+                            cout << "\033[1;31m";
+                        }
+                        cout << " H ";
+                        if (oneMore) {
+                            cout << "\033[1;33m";
+                        }
+                        else {
+                            cout << "\033[0m";
+                        }
+                    break;
+                    // the last two states will both show the unit on top
+                    // so we can use the same case for either
+                    default:
+                        if (playerID == board[2][j][i]) {
+                            cout << "\033[1;32m";
+                        }
+                        else {
+                            cout << "\033[1;31m";
+                        }
+                        int curcard = board[0][i][j] % 13;
+                        if (curcard == 10) {
+                            cout << " " << (int)curcard;
+                        }
+                        else if (curcard == 11) {
+                            cout << " J ";
+                        }
+                        else if (curcard == 12) {
+                            cout << " Q " ;
+                        }
+                        else if (curcard == 13) {
+                            cout << " K ";
+                        }
+                        else if (curcard == 1) {
+                            cout << " A ";
+                        }
+                        else {
+                            cout << " " << (int)curcard << " ";
+                        }
+                        if (oneMore) {
+                            cout << "\033[1;33m";
+                        }
+                        else {
+                            cout << "\033[0m";
+                        }
                 }
             }
-            cout << "|";
-            if (oneMore && !foundSquare) {
-                cout << "\033[1;0m";
-                oneMore = false;
-            }
-            switch (board[1][j][i]){
-                case (STATE_BLANK):
-                    cout << "   ";
-                break;
-                case (STATE_PATH):
-                    if (foundSquare) {
-                        cout << "\033[1;0m" << " = " << "\033[1;33m";
-                    }
-                    else {
-                        cout << " = ";
-                    }
-                break;
-                case (STATE_HQ):
-                    if (playerID == board[2][j][i]) {
-                        cout << "\033[1;32m";
-                    }
-                    else {
-                        cout << "\033[1;31m";
-                    }
-                    cout << " H ";
-                    if (oneMore) {
-                        cout << "\033[1;33m";
-                    }
-                    else {
-                        cout << "\033[0m";
-                    }
-                break;
-                // the last two states will both show the unit on top
-                // so we can use the same case for either
-                default:
-                    if (playerID == board[2][j][i]) {
-                        cout << "\033[1;32m";
-                    }
-                    else {
-                        cout << "\033[1;31m";
-                    }
-                    int curcard = board[0][i][j] % 13;
-                    if (curcard == 10) {
-                        cout << " " << (int)curcard;
-                    }
-                    else if (curcard == 11) {
-                        cout << " J ";
-                    }
-                    else if (curcard == 12) {
-                        cout << " Q " ;
-                    }
-                    else if (curcard == 13) {
-                        cout << " K ";
-                    }
-                    else if (curcard == 1) {
-                        cout << " A ";
-                    }
-                    else {
-                        cout << " " << (int)curcard << " ";
-                    }
-                    if (oneMore) {
-                        cout << "\033[1;33m";
-                    }
-                    else {
-                        cout << "\033[0m";
-                    }
-            }
+            cout << "| " << "\033[0m" << i + 1 << endl;
+            printHorizontalBar(i+1, points);
         }
-        cout << "| " << "\033[0m" << i + 1 << endl;
-        printHorizontalBar(i+1, points);
+    }
+    else {
+        printHorizontalBar(8,points);
+        for (int i = 8; i >= 0; i--) {
+            bool oneMore = false;
+            for (int j = 0; j < 10; j++) {
+                // check state first
+                bool foundSquare = false;
+                for (size_t k = 0; k < points.size(); k++) {
+                    if (points[k][0] == j && points[k][1] == i) {
+                        foundSquare = true;
+                        oneMore = true;
+                        cout << "\033[1;33m";
+                    }
+                }
+                cout << "|";
+                if (oneMore && !foundSquare) {
+                    cout << "\033[1;0m";
+                    oneMore = false;
+                }
+                switch (board[1][j][i]){
+                    case (STATE_BLANK):
+                        cout << "   ";
+                    break;
+                    case (STATE_PATH):
+                        if (foundSquare) {
+                            cout << "\033[1;0m" << " = " << "\033[1;33m";
+                        }
+                        else {
+                            cout << " = ";
+                        }
+                    break;
+                    case (STATE_HQ):
+                        if (playerID == board[2][j][i]) {
+                            cout << "\033[1;32m";
+                        }
+                        else {
+                            cout << "\033[1;31m";
+                        }
+                        cout << " H ";
+                        if (oneMore) {
+                            cout << "\033[1;33m";
+                        }
+                        else {
+                            cout << "\033[0m";
+                        }
+                    break;
+                    // the last two states will both show the unit on top
+                    // so we can use the same case for either
+                    default:
+                        if (playerID == board[2][j][i]) {
+                            cout << "\033[1;32m";
+                        }
+                        else {
+                            cout << "\033[1;31m";
+                        }
+                        int curcard = board[0][i][j] % 13;
+                        if (curcard == 10) {
+                            cout << " " << (int)curcard;
+                        }
+                        else if (curcard == 11) {
+                            cout << " J ";
+                        }
+                        else if (curcard == 12) {
+                            cout << " Q " ;
+                        }
+                        else if (curcard == 13) {
+                            cout << " K ";
+                        }
+                        else if (curcard == 1) {
+                            cout << " A ";
+                        }
+                        else {
+                            cout << " " << (int)curcard << " ";
+                        }
+                        if (oneMore) {
+                            cout << "\033[1;33m";
+                        }
+                        else {
+                            cout << "\033[0m";
+                        }
+                }
+            }
+            cout << "| " << "\033[0m" << i + 1 << endl;
+            printHorizontalBar(i, points);
+        }
     }
     cout << "\033[0m";
     for (int i = 0; i < 10; i++) {
         cout << "  " << (char)(i + 65) << " ";
     }
     cout << endl << BOARDHANDSEPARATER << endl;
+    cout << "       "; // spacing
+    cout << "Your HQ's Health Points: "<< (int)friendlyHQLife << endl;
+    cout << BOARDHANDSEPARATER << endl;
 }
 
 vector< vector<uint8_t> >
@@ -297,5 +393,24 @@ getAdjacentTiles(vector<uint8_t> unit) {
                 points.push_back({x,static_cast<unsigned char>(y+1)});
     }
     
+    return points;
+}
+
+vector< vector<uint8_t> > getPossibleHQLocations(uint8_t playerID) {
+    vector< vector<uint8_t> > points;
+    if (playerID == 1) {
+        for (uint8_t i = 0; i < 10; i++) {
+            vector<uint8_t> point = {i, 9};
+            points.push_back(point);
+            point.clear();
+        }
+    }
+    else {
+        for (uint8_t i = 0; i < 10; i++) {
+            vector<uint8_t> point = {i, 0};
+            points.push_back(point);
+            point.clear();
+        }
+    }
     return points;
 }

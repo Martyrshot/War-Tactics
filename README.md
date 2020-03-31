@@ -26,3 +26,8 @@ Test ethabi works: `ethabi -h`
 `sudo apt update && sudo apt install libboost-all-dev`
 
 
+#### Solidity Compiler (solc)
+
+##### Ubuntu/Debian
+
+`sudo apt update && sudo apt install solc`
