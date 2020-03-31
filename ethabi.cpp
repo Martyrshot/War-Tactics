@@ -218,10 +218,8 @@ ethabi_decode_3d_uint8_array(string const& abiFile, string const& eventName, str
 	boost::replace_all(responce, "]", "");
 	boost::split(arrayStr, responce, boost::is_any_of(","));
 
-	cout << "ethabi_decode_3d_uint8_array()::" << endl;
 	for (vector<string>::iterator it = arrayStr.begin(); it != arrayStr.end(); ++it)
 	{
-		cout << *it << "   |    " << to_string(strtoul(((*it).c_str()), nullptr, 16)) << endl;
 		arrayUInt8.push_back(strtoul(((*it).c_str()), nullptr, 16));
 	}
 	return arrayUInt8;
