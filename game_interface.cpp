@@ -349,7 +349,7 @@ GameInterface::layUnit(uint8_t handIndex)
 	unique_ptr<unordered_map<string, string>> eventLog;
 
 	ethabiEncodeArgs = " -p ";
-	ethabiEncodeArgs += handIndex;
+	ethabiEncodeArgs += to_string(handIndex);
 
 	return callMutatorContract("lay_unit", ethabiEncodeArgs, eventLog);
 }
