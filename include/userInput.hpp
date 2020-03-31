@@ -45,7 +45,7 @@ int8_t promptForAction(string stringToPrint) {
     int8_t input = -1;
     cout << stringToPrint << flush;
     cin >> input;
-    input = input - 1;
+    input = input - 31;
     if (input > 3 || input < 0) {
         cout << "Bad input!\n" << flush;
         return -1;
