@@ -235,6 +235,17 @@ GameInterface::getCardHash(uint8_t cardSeed)
 
 
 
+string
+GameInterface::getHandCardHash(uint8_t handIndex)
+{
+	return ethabi_decode_result(
+		getEthContractABI(),
+		"get_hand_card_hash",
+		getFrom("get_hand_card_hash", " -p '" + to_string(handIndex) + "'"));
+}
+
+
+
 uint8_t
 GameInterface::getPrivateCardFromSeed(uint8_t cardSeed)
 {
@@ -347,9 +358,18 @@ GameInterface::layUnit(uint8_t handIndex)
 {
 	string ethabiEncodeArgs;
 	unique_ptr<unordered_map<string, string>> eventLog;
+	string hash = getHandCardHash(handIndex);
+	vector<uint8_t> hand = getPlayerSeedHand(0);
 
-	ethabiEncodeArgs = " -p ";
-	ethabiEncodeArgs += handIndex;
+	while (hash.length() < 130) {
+		hash = "0" + hash;
+	}
+
+	ethabiEncodeArgs = " -p " + to_string(handIndex) +
+		" -p " + to_string(getPrivateCardFromSeed(hand[handIndex])) +
+		" -p " + hash.substr(0, 2) +
+		" -p " + hash.substr(2, 64) +
+		" -p " + hash.substr(66, 64);
 
 	return callMutatorContract("lay_unit", ethabiEncodeArgs, eventLog);
 }

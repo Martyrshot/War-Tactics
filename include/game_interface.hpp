@@ -122,13 +122,26 @@ class GameInterface : public EthInterface
 	libconfig::Config cfg;
 	libconfig::Setting* cfgRoot;
 
-	std::vector<std::tuple<std::string, std::string, bool>> contractEventSignatures(void);
-	std::string getCardHash(uint8_t cardSeed);
+	std::vector<std::tuple<std::string, std::string, bool>>
+	contractEventSignatures(void);
 
-	std::string getFromDeviceID(std::string const& funcName, uint32_t deviceID);
-	uint64_t getIntFromDeviceID(std::string const& funcName, uint32_t deviceID);
-	std::string getStringFromDeviceID(std::string const& funcName, uint32_t deviceID);
-	std::vector<std::string> getStringsFromDeviceID(std::string const& funcName, uint32_t deviceID);
+	std::string
+	getCardHash(uint8_t cardSeed);
+
+	std::string
+	getHandCardHash(uint8_t handIndex);
+
+	std::string
+	getFromDeviceID(std::string const& funcName, uint32_t deviceID);
+
+	uint64_t
+	getIntFromDeviceID(std::string const& funcName, uint32_t deviceID);
+
+	std::string
+	getStringFromDeviceID(std::string const& funcName, uint32_t deviceID);
+
+	std::vector<std::string>
+	getStringsFromDeviceID(std::string const& funcName, uint32_t deviceID);
 };
 
 

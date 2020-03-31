@@ -213,6 +213,20 @@ contract Game {
 	}
 
 
+	function get_hand_card_hash(uint8 handIndex) public view returns (bytes32) {
+		uint8 sender;
+
+		if (msg.sender == player[PLAYER1]) {
+			sender = PLAYER1;
+		} else {
+			sender = PLAYER2;
+		}
+
+		require(handIndex < player_hand[sender].length);
+		return prefixed(keccak256(abi.encodePacked(game_create_time, game_join_time, player_hand[sender][handIndex])));
+	}
+
+
 	function verify_card(uint8 card, uint8 cardSeed, address addr, uint8 v, bytes32 r, bytes32 s) public view returns (bool) {
 		bytes32 hash = get_card_hash(cardSeed);
 		return ecrecover(hash, v, r, s) == addr && get_private_card_from_seed(v, r, s) == card;
@@ -280,8 +294,14 @@ contract Game {
 
 
 	function get_player_seed_hand(uint8 playerNum) external view returns (uint8[] memory) {
-		require(playerNum == 1 || playerNum == 2);
+		require(playerNum == 0 || playerNum == 1 || playerNum == 2);
 
+		if (playerNum == 0) {
+			if (msg.sender == player[PLAYER1]) {
+				return player_hand[PLAYER1];
+			}
+			return player_hand[PLAYER2];
+		}
 		return player_hand[playerNum - 1];
 	}
 
