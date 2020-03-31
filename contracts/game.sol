@@ -310,10 +310,12 @@ contract Game {
 
 		if (sender == PLAYER1) {
 			board[BOARD_OWNER][x][0] = PLAYER1 + 1;
+			board[BOARD_STATE][x][0] = STATE_HQ;
 		}
 		else
 		{
 			board[BOARD_OWNER][x][BOARD_HEIGHT - 1] = PLAYER2 + 1;
+			board[BOARD_STATE][x][BOARD_HEIGHT - 1] = STATE_HQ;
 		}
 		player_hq[sender] = x;
 		has_player_hq[sender] = true;
