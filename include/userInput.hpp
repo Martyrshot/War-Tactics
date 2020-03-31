@@ -1,6 +1,8 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <limits>
+
 
 using namespace std;
 
@@ -11,7 +13,7 @@ void promptForEnter(string stringToPrint) {
         cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
     while (cin.get() != '\n');
-    
+
 }
 
 vector<uint8_t> promptForPoint(string stringToPrint) {
@@ -74,7 +76,7 @@ int8_t promptForCard(string stringToPrint, int numCards) {
         cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
     }
     cin >> input;
-    
+
 
     input = input - 1;
     if (input > numCards - 1 || input < 0) {
