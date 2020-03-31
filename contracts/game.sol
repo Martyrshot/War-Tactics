@@ -343,10 +343,9 @@ contract Game {
 		require(handIndex < player_hand[sender].length);
 		require(board[BOARD_STATE][x][y] == STATE_BLANK);
 		require(
-			!((board[BOARD_OWNER][adjacentPathX][adjacentPathY] != sender + 1) ||
-			(board[BOARD_STATE][adjacentPathX][adjacentPathY] != STATE_PATH_AND_UNIT) ||
-			!check_neighbouring(x, y, adjacentPathX, adjacentPathY) ||
-			(board[BOARD_STATE][adjacentPathX][adjacentPathY] == STATE_BLANK))
+			(board[BOARD_OWNER][adjacentPathX][adjacentPathY] == sender + 1) &&
+			(board[BOARD_STATE][adjacentPathX][adjacentPathY] != STATE_BLANK) &&
+			check_neighbouring(x, y, adjacentPathX, adjacentPathY)
 		);
 
 		// The card value is irrelavent so just ignore it
