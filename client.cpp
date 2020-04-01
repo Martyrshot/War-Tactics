@@ -38,7 +38,7 @@ bool joinGame(string address);
 void playGame(void);
 
 int main(int argc, char **argv) {
-    
+
     int8_t selection = -1;
 
     (void) argc;
@@ -59,7 +59,7 @@ int main(int argc, char **argv) {
         }
     }
     playGame();
-    
+
     //testDriver();
     return 0;
 }
@@ -81,10 +81,7 @@ bool createGame(void) {
         cout << "Error creating deck!" << endl;
         return false;
     }
-    while(!interface.hasDeck())
-    {
-        sleep(1);
-    }
+
     interface.waitDecksReady();
     if (!interface.drawHand()) {
         cout << "Error drawing initial hand!" << endl;
