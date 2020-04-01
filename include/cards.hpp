@@ -403,7 +403,6 @@ void printHand(vector<uint8_t> ids, uint8_t idx) {
 
     vector< vector<string> > cards;
     for(uint n : ids) {
-        cout << (int)n << " ";
         if (n < 13) {
             cards.push_back(spades[n]);
         }
@@ -435,7 +434,6 @@ void printHand(vector<uint8_t> ids, uint8_t idx) {
     for (size_t i = 0; i < cards.size(); i++) {
         cout << "   " << i + 1<< "   ";
     }
-    cout << endl;
 }
 
 void printHand(vector<uint8_t> ids) {
