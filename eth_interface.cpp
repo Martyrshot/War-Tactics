@@ -208,26 +208,6 @@ EthInterface::getIntFromContract(string const& funcName, string const& params)
 
 
 
-// Throws ResourceRequestFailedException from ethabi()
-string
-EthInterface::getArrayFromContract(string const& funcName)
-{
-	return getArrayFromContract(funcName, "");
-}
-
-
-
-// Throws ResourceRequestFailedException from ethabi()
-string
-EthInterface::getArrayFromContract(string const& funcName, string const& params)
-{
-	string arrayStr;
-	arrayStr = getFrom(funcName, params);
-	return arrayStr;
-}
-
-
-
 Json
 EthInterface::call_helper(string const& data)
 {

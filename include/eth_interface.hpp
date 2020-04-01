@@ -69,8 +69,6 @@ class EthInterface
 	uint64_t getInt(std::string const& funcName);
 	uint64_t getIntFromContract(std::string const& funcName);
 	uint64_t getIntFromContract(std::string const& funcName, std::string const& params);
-	std::string getArrayFromContract(std::string const& funcName);
-	std::string getArrayFromContract(std::string const& funcName, std::string const& params);
 
 	Json call_helper(std::string const& data);
 	std::unique_ptr<std::unordered_map<std::string, std::string>> contract_helper(std::string const& data);

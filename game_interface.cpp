@@ -216,10 +216,10 @@ GameInterface::hasDeck(void)
 vector<uint8_t>
 GameInterface::getPlayerSeedHand(uint8_t playerNum)
 {
-	return ethabi_decode_uint8_array(
+	return ethabi_decode_3d_uint8_array( // TODO: Change name of this decoder
 		getEthContractABI(),
 		"get_player_seed_hand",
-		getArrayFromContract("get_player_seed_hand", " -p " + to_string(playerNum)));
+		getFrom("get_player_seed_hand", " -p " + to_string(playerNum)));
 }
 
 
@@ -275,7 +275,7 @@ GameInterface::getPrivateCardFromSeed(uint8_t cardSeed)
 
 
 
-std::vector<std::vector<std::vector<uint8_t>>>
+vector<vector<vector<uint8_t>>>
 GameInterface::getBoardState(void)
 {
 	uint16_t n = 0;
@@ -283,7 +283,7 @@ GameInterface::getBoardState(void)
 	vector<uint8_t> vec =  ethabi_decode_3d_uint8_array(
 		getEthContractABI(),
 		"get_board_state",
-		getArrayFromContract("get_board_state"));
+		getFrom("get_board_state", ""));
 
 	if (vec.size() != 3 * 10 * 9) {
 		throw ResourceRequestFailedException(
