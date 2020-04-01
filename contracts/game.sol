@@ -154,32 +154,16 @@ contract Game {
 		if (player[PLAYER1] == msg.sender) {
 			require(!has_player_deck[PLAYER1]);
 
-			if (has_player_deck[PLAYER2]) {
-				for (uint8 i = 0; i < DECK_SIZE; i++) {
-					deck[i] = deck[i] ^ _deck[i];
-				}
-
-			} else {
-				for (uint8 i = 0; i < DECK_SIZE; i++) {
-					deck[i] = _deck[i];
-				}
-			}
 			has_player_deck[PLAYER1] = true;
 
 		} else if (player[PLAYER2] == msg.sender) {
 			require(!has_player_deck[PLAYER2]);
 
-			if (has_player_deck[PLAYER1]) {
-				for (uint8 i = 0; i < DECK_SIZE; i++) {
-					deck[i] = deck[i] ^ _deck[i];
-				}
-
-			} else {
-				for (uint8 i = 0; i < DECK_SIZE; i++) {
-					deck[i] = _deck[i];
-				}
-			}
 			has_player_deck[PLAYER2] = true;
+		}
+
+		for (uint8 i = 0; i < DECK_SIZE; i++) {
+			deck[i] = deck[i] ^ _deck[i];
 		}
 
 		if (has_player_deck[PLAYER1] && has_player_deck[PLAYER2]) {
@@ -188,13 +172,7 @@ contract Game {
 
 		emit CreateDeck(msg.sender);
 
-		if (has_player_hq[PLAYER1] &&
-			has_player_hq[PLAYER2] &&
-			has_deck()
-		) {
-			emit GameStart();
-		}
-
+		check_game_start();
 		return true;
 	}
 
