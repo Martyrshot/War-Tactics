@@ -398,12 +398,12 @@ vector< vector<string> > diamonds = {
 // It is the responsibility of the caller to pass shifted number that starts at
 // 0.
 void printHand(vector<uint8_t> ids, uint8_t idx) {
-
+    if (idx < 0 || idx > ids.size()) {
+        return;
+    }
     vector< vector<string> > cards;
-    for(int n : ids) {
-        if (n < 0) {
-            return;
-        }
+    for(uint n : ids) {
+
         if (n < 13) {
             cards.push_back(spades[n]);
         }
