@@ -342,7 +342,7 @@ EthInterface::eth_sign(string const& data)
 						 "\"method\":\"eth_sign\","
 						 "\"params\":[\"0x" +
 						 clientAddress +
-						 "\",\"" +
+						 "\",\"0x" +
 						 data +
 						 "\"],\"id\":1}";
 
