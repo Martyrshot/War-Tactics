@@ -408,13 +408,13 @@ void printHand(vector<uint8_t> ids, uint8_t idx) {
             cards.push_back(spades[n]);
         }
         else if (n < 26) {
-            cards.push_back(clubs[n%13]);
+            cards.push_back(clubs[n%14]);
         }
         else if (n < 39) {
-            cards.push_back(diamonds[n%13]);
+            cards.push_back(diamonds[n%14]);
         }
         else {
-            cards.push_back(hearts[n%13]);
+            cards.push_back(hearts[n%14]);
         }
     }
 
