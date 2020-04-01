@@ -346,7 +346,7 @@ EthInterface::eth_sign(string const& data)
 						 data +
 						 "\"],\"id\":1}";
 
-	Json jsonResponce = this->eth_ipc_request(jsonRequest);
+	Json jsonResponce = Json::parse(this->eth_ipc_request(jsonRequest));
 	auto result = jsonResponce.find("result");
 
 	if (result != jsonResponce.end())

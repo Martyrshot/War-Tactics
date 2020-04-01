@@ -261,6 +261,7 @@ GameInterface::getPrivateCardFromSeed(uint8_t cardSeed)
 		 << endl;
 #endif
 
+	sig = sig.substr(2);
 	while (sig.length() < 130) {
 		sig = "0" + sig;
 	}
