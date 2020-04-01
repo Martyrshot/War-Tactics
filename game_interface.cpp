@@ -250,15 +250,26 @@ uint8_t
 GameInterface::getPrivateCardFromSeed(uint8_t cardSeed)
 {
 	string hash = getCardHash(cardSeed);
-	while (hash.length() < 130) {
-		hash = "0" + hash;
+	string sig = eth_sign(hash);
+
+#ifdef _DEBUG
+	cout << "getPrivateCardFromSeed(): hash = \""
+		 << hash
+		 << "\", sig = \""
+		 << sig
+		 << "\""
+		 << endl;
+#endif
+
+	while (sig.length() < 130) {
+		sig = "0" + sig;
 	}
 
 	return getIntFromContract(
 		"get_private_card_from_seed",
-		" -p " + hash.substr(0, 2) +
-		" -p " + hash.substr(2, 64) +
-		" -p " + hash.substr(66, 64));
+		" -p " + sig.substr(0, 2) +
+		" -p " + sig.substr(2, 64) +
+		" -p " + sig.substr(66, 64));
 }
 
 
