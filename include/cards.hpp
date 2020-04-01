@@ -416,7 +416,6 @@ void printHand(vector<uint8_t> ids, uint8_t idx) {
             cards.push_back(hearts[n%13]);
         }
     }
-    cout << endl;
     
     for (int i = 0; i < CARDHEIGHT; i++) {
         int curCard = 0;
@@ -434,6 +433,7 @@ void printHand(vector<uint8_t> ids, uint8_t idx) {
     for (size_t i = 0; i < cards.size(); i++) {
         cout << "   " << i + 1<< "   ";
     }
+    cout << endl;
 }
 
 void printHand(vector<uint8_t> ids) {
