@@ -138,7 +138,7 @@ void printBoard(vector< vector< vector<uint8_t> > >board, int playerID,
                         }
                 }
             }
-            cout << "| " << "\033[0m" << i + 1 << endl;
+            cout << "| " << "\033[0m" << (int)(i + 2) << endl;
             printHorizontalBar(i+1, points);
         }
     }
@@ -197,7 +197,7 @@ void printBoard(vector< vector< vector<uint8_t> > >board, int playerID,
                         else {
                             cout << "\033[1;31m";
                         }
-                        int curcard = board[0][i][j] % 14;
+                        int curcard = (board[0][i][j] + 14)% 14;
                         if (curcard == 9) {
                             cout << " " << (int)(curcard + 1);
                         }
@@ -224,7 +224,7 @@ void printBoard(vector< vector< vector<uint8_t> > >board, int playerID,
                         }
                 }
             }
-            cout << "| " << "\033[0m" << i + 1 << endl;
+            cout << "| " << "\033[0m" << i + 2 << endl;
             printHorizontalBar(i, points);
         }
     }
