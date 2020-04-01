@@ -1,6 +1,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <fstream>
 #include "include/cards.hpp"
 #include "include/userInput.hpp"
 #include "include/output.hpp"
@@ -39,10 +40,16 @@ void playGame(void);
 
 int main(int argc, char **argv) {
 
+    unsigned int randSeed;
+    ifstream irand("/dev/urand", ios::binary);
     int8_t selection = -1;
 
     (void) argc;
     (void) argv;
+
+    irand.read((char*) &randSeed, sizeof(randSeed));
+    srand(randSeed);
+    irand.close();
 
     do {
         selection = mainMenu(TITLE);
@@ -73,7 +80,6 @@ bool createGame(void) {
         return false;
     }
     uint8_t deckSeed[DECK_SIZE];
-    srand(time(NULL));
     for (int i = 0; i < DECK_SIZE; i++) {
         deckSeed[i] = rand();
     }
@@ -101,7 +107,6 @@ bool joinGame(string address) {
         cout << "Exception: Failed to join game with address: " << address << endl;
         return false;
     }
-    srand(time(NULL));
     uint8_t deckSeed[DECK_SIZE];
     for (int i = 0; i < DECK_SIZE; i++) {
         deckSeed[i] = rand();
@@ -317,7 +322,6 @@ void testDriver(void) {
 
     // Dumby initialization
     playerID = 2;
-    srand(time(NULL));
     vector< vector<uint8_t> > r0;
     vector< vector<uint8_t> > r1;
     vector< vector<uint8_t> > r2;
