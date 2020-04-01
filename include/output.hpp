@@ -111,20 +111,20 @@ void printBoard(vector< vector< vector<uint8_t> > >board, int playerID,
                         else {
                             cout << "\033[1;31m";
                         }
-                        int curcard = board[0][i][j] % 14;
-                        if (curcard == 10) {
-                            cout << " " << (int)curcard;
+                        uint curcard = board[0][i][j] % 13;
+                        if (curcard == 8) {
+                            cout << " " << (int)curcard + 2;
                         }
-                        else if (curcard == 10) {
+                        else if (curcard == 9) {
                             cout << " J ";
                         }
-                        else if (curcard == 11) {
+                        else if (curcard == 10) {
                             cout << " Q " ;
                         }
-                        else if (curcard == 12) {
+                        else if (curcard == 11) {
                             cout << " K ";
                         }
-                        else if (curcard == 13) {
+                        else if (curcard == 12) {
                             cout << " A ";
                         }
                         else {
@@ -197,20 +197,20 @@ void printBoard(vector< vector< vector<uint8_t> > >board, int playerID,
                         else {
                             cout << "\033[1;31m";
                         }
-                        int curcard = (board[0][i][j] + 14) % 14;
-                        if (curcard == 9) {
+                        uint curcard = board[0][i][j] % 13;
+                        if (curcard == 8) {
                             cout << " " << (int)(curcard + 1);
                         }
-                        else if (curcard == 10) {
+                        else if (curcard == 9) {
                             cout << " J ";
                         }
-                        else if (curcard == 11) {
+                        else if (curcard == 10) {
                             cout << " Q " ;
                         }
-                        else if (curcard == 12) {
+                        else if (curcard == 11) {
                             cout << " K ";
                         }
-                        else if (curcard == 13) {
+                        else if (curcard == 12) {
                             cout << " A ";
                         }
                         else {
