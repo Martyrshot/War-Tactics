@@ -201,13 +201,17 @@ contract Game {
 		}
 
 		require(handIndex < player_hand[sender].length);
-		return prefixed(keccak256(abi.encodePacked(game_create_time, game_join_time, player_hand[sender][handIndex])));
+
+		return get_card_hash(player_hand[sender][handIndex]);
 	}
 
 
-	function verify_card(uint8 card, uint8 cardSeed, address addr, uint8 v, bytes32 r, bytes32 s) public view returns (bool) {
+	function verify_card(uint8 card, uint8 cardSeed, address addr, bytes memory signature) internal view returns (bool) {
 		bytes32 hash = get_card_hash(cardSeed);
-		return ecrecover(hash, v, r, s) == addr && get_private_card_from_seed(v, r, s) == card;
+		(uint8 v, bytes32 r, bytes32 s) = split_signature(signature);
+
+		return ecrecover(hash, v, r, s) == addr &&
+			get_private_card_from_seed(v, r, s) == card;
 	}
 
 
@@ -538,10 +542,29 @@ contract Game {
 		return false;
 	}
 
+
 	// https://solidity.readthedocs.io/en/v0.6.3/solidity-by-example.html
 	/// builds a prefixed hash to mimic the behavior of eth_sign.
 	function prefixed(bytes32 hash) internal pure returns (bytes32) {
-		return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hash));
+		//return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hash));
+		return keccak256(abi.encode("\x19Ethereum Signed Message:\n32", hash));
+	}
+
+
+	// https://solidity.readthedocs.io/en/v0.6.3/solidity-by-example.html
+	function split_signature(bytes memory sig) internal pure returns (uint8 v, bytes32 r, bytes32 s) {
+		require(sig.length == 65);
+
+		assembly {
+			// first 32 bytes, after the length prefix.
+			r := mload(add(sig, 32))
+			// second 32 bytes.
+			s := mload(add(sig, 64))
+			// final byte (first byte of the next 32 bytes).
+			v := byte(0, mload(add(sig, 96)))
+		}
+
+		return (v, r, s);
 	}
 
 
