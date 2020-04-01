@@ -541,7 +541,7 @@ contract Game {
 	// https://solidity.readthedocs.io/en/v0.6.3/solidity-by-example.html
 	/// builds a prefixed hash to mimic the behavior of eth_sign.
 	function prefixed(bytes32 hash) internal pure returns (bytes32) {
-		return keccak256(abi.encodePacked("\x19ethereum signed message:\n32", hash));
+		return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hash));
 	}
 
 
