@@ -267,7 +267,7 @@ GameInterface::getPrivateCardFromSeed(uint8_t cardSeed)
 	}
 
 	return getIntFromContract(
-		"get_private_card_from_seed",
+		"get_private_card_from_signature",
 		" -p " + sig);
 }
 

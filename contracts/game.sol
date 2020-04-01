@@ -177,10 +177,10 @@ contract Game {
 	}
 
 
-	function get_private_card_from_seed(uint8 v, bytes32 r, bytes32 s) public pure returns (uint8) {
-		uint8 c = v;
-		for (uint8 i = 0; i < 32; i++) {
-			c = c ^ uint8(r[i]) ^ uint8(s[i]);
+	function get_private_card_from_signature(bytes memory signature) public pure returns (uint8) {
+		uint8 c = 0;
+		for (uint8 i = 0; i < 65; i++) {
+			c = c ^ uint8(signature[i]);
 		}
 		return c % DECK_SIZE;
 	}
@@ -211,7 +211,7 @@ contract Game {
 		(uint8 v, bytes32 r, bytes32 s) = split_signature(signature);
 
 		return ecrecover(hash, v, r, s) == addr &&
-			get_private_card_from_seed(v, r, s) == card;
+			get_private_card_from_signature(signature) == card;
 	}
 
 
