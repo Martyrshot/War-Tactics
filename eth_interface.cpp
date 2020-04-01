@@ -338,6 +338,7 @@ EthInterface::callMutatorContract(
 string
 EthInterface::eth_sign(string const& data)
 {
+	string jsonResponceStr;
 	string jsonRequest = "{\"jsonrpc\":\"2.0\","
 						 "\"method\":\"eth_sign\","
 						 "\"params\":[\"0x" +
@@ -346,10 +347,21 @@ EthInterface::eth_sign(string const& data)
 						 data +
 						 "\"],\"id\":1}";
 
-	Json jsonResponce = Json::parse(this->eth_ipc_request(jsonRequest));
+	jsonResponceStr = this->eth_ipc_request(jsonRequest);
+
+
+
+	Json jsonResponce = Json::parse(jsonResponceStr);
 	auto result = jsonResponce.find("result");
 
-	if (result != jsonResponce.end())
+#ifdef _DEBUG
+	cout << "eth_sign: jsonResponce = \""
+		 << jsonResponceStr
+		 << "\""
+		 << endl;
+#endif //_DEBUG
+
+	if (result == jsonResponce.end())
 	{
 		throw TransactionFailedException(
 			"eth_sign(): \"result\" was not "
