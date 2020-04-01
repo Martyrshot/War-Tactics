@@ -216,10 +216,10 @@ GameInterface::hasDeck(void)
 vector<uint8_t>
 GameInterface::getPlayerSeedHand(uint8_t playerNum)
 {
-	return ethabi_decode_uint8_array(
+	return ethabi_decode_3d_uint8_array( // TODO: Change name of this decoder
 		getEthContractABI(),
 		"get_player_seed_hand",
-		getArrayFromContract("get_player_seed_hand", " -p " + to_string(playerNum)));
+		getFrom("get_player_seed_hand", " -p " + to_string(playerNum)));
 }
 
 
@@ -250,20 +250,30 @@ uint8_t
 GameInterface::getPrivateCardFromSeed(uint8_t cardSeed)
 {
 	string hash = getCardHash(cardSeed);
-	while (hash.length() < 130) {
-		hash = "0" + hash;
+	string sig = eth_sign(hash);
+
+#ifdef _DEBUG
+	cout << "getPrivateCardFromSeed(): hash = \""
+		 << hash
+		 << "\", sig = \""
+		 << sig
+		 << "\""
+		 << endl;
+#endif
+
+	sig = sig.substr(2);
+	while (sig.length() < 130) {
+		sig = "0" + sig;
 	}
 
 	return getIntFromContract(
-		"get_private_card_from_seed",
-		" -p " + hash.substr(0, 2) +
-		" -p " + hash.substr(2, 64) +
-		" -p " + hash.substr(66, 64));
+		"get_private_card_from_signature",
+		" -p " + sig);
 }
 
 
 
-std::vector<std::vector<std::vector<uint8_t>>>
+vector<vector<vector<uint8_t>>>
 GameInterface::getBoardState(void)
 {
 	uint16_t n = 0;
@@ -271,7 +281,7 @@ GameInterface::getBoardState(void)
 	vector<uint8_t> vec =  ethabi_decode_3d_uint8_array(
 		getEthContractABI(),
 		"get_board_state",
-		getArrayFromContract("get_board_state"));
+		getFrom("get_board_state", ""));
 
 	if (vec.size() != 3 * 10 * 9) {
 		throw ResourceRequestFailedException(
@@ -360,16 +370,16 @@ GameInterface::layUnit(uint8_t handIndex)
 	unique_ptr<unordered_map<string, string>> eventLog;
 	string hash = getHandCardHash(handIndex);
 	vector<uint8_t> hand = getPlayerSeedHand(0);
+	string sig = eth_sign(hash);
 
-	while (hash.length() < 130) {
-		hash = "0" + hash;
+	sig = sig.substr(2);
+	while (sig.length() < 130) {
+		sig = "0" + sig;
 	}
 
 	ethabiEncodeArgs = " -p " + to_string(handIndex) +
 		" -p " + to_string(getPrivateCardFromSeed(hand[handIndex])) +
-		" -p " + hash.substr(0, 2) +
-		" -p " + hash.substr(2, 64) +
-		" -p " + hash.substr(66, 64);
+		" -p " + sig;
 
 	return callMutatorContract("lay_unit", ethabiEncodeArgs, eventLog);
 }

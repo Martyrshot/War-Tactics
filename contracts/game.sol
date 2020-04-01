@@ -154,32 +154,16 @@ contract Game {
 		if (player[PLAYER1] == msg.sender) {
 			require(!has_player_deck[PLAYER1]);
 
-			if (has_player_deck[PLAYER2]) {
-				for (uint8 i = 0; i < DECK_SIZE; i++) {
-					deck[i] = deck[i] ^ _deck[i];
-				}
-
-			} else {
-				for (uint8 i = 0; i < DECK_SIZE; i++) {
-					deck[i] = _deck[i];
-				}
-			}
 			has_player_deck[PLAYER1] = true;
 
 		} else if (player[PLAYER2] == msg.sender) {
 			require(!has_player_deck[PLAYER2]);
 
-			if (has_player_deck[PLAYER1]) {
-				for (uint8 i = 0; i < DECK_SIZE; i++) {
-					deck[i] = deck[i] ^ _deck[i];
-				}
-
-			} else {
-				for (uint8 i = 0; i < DECK_SIZE; i++) {
-					deck[i] = _deck[i];
-				}
-			}
 			has_player_deck[PLAYER2] = true;
+		}
+
+		for (uint8 i = 0; i < DECK_SIZE; i++) {
+			deck[i] = deck[i] ^ _deck[i];
 		}
 
 		if (has_player_deck[PLAYER1] && has_player_deck[PLAYER2]) {
@@ -188,21 +172,15 @@ contract Game {
 
 		emit CreateDeck(msg.sender);
 
-		if (has_player_hq[PLAYER1] &&
-			has_player_hq[PLAYER2] &&
-			has_deck()
-		) {
-			emit GameStart();
-		}
-
+		check_game_start();
 		return true;
 	}
 
 
-	function get_private_card_from_seed(uint8 v, bytes32 r, bytes32 s) public pure returns (uint8) {
-		uint8 c = v;
-		for (uint8 i = 0; i < 32; i++) {
-			c = c ^ uint8(r[i]) ^ uint8(s[i]);
+	function get_private_card_from_signature(bytes memory signature) public pure returns (uint8) {
+		uint8 c = 0;
+		for (uint8 i = 0; i < 65; i++) {
+			c = c ^ uint8(signature[i]);
 		}
 		return c % DECK_SIZE;
 	}
@@ -223,13 +201,17 @@ contract Game {
 		}
 
 		require(handIndex < player_hand[sender].length);
-		return prefixed(keccak256(abi.encodePacked(game_create_time, game_join_time, player_hand[sender][handIndex])));
+
+		return get_card_hash(player_hand[sender][handIndex]);
 	}
 
 
-	function verify_card(uint8 card, uint8 cardSeed, address addr, uint8 v, bytes32 r, bytes32 s) public view returns (bool) {
+	function verify_card(uint8 card, uint8 cardSeed, address addr, bytes memory signature) internal view returns (bool) {
 		bytes32 hash = get_card_hash(cardSeed);
-		return ecrecover(hash, v, r, s) == addr && get_private_card_from_seed(v, r, s) == card;
+		(uint8 v, bytes32 r, bytes32 s) = split_signature(signature);
+
+		return ecrecover(hash, v, r, s) == addr &&
+			get_private_card_from_signature(signature) == card;
 	}
 
 
@@ -245,6 +227,7 @@ contract Game {
 		draw_cards();
 		check_game_start();
 		emit DrawHand(msg.sender);
+		return true;
 	}
 
 
@@ -383,7 +366,7 @@ contract Game {
 	}
 
 
-	function lay_unit(uint8 handIndex, uint8 card, uint8 v, bytes32 r, bytes32 s) external _players_turn returns (bool) {
+	function lay_unit(uint8 handIndex, uint8 card, bytes calldata signature) external _players_turn returns (bool) {
 		uint8 sender;
 		uint8 other;
 
@@ -399,7 +382,20 @@ contract Game {
 
 		require(handIndex < player_hand[sender].length);
 		require(has_player_hq[sender] || board[BOARD_STATE][player_hq[sender]][sender * BOARD_HEIGHT] == STATE_HQ);
-		require(verify_card(card, player_hand[sender][handIndex], msg.sender, v, r, s));
+		require(verify_card(card, player_hand[sender][handIndex], msg.sender, signature));
+
+		//board[BOARD_STATE][player_hq[sender]][sender * BOARD_HEIGHT] = STATE_HQ_AND_UNIT;
+		//board[BOARD_CARD][player_hq[sender]][sender * BOARD_HEIGHT] = card;
+
+		if (sender == PLAYER1) {
+			board[BOARD_STATE][1][0] = STATE_HQ_AND_UNIT;
+			board[BOARD_CARD][1][0] = card;
+		}
+		else
+		{
+			board[BOARD_STATE][1][8] = STATE_HQ_AND_UNIT;
+			board[BOARD_CARD][1][8] = card;
+		}
 
 		player_hand[sender][handIndex] = player_hand[sender][player_hand[sender].length - 1];
 		player_hand[sender].pop();
@@ -556,10 +552,29 @@ contract Game {
 		return false;
 	}
 
+
 	// https://solidity.readthedocs.io/en/v0.6.3/solidity-by-example.html
 	/// builds a prefixed hash to mimic the behavior of eth_sign.
 	function prefixed(bytes32 hash) internal pure returns (bytes32) {
-		return keccak256(abi.encodePacked("\x19ethereum signed message:\n32", hash));
+		//return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hash));
+		return keccak256(abi.encode("\x19Ethereum Signed Message:\n32", hash));
+	}
+
+
+	// https://solidity.readthedocs.io/en/v0.6.3/solidity-by-example.html
+	function split_signature(bytes memory sig) internal pure returns (uint8 v, bytes32 r, bytes32 s) {
+		require(sig.length == 65);
+
+		assembly {
+			// first 32 bytes, after the length prefix.
+			r := mload(add(sig, 32))
+			// second 32 bytes.
+			s := mload(add(sig, 64))
+			// final byte (first byte of the next 32 bytes).
+			v := byte(0, mload(add(sig, 96)))
+		}
+
+		return (v, r, s);
 	}
 
 

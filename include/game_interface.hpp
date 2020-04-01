@@ -131,17 +131,6 @@ class GameInterface : public EthInterface
 	std::string
 	getHandCardHash(uint8_t handIndex);
 
-	std::string
-	getFromDeviceID(std::string const& funcName, uint32_t deviceID);
-
-	uint64_t
-	getIntFromDeviceID(std::string const& funcName, uint32_t deviceID);
-
-	std::string
-	getStringFromDeviceID(std::string const& funcName, uint32_t deviceID);
-
-	std::vector<std::string>
-	getStringsFromDeviceID(std::string const& funcName, uint32_t deviceID);
 };
 
 

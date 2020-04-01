@@ -208,26 +208,6 @@ EthInterface::getIntFromContract(string const& funcName, string const& params)
 
 
 
-// Throws ResourceRequestFailedException from ethabi()
-string
-EthInterface::getArrayFromContract(string const& funcName)
-{
-	return getArrayFromContract(funcName, "");
-}
-
-
-
-// Throws ResourceRequestFailedException from ethabi()
-string
-EthInterface::getArrayFromContract(string const& funcName, string const& params)
-{
-	string arrayStr;
-	arrayStr = getFrom(funcName, params);
-	return arrayStr;
-}
-
-
-
 Json
 EthInterface::call_helper(string const& data)
 {
@@ -338,27 +318,44 @@ EthInterface::callMutatorContract(
 string
 EthInterface::eth_sign(string const& data)
 {
+	string jsonResponceStr;
 	string jsonRequest = "{\"jsonrpc\":\"2.0\","
 						 "\"method\":\"eth_sign\","
 						 "\"params\":[\"0x" +
 						 clientAddress +
-						 "\",\"" +
+						 "\",\"0x" +
 						 data +
 						 "\"],\"id\":1}";
 
-#ifdef _DEBUG
-	cout << "eth_sign()" << endl;
-#endif //_DEBUG
+	jsonResponceStr = this->eth_ipc_request(jsonRequest);
 
-	Json jsonResponce = this->eth_ipc_request(jsonRequest);
+
+
+	Json jsonResponce = Json::parse(jsonResponceStr);
 	auto result = jsonResponce.find("result");
 
-	if (result != jsonResponce.end())
+#ifdef _DEBUG
+	cout << "eth_sign: jsonResponce = \""
+		 << jsonResponceStr
+		 << "\""
+		 << endl;
+#endif //_DEBUG
+
+	if (result == jsonResponce.end())
 	{
 		throw TransactionFailedException(
 			"eth_sign(): \"result\" was not "
 			"present in responce to eth_sign!");
 	}
+
+#ifdef _DEBUG
+	cout << "eth_sign(\""
+		 << data
+		 << "\") = \""
+		 << result.value()
+		 << "\""
+		 << endl;
+#endif //_DEBUG
 
 	return result.value();
 }
