@@ -198,8 +198,8 @@ void printBoard(vector< vector< vector<uint8_t> > >board, int playerID,
                             cout << "\033[1;31m";
                         }
                         int curcard = board[0][i][j] % 14;
-                        if (curcard == 10) {
-                            cout << " " << (int)curcard;
+                        if (curcard == 9) {
+                            cout << " " << (int)(curcard + 1);
                         }
                         else if (curcard == 10) {
                             cout << " J ";
@@ -214,7 +214,7 @@ void printBoard(vector< vector< vector<uint8_t> > >board, int playerID,
                             cout << " A ";
                         }
                         else {
-                            cout << " " << (int)curcard << " ";
+                            cout << " " << (int)(curcard + 1) << " ";
                         }
                         if (oneMore) {
                             cout << "\033[1;33m";
