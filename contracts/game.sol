@@ -384,8 +384,18 @@ contract Game {
 		require(has_player_hq[sender] || board[BOARD_STATE][player_hq[sender]][sender * BOARD_HEIGHT] == STATE_HQ);
 		require(verify_card(card, player_hand[sender][handIndex], msg.sender, signature));
 
-		board[BOARD_STATE][player_hq[sender]][sender * BOARD_HEIGHT] = STATE_HQ_AND_UNIT;
-		board[BOARD_CARD][player_hq[sender]][sender * BOARD_HEIGHT] = card;
+		//board[BOARD_STATE][player_hq[sender]][sender * BOARD_HEIGHT] = STATE_HQ_AND_UNIT;
+		//board[BOARD_CARD][player_hq[sender]][sender * BOARD_HEIGHT] = card;
+
+		if (sender == PLAYER1) {
+			board[BOARD_STATE][player_hq[sender]][0] = STATE_HQ_AND_UNIT;
+			board[BOARD_CARD][player_hq[sender]][0] = card;
+		}
+		else
+		{
+			board[BOARD_STATE][player_hq[sender]][BOARD_HEIGHT - 1] = STATE_HQ_AND_UNIT;
+			board[BOARD_CARD][player_hq[sender]][BOARD_HEIGHT - 1] = card;
+		}
 
 		player_hand[sender][handIndex] = player_hand[sender][player_hand[sender].length - 1];
 		player_hand[sender].pop();
