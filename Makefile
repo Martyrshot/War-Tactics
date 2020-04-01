@@ -21,6 +21,7 @@ CFLAGS = -Wno-psabi
 CPPFLAGS = -std=gnu++17 -Wall -Wextra -pedantic -g
 LDFLAGS = -lconfig++ \
 					-lpthread \
+					-lncurses \
 					-lboost_system
 
 JSONINC = ./json/include
@@ -59,7 +60,7 @@ OBJECTS := $(OBJ)/eth_interface.o \
 			$(OBJ)/misc.o \
 			$(OBJ)/client.o
 
-$(OBJ)/%.o: %.cpp
+$(OBJ)/%.o: %.cpp include/%.hpp
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $(DEBUG) -o $@ $(INCLUDE) $<
 
 $(BIN)/client: $(OBJECTS)

@@ -44,8 +44,8 @@ int main(int argc, char **argv) {
     (void) argc;
     (void) argv;
 
-    do {
-        selection = mainMenu(TITLE);
+		do {
+			selection = mainMenu(TITLE);
     } while (selection == -1);
     if (selection == 0) {
         if (!createGame()) {
