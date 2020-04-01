@@ -388,13 +388,13 @@ contract Game {
 		//board[BOARD_CARD][player_hq[sender]][sender * BOARD_HEIGHT] = card;
 
 		if (sender == PLAYER1) {
-			board[BOARD_STATE][1][0] = STATE_HQ_AND_UNIT;
-			board[BOARD_CARD][1][0] = card;
+			board[BOARD_STATE][player_hq[sender]][0] = STATE_HQ_AND_UNIT;
+			board[BOARD_CARD][player_hq[sender]][0] = card;
 		}
 		else
 		{
-			board[BOARD_STATE][1][8] = STATE_HQ_AND_UNIT;
-			board[BOARD_CARD][1][8] = card;
+			board[BOARD_STATE][player_hq[sender]][8] = STATE_HQ_AND_UNIT;
+			board[BOARD_CARD][player_hq[sender]][8] = card;
 		}
 
 		player_hand[sender][handIndex] = player_hand[sender][player_hand[sender].length - 1];
