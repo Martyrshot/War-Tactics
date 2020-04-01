@@ -346,10 +346,6 @@ EthInterface::eth_sign(string const& data)
 						 data +
 						 "\"],\"id\":1}";
 
-#ifdef _DEBUG
-	cout << "eth_sign()" << endl;
-#endif //_DEBUG
-
 	Json jsonResponce = this->eth_ipc_request(jsonRequest);
 	auto result = jsonResponce.find("result");
 
@@ -359,6 +355,15 @@ EthInterface::eth_sign(string const& data)
 			"eth_sign(): \"result\" was not "
 			"present in responce to eth_sign!");
 	}
+
+#ifdef _DEBUG
+	cout << "eth_sign(\""
+		 << data
+		 << "\") = \""
+		 << result.value()
+		 << "\""
+		 << endl;
+#endif //_DEBUG
 
 	return result.value();
 }
