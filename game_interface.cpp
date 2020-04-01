@@ -268,9 +268,7 @@ GameInterface::getPrivateCardFromSeed(uint8_t cardSeed)
 
 	return getIntFromContract(
 		"get_private_card_from_seed",
-		" -p " + to_string(strtol(sig.substr(0, 2).c_str(), nullptr, 16)) +
-		" -p " + sig.substr(2, 64) +
-		" -p " + sig.substr(66, 64));
+		" -p " + sig);
 }
 
 
