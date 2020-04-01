@@ -245,6 +245,7 @@ contract Game {
 		draw_cards();
 		check_game_start();
 		emit DrawHand(msg.sender);
+		return true;
 	}
 
 
