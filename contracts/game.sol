@@ -366,7 +366,7 @@ contract Game {
 	}
 
 
-	function lay_unit(uint8 handIndex, uint8 card, uint8 v, bytes32 r, bytes32 s) external _players_turn returns (bool) {
+	function lay_unit(uint8 handIndex, uint8 card, bytes calldata signature) external _players_turn returns (bool) {
 		uint8 sender;
 		uint8 other;
 
@@ -382,7 +382,7 @@ contract Game {
 
 		require(handIndex < player_hand[sender].length);
 		require(has_player_hq[sender] || board[BOARD_STATE][player_hq[sender]][sender * BOARD_HEIGHT] == STATE_HQ);
-		require(verify_card(card, player_hand[sender][handIndex], msg.sender, v, r, s));
+		require(verify_card(card, player_hand[sender][handIndex], msg.sender, signature));
 
 		board[BOARD_STATE][player_hq[sender]][sender * BOARD_HEIGHT] = STATE_HQ_AND_UNIT;
 		board[BOARD_CARD][player_hq[sender]][sender * BOARD_HEIGHT] = card;

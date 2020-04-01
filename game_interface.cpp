@@ -370,16 +370,16 @@ GameInterface::layUnit(uint8_t handIndex)
 	unique_ptr<unordered_map<string, string>> eventLog;
 	string hash = getHandCardHash(handIndex);
 	vector<uint8_t> hand = getPlayerSeedHand(0);
+	string sig = eth_sign(hash);
 
-	while (hash.length() < 130) {
-		hash = "0" + hash;
+	sig = sig.substr(2);
+	while (sig.length() < 130) {
+		sig = "0" + sig;
 	}
 
 	ethabiEncodeArgs = " -p " + to_string(handIndex) +
 		" -p " + to_string(getPrivateCardFromSeed(hand[handIndex])) +
-		" -p " + hash.substr(0, 2) +
-		" -p " + hash.substr(2, 64) +
-		" -p " + hash.substr(66, 64);
+		" -p " + sig;
 
 	return callMutatorContract("lay_unit", ethabiEncodeArgs, eventLog);
 }
