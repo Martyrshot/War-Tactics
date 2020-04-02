@@ -412,11 +412,8 @@ contract Game {
 		}
 
 		require(handIndex < player_hand[sender].length);
-		require(has_player_hq[sender] || board[BOARD_STATE][player_hq[sender]][sender * BOARD_HEIGHT] == STATE_HQ);
+		require(has_player_hq[sender] && board[BOARD_STATE][player_hq[sender]][uint8(sender * BOARD_HEIGHT)] == STATE_HQ);
 		require(verify_card(card, player_hand[sender][handIndex], msg.sender, signature));
-
-		//board[BOARD_STATE][player_hq[sender]][sender * BOARD_HEIGHT] = STATE_HQ_AND_UNIT;
-		//board[BOARD_CARD][player_hq[sender]][sender * BOARD_HEIGHT] = card;
 
 		if (sender == PLAYER1) {
 			board[BOARD_STATE][player_hq[sender]][0] = STATE_HQ_AND_UNIT;
@@ -526,6 +523,8 @@ contract Game {
 					player1_won = true;
 				}
 
+				emit Attack(msg.sender);
+				emit NextTurn();
 				return true;
 			}
 		}
