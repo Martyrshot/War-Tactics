@@ -3,7 +3,6 @@
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/lexical_cast.hpp>
 #include <iostream>
-#include <sstream>
 #include <string>
 
 #include <fcntl.h>
@@ -197,13 +196,13 @@ EthInterface::getIntFromContract(string const& funcName)
 uint64_t
 EthInterface::getIntFromContract(string const& funcName, string const& params)
 {
-	stringstream ss;
-	uint64_t result;
+	string hex;
+	uint64_t dec;
 
-	ss << getFrom(funcName, params);
-	ss >> result;
+	hex = getFrom(funcName, params);
+	dec = strtoull(hex.c_str(), nullptr, 16);
 
-	return result;
+	return dec;
 }
 
 
