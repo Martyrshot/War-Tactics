@@ -81,10 +81,10 @@ void printBoard(vector< vector< vector<uint8_t> > >board, int playerID,
                     break;
                     case (STATE_PATH):
                         if (foundSquare) {
-                            cout << "\033[1;0m" << " = " << "\033[1;33m";
+                            cout << "\033[1;0m" << " \xb0 " << "\033[1;33m";
                         }
                         else {
-                            cout << " ▓ ";
+                            cout << " \xb2 ";
                         }
                     break;
                     case (STATE_HQ):
@@ -167,10 +167,10 @@ void printBoard(vector< vector< vector<uint8_t> > >board, int playerID,
                     break;
                     case (STATE_PATH):
                         if (foundSquare) {
-                            cout << "\033[1;0m" << " = " << "\033[1;33m";
+                            cout << "\033[1;0m" << " \xb2 " << "\033[1;33m";
                         }
                         else {
-                            cout << " ▓ ";
+                            cout << " \xb2 ";
                         }
                     break;
                     case (STATE_HQ):
@@ -199,7 +199,7 @@ void printBoard(vector< vector< vector<uint8_t> > >board, int playerID,
                         }
                         uint curcard = board[0][j][i] % 13;
                         if (curcard == 8) {
-                            cout << " " << (int)(curcard + 1);
+                            cout << " " << (int)(curcard + 2);
                         }
                         else if (curcard == 9) {
                             cout << " J ";
@@ -246,7 +246,7 @@ getAllUnitPoints(vector< vector< vector<uint8_t> > >board, int playerID) {
             if ((board[1][j][i] == STATE_PATH_AND_UNIT
                             || board[1][j][i] == STATE_HQ_AND_UNIT)
                             && board[2][j][i] == playerID) {
-                
+
                 points.push_back({j, i});
             }
         }
@@ -273,7 +273,7 @@ getPossibleMovementOptionsForUnit(vector< vector< vector<uint8_t> > >board,
     if (y < 8 && board[1][x][y+1] == STATE_PATH) {
                 points.push_back({x,static_cast<unsigned char>(y+1)});
     }
-    
+
     return points;
 }
 
@@ -395,7 +395,7 @@ getAdjacentTiles(vector<uint8_t> unit) {
     if (y < 8) {
             points.push_back({x,static_cast<unsigned char>(y+1)});
     }
-    
+
     return points;
 }
 
