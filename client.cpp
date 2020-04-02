@@ -183,6 +183,7 @@ void playGame(void) {
         // TODO confirm which health is which
         printBoard(board, playerID, points, healths[0], healths[1]);
         printHand(handIDs);
+        interface.waitNextTurn();
         int action = promptForAction(PROMPTACTION);
         switch (action) {
             case 0:
