@@ -81,10 +81,10 @@ void printBoard(vector< vector< vector<uint8_t> > >board, int playerID,
                     break;
                     case (STATE_PATH):
                         if (foundSquare) {
-                            cout << "\033[1;0m" << " \xb0 " << "\033[1;33m";
+                            cout << "\033[1;0m" << " ░ " << "\033[1;33m";
                         }
                         else {
-                            cout << " \xb2 ";
+                            cout << " ▓ ";
                         }
                     break;
                     case (STATE_HQ):
@@ -167,10 +167,10 @@ void printBoard(vector< vector< vector<uint8_t> > >board, int playerID,
                     break;
                     case (STATE_PATH):
                         if (foundSquare) {
-                            cout << "\033[1;0m" << " \xb2 " << "\033[1;33m";
+                            cout << "\033[1;0m" << " ░ " << "\033[1;33m";
                         }
                         else {
-                            cout << " \xb2 ";
+                            cout << " ▓ ";
                         }
                     break;
                     case (STATE_HQ):
