@@ -253,7 +253,9 @@ GameInterface::getPrivateCardFromSeed(uint8_t cardSeed)
 	string sig = eth_sign(hash);
 
 #ifdef _DEBUG
-	cout << "getPrivateCardFromSeed(): hash = \""
+	cout << "getPrivateCardFromSeed("
+		 << cardSeed
+		 << "): hash = \""
 		 << hash
 		 << "\", sig = \""
 		 << sig
@@ -400,7 +402,7 @@ GameInterface::moveUnit(uint8_t unitX,
 		" -p " + to_string(moveX) +
 		" -p " + to_string(moveY);
 
-	return callMutatorContract("lay_unit", ethabiEncodeArgs, eventLog);
+	return callMutatorContract("move_unit", ethabiEncodeArgs, eventLog);
 }
 
 
