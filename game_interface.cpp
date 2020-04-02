@@ -254,7 +254,7 @@ GameInterface::getPrivateCardFromSeed(uint8_t cardSeed)
 
 #ifdef _DEBUG
 	cout << "getPrivateCardFromSeed("
-		 << cardSeed
+		 << to_string(cardSeed)
 		 << "): hash = \""
 		 << hash
 		 << "\", sig = \""
