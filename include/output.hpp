@@ -84,7 +84,7 @@ void printBoard(vector< vector< vector<uint8_t> > >board, int playerID,
                             cout << "\033[1;0m" << " = " << "\033[1;33m";
                         }
                         else {
-                            cout << " = ";
+                            cout << " ▓ ";
                         }
                     break;
                     case (STATE_HQ):
@@ -170,7 +170,7 @@ void printBoard(vector< vector< vector<uint8_t> > >board, int playerID,
                             cout << "\033[1;0m" << " = " << "\033[1;33m";
                         }
                         else {
-                            cout << " = ";
+                            cout << " ▓ ";
                         }
                     break;
                     case (STATE_HQ):
@@ -279,11 +279,15 @@ getPossibleMovementOptionsForUnit(vector< vector< vector<uint8_t> > >board,
 
 
 vector< vector<uint8_t> >
+getFriendlyHQ(vector< vector< vector<uint8_t> > >board, int playerID);
+
+vector< vector<uint8_t> >
 getAllPathPlacementOptions(vector< vector< vector<uint8_t> > >board,
                                                                 int playerID) {
     vector< vector<uint8_t> > points;
     vector< vector<uint8_t> > units = getAllUnitPoints(board, playerID);
-
+    vector< vector<uint8_t> > hq = getFriendlyHQ(board, playerID);
+    units.insert(units.end(), hq.begin(), hq.end());
     for (vector<uint8_t> unit: units) {
 
         uint8_t x = unit[0];
