@@ -287,8 +287,8 @@ GameInterface::getBoardState(void)
 	// THIS IS A TEMPORARY FIX FOR APPARENT ISSUES ON OS X
 	if (rawData.length() > 270 * 64)
 	{
-		// rawData = rawData.substr(rawData.length() - 270 * 64); // Trim from front
-		rawData = rawData.substr(0, 270 * 64); // Trim from rear
+		rawData = rawData.substr(rawData.length() - 270 * 64); // Trim from front
+		// rawData = rawData.substr(0, 270 * 64); // Trim from rear
 	}
 
 	vector<uint8_t> vec =  ethabi_decode_3d_uint8_array(
