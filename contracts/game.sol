@@ -124,6 +124,7 @@ contract Game {
 		board[BOARD_STATE][5][4] = STATE_PATH;
 		board[BOARD_STATE][5][3] = STATE_PATH;
 		board[BOARD_STATE][4][3] = STATE_PATH;
+		board[BOARD_STATE][3][3] = STATE_PATH;
 		board[BOARD_STATE][2][3] = STATE_PATH;
 		board[BOARD_STATE][2][2] = STATE_PATH;
 		board[BOARD_STATE][2][1] = STATE_PATH;
