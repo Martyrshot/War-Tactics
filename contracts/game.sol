@@ -210,9 +210,8 @@ contract Game {
 		bytes32 message = prefixed(get_card_hash(cardSeed));
 		(uint8 v, bytes32 r, bytes32 s) = split_signature(signature);
 
-		// return ecrecover(message, v, r, s) == addr &&
-		// 	get_private_card_from_signature(signature) == card;
-		return ecrecover(message, v, r, s) == addr;
+		return ecrecover(message, v, r, s) == addr &&
+			get_private_card_from_signature(signature) == card;
 	}
 
 
