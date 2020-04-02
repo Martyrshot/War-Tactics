@@ -134,6 +134,14 @@ contract Game {
 		board[BOARD_STATE][7][2] = STATE_PATH;
 		board[BOARD_STATE][7][1] = STATE_PATH;
 
+		board[BOARD_STATE][6][3] = STATE_PATH_AND_UNIT;
+		board[BOARD_OWNER][6][3] = 1;
+		board[BOARD_CARD][6][3] = 24;
+
+		board[BOARD_STATE][5][3] = STATE_PATH_AND_UNIT;
+		board[BOARD_OWNER][5][3] = 2;
+		board[BOARD_CARD][5][3] = 37;
+
 
 		game_create_time = uint2str(now);
 	}
