@@ -187,7 +187,7 @@ contract Game {
 
 
 	function get_card_hash(uint8 cardSeed) public view returns (bytes32) {
-		return prefixed(keccak256(abi.encodePacked(game_create_time, game_join_time, cardSeed)));
+		return keccak256(abi.encodePacked(game_create_time, game_join_time, cardSeed));
 	}
 
 
@@ -207,11 +207,12 @@ contract Game {
 
 
 	function verify_card(uint8 card, uint8 cardSeed, address addr, bytes memory signature) internal view returns (bool) {
-		bytes32 hash = get_card_hash(cardSeed);
+		bytes32 message = prefixed(get_card_hash(cardSeed));
 		(uint8 v, bytes32 r, bytes32 s) = split_signature(signature);
 
-		return ecrecover(hash, v, r, s) == addr &&
-			get_private_card_from_signature(signature) == card;
+		// return ecrecover(message, v, r, s) == addr &&
+		// 	get_private_card_from_signature(signature) == card;
+		return ecrecover(message, v, r, s) == addr;
 	}
 
 
@@ -560,8 +561,7 @@ contract Game {
 	// https://solidity.readthedocs.io/en/v0.6.3/solidity-by-example.html
 	/// builds a prefixed hash to mimic the behavior of eth_sign.
 	function prefixed(bytes32 hash) internal pure returns (bytes32) {
-		//return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hash));
-		return keccak256(abi.encode("\x19Ethereum Signed Message:\n32", hash));
+		return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hash));
 	}
 
 
