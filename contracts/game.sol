@@ -116,33 +116,6 @@ contract Game {
 		has_player_hq[PLAYER2] = false;
 		has_player2 = false;
 
-		// Set a test board state:
-		board[BOARD_STATE][4][7] = STATE_PATH;
-		board[BOARD_STATE][4][6] = STATE_PATH;
-		board[BOARD_STATE][4][5] = STATE_PATH;
-		board[BOARD_STATE][5][5] = STATE_PATH;
-		board[BOARD_STATE][5][4] = STATE_PATH;
-		board[BOARD_STATE][5][3] = STATE_PATH;
-		board[BOARD_STATE][4][3] = STATE_PATH;
-		board[BOARD_STATE][3][3] = STATE_PATH;
-		board[BOARD_STATE][2][3] = STATE_PATH;
-		board[BOARD_STATE][2][2] = STATE_PATH;
-		board[BOARD_STATE][2][1] = STATE_PATH;
-
-		board[BOARD_STATE][6][3] = STATE_PATH;
-		board[BOARD_STATE][7][3] = STATE_PATH;
-		board[BOARD_STATE][7][2] = STATE_PATH;
-		board[BOARD_STATE][7][1] = STATE_PATH;
-
-		board[BOARD_STATE][6][3] = STATE_PATH_AND_UNIT;
-		board[BOARD_OWNER][6][3] = 1;
-		board[BOARD_CARD][6][3] = 24;
-
-		board[BOARD_STATE][5][3] = STATE_PATH_AND_UNIT;
-		board[BOARD_OWNER][5][3] = 2;
-		board[BOARD_CARD][5][3] = 37;
-
-
 		game_create_time = uint2str(now);
 	}
 
