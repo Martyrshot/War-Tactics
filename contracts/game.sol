@@ -347,7 +347,11 @@ contract Game {
 		require(board[BOARD_STATE][x][y] == STATE_BLANK);
 		require(
 			(board[BOARD_OWNER][adjacentPathX][adjacentPathY] == sender + 1) &&
-			(board[BOARD_STATE][adjacentPathX][adjacentPathY] != STATE_BLANK) &&
+			(
+				board[BOARD_STATE][adjacentPathX][adjacentPathY] == STATE_PATH_AND_UNIT ||
+				board[BOARD_STATE][adjacentPathX][adjacentPathY] == STATE_HQ ||
+				board[BOARD_STATE][adjacentPathX][adjacentPathY] == STATE_HQ_AND_UNIT
+			) &&
 			check_neighbouring(x, y, adjacentPathX, adjacentPathY)
 		);
 
