@@ -279,22 +279,11 @@ vector<vector<vector<uint8_t>>>
 GameInterface::getBoardState(void)
 {
 	uint16_t n = 0;
-	string rawData;
 	vector<vector<vector<uint8_t>>> result(3, vector<vector<uint8_t>> (10, vector<uint8_t> (9, 0)));
-
-	rawData = getFrom("get_board_state", "");
-
-	// THIS IS A TEMPORARY FIX FOR APPARENT ISSUES ON OS X
-	if (rawData.length() > 270 * 64)
-	{
-		rawData = rawData.substr(rawData.length() - 270 * 64); // Trim from front
-		// rawData = rawData.substr(0, 270 * 64); // Trim from rear
-	}
-
 	vector<uint8_t> vec =  ethabi_decode_3d_uint8_array(
 		getEthContractABI(),
 		"get_board_state",
-		rawData);
+		getFrom("get_board_state", ""));
 
 	if (vec.size() != 3 * 10 * 9) {
 		throw ResourceRequestFailedException(
