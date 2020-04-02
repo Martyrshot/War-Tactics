@@ -219,7 +219,7 @@ GameInterface::getPlayerSeedHand(uint8_t playerNum)
 	return ethabi_decode_3d_uint8_array( // TODO: Change name of this decoder
 		getEthContractABI(),
 		"get_player_seed_hand",
-		getFrom("get_player_seed_hand", " -p " + to_string(playerNum)));
+		getFrom("get_player_seed_hand", "-p " + to_string(playerNum)));
 }
 
 
@@ -230,7 +230,7 @@ GameInterface::getCardHash(uint8_t cardSeed)
 	return ethabi_decode_result(
 		getEthContractABI(),
 		"get_card_hash",
-		getFrom("get_card_hash", " -p '" + to_string(cardSeed) + "'"));
+		getFrom("get_card_hash", "-p '" + to_string(cardSeed) + "'"));
 }
 
 
@@ -241,7 +241,7 @@ GameInterface::getHandCardHash(uint8_t handIndex)
 	return ethabi_decode_result(
 		getEthContractABI(),
 		"get_hand_card_hash",
-		getFrom("get_hand_card_hash", " -p '" + to_string(handIndex) + "'"));
+		getFrom("get_hand_card_hash", "-p '" + to_string(handIndex) + "'"));
 }
 
 
@@ -270,7 +270,7 @@ GameInterface::getPrivateCardFromSeed(uint8_t cardSeed)
 
 	return getIntFromContract(
 		"get_private_card_from_signature",
-		" -p " + sig);
+		"-p " + sig);
 }
 
 
@@ -354,7 +354,7 @@ GameInterface::layPath(uint8_t x,
 	string ethabiEncodeArgs;
 	unique_ptr<unordered_map<string, string>> eventLog;
 
-	ethabiEncodeArgs = " -p " + to_string(x) +
+	ethabiEncodeArgs = "-p " + to_string(x) +
 		" -p " + to_string(y) +
 		" -p " + to_string(handIndex) +
 		" -p " + to_string(adjacentPathX) +
@@ -379,7 +379,7 @@ GameInterface::layUnit(uint8_t handIndex)
 		sig = "0" + sig;
 	}
 
-	ethabiEncodeArgs = " -p " + to_string(handIndex) +
+	ethabiEncodeArgs = "-p " + to_string(handIndex) +
 		" -p " + to_string(getPrivateCardFromSeed(hand[handIndex])) +
 		" -p " + sig;
 

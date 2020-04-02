@@ -279,7 +279,7 @@ EthInterface::callMutatorContract(
 	string data;
 
 	data = ethabi(
-		"encode -l function " + this->ethContractABI + " " + funcName + ethabiEncodeArgs);
+		"encode -l function " + this->ethContractABI + " " + funcName + " " + ethabiEncodeArgs);
 
 	try
 	{
