@@ -317,6 +317,7 @@ EthInterface::callMutatorContract(
 string
 EthInterface::eth_sign(string const& data)
 {
+	string sig;
 	string jsonResponceStr;
 	string jsonRequest = "{\"jsonrpc\":\"2.0\","
 						 "\"method\":\"eth_sign\","
@@ -347,16 +348,18 @@ EthInterface::eth_sign(string const& data)
 			"present in responce to eth_sign!");
 	}
 
+	sig = result.value();
+
 #ifdef _DEBUG
 	cout << "eth_sign(\""
 		 << data
 		 << "\") = \""
-		 << result.value()
+		 << sig
 		 << "\""
 		 << endl;
 #endif //_DEBUG
 
-	return result.value();
+	return sig;
 }
 
 

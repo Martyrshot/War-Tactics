@@ -264,9 +264,9 @@ GameInterface::getPrivateCardFromSeed(uint8_t cardSeed)
 #endif
 
 	sig = sig.substr(2);
-	while (sig.length() < 130) {
-		sig = "0" + sig;
-	}
+	// while (sig.length() < 130) {
+	// 	sig = "0" + sig;
+	// }
 
 	return getIntFromContract(
 		"get_private_card_from_signature",
@@ -370,14 +370,15 @@ GameInterface::layUnit(uint8_t handIndex)
 {
 	string ethabiEncodeArgs;
 	unique_ptr<unordered_map<string, string>> eventLog;
-	string hash = getHandCardHash(handIndex);
 	vector<uint8_t> hand = getPlayerSeedHand(0);
+
+	string hash = getHandCardHash(handIndex);
 	string sig = eth_sign(hash);
 
 	sig = sig.substr(2);
-	while (sig.length() < 130) {
-		sig = "0" + sig;
-	}
+	// while (sig.length() < 130) {
+	// 	sig = "0" + sig;
+	// }
 
 	ethabiEncodeArgs = "-p " + to_string(handIndex) +
 		" -p " + to_string(getPrivateCardFromSeed(hand[handIndex])) +
