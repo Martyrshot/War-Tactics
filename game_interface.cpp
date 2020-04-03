@@ -295,6 +295,11 @@ GameInterface::getBoardState(void)
 		}
 		catch (ResourceRequestFailedException const& e)
 		{
+
+#ifdef _DEBUG
+			cout << "getBoardState() failed on retry #" << to_string(retry) << endl;
+#endif //_DEBUG
+
 			if (retries >= 25)
 			{
 				throw ResourceRequestFailedException(
