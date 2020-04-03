@@ -297,7 +297,7 @@ GameInterface::getBoardState(void)
 		{
 
 #ifdef _DEBUG
-			cout << "getBoardState() failed on retry #" << to_string(retry) << endl;
+			cout << "getBoardState() failed on retry #" << to_string(retries) << endl;
 #endif //_DEBUG
 
 			if (retries >= 25)
