@@ -302,6 +302,8 @@ contract Game {
 	function place_hq(uint8 x) external _player returns (bool) {
 		uint8 sender;
 
+		require (x < BOARD_WIDTH);
+
 		if (msg.sender == player[PLAYER1]) {
 			sender = PLAYER1;
 		} else {
@@ -309,7 +311,6 @@ contract Game {
 		}
 
 		require(!has_player_hq[sender]);
-		require (x < BOARD_WIDTH);
 
 		if (sender == PLAYER1) {
 			board[BOARD_OWNER][x][0] = PLAYER1 + 1;
@@ -333,6 +334,12 @@ contract Game {
 		uint8 sender;
 		uint8 other;
 
+		require(
+			x < BOARD_WIDTH &&
+			y < BOARD_HEIGHT &&
+			adjacentPathX < BOARD_WIDTH &&
+			adjacentPathY < BOARD_HEIGHT
+		);
 		require(game_started && !game_over);
 
 		if (msg.sender == player[PLAYER1]) {
@@ -373,6 +380,7 @@ contract Game {
 	function lay_unit(uint8 handIndex, uint8 card, bytes calldata signature) external _players_turn returns (bool) {
 		uint8 sender;
 
+		require(signature.length == 65);
 		require(game_started && !game_over);
 
 		if (msg.sender == player[PLAYER1]) {
@@ -402,6 +410,12 @@ contract Game {
 	function move_unit(uint8 unitX, uint8 unitY, uint8 moveX, uint8 moveY) external _players_turn returns (bool) {
 		uint8 sender;
 
+		require(
+			unitX < BOARD_WIDTH &&
+			unitY < BOARD_HEIGHT &&
+			moveX < BOARD_WIDTH &&
+			moveY < BOARD_HEIGHT
+		);
 		require(game_started && !game_over);
 
 		if (msg.sender == player[PLAYER1]) {
@@ -452,6 +466,12 @@ contract Game {
 		uint8 attackerCard;
 		uint8 attackeeCard;
 
+		require(
+			unitX < BOARD_WIDTH &&
+			unitY < BOARD_HEIGHT &&
+			attackX < BOARD_WIDTH &&
+			attackY < BOARD_HEIGHT
+		);
 		require(game_started && !game_over);
 
 		if (msg.sender == player[PLAYER1]) {
