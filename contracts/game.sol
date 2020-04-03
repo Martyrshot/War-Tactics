@@ -116,6 +116,16 @@ contract Game {
 		has_player_hq[PLAYER2] = false;
 		has_player2 = false;
 
+		uint n = 0;
+		for (uint a = 0; a < 3; a++) {
+			for (uint b = 0; b < BOARD_WIDTH; b++) {
+				for (uint c = 0; c < BOARD_HEIGHT; c++) {
+					board[a][b][c] = uint8(n);
+					n++;
+				}
+			}
+		}
+
 		game_create_time = uint2str(now);
 	}
 
