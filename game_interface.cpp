@@ -279,11 +279,37 @@ vector<vector<vector<uint8_t>>>
 GameInterface::getBoardState(void)
 {
 	uint16_t n = 0;
+	uint8_t retries = 0;
 	vector<vector<vector<uint8_t>>> result(3, vector<vector<uint8_t>> (10, vector<uint8_t> (9, 0)));
-	vector<uint8_t> vec =  ethabi_decode_3d_uint8_array(
-		getEthContractABI(),
-		"get_board_state",
-		getFrom("get_board_state", ""));
+	vector<uint8_t> vec;
+
+	// Temporary fix for: https://github.com/ethereum/go-ethereum/issues/20890
+	while(1)
+	{
+		try
+		{
+			vec = ethabi_decode_3d_uint8_array(
+				getEthContractABI(),
+				"get_board_state",
+				getFrom("get_board_state", ""));
+		}
+		catch (ResourceRequestFailedException const& e)
+		{
+
+#ifdef _DEBUG
+			cout << "getBoardState() failed on retry #" << to_string(retries) << endl;
+#endif //_DEBUG
+
+			if (retries >= 25)
+			{
+				throw ResourceRequestFailedException(
+					"Failed to getBoardState after 25 attempts");
+			}
+			retries++;
+			continue;
+		}
+		break;
+	}
 
 	if (vec.size() != 3 * 10 * 9) {
 		throw ResourceRequestFailedException(
