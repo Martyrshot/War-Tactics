@@ -38,6 +38,10 @@ bool joinGame(string address);
 
 void playGame(void);
 
+vector< vector< vector<uint8_t> > >
+safeGetBoardState(vector< vector< vector<uint8_t> > >curBoard, 
+                                                             bool initialState);
+
 int main(int argc, char **argv) {
 
     unsigned int randSeed;
@@ -135,7 +139,7 @@ void playGame(void) {
         system("clear");
         points = getPossibleHQLocations(playerID);
         healths = interface.getHqHealth();
-        board = interface.getBoardState();
+        board = safeGetBoardState(board, true);
         printBoard(board, playerID, points, healths[0], healths[1]);
         points.clear();
         vector<uint8_t> point;
@@ -151,7 +155,7 @@ void playGame(void) {
     interface.waitGameStart();
     while(!interface.isGameOver()) {
         interface.waitNextTurn();
-        board = interface.getBoardState();
+        board = safeGetBoardState(board, false);
         handSeeds = interface.getPlayerSeedHand(playerID);
         handIDs = buildHand(handSeeds);
         vector<uint8_t> oppHand;
@@ -172,7 +176,7 @@ void playGame(void) {
         printBoard(board, playerID, points, healths[0], healths[1]);
         printHand(handIDs);
         interface.waitNextTurn();
-        board = interface.getBoardState();
+        board = safeGetBoardState(board, false);
         //promptForEnter(PRPOMPTSTARTTURN);
         // clear screen, and prompt for action
         system("clear");
@@ -286,7 +290,7 @@ void playGame(void) {
         points.clear();
 
         system("clear");
-        board = interface.getBoardState();
+        board = safeGetBoardState(board, false);
         printOpponentsHand(oppHandSize);
         healths = interface.getHqHealth();
         // TODO confirm which health is which
@@ -312,7 +316,53 @@ vector<uint8_t> buildHand(vector<uint8_t> handSeeds) {
     return result;
 }
 
-
+vector< vector< vector<uint8_t> > >
+safeGetBoardState(vector< vector< vector<uint8_t> > >curBoard, 
+                                                      bool initialVerification){
+    bool boardSound;
+    vector< vector< vector<uint8_t> > >tmpBoard;
+    do {
+        boardSound = true;
+        tmpBoard = interface.getBoardState();
+        if (initialVerification) {
+            for (uint i = 0; i < tmpBoard.size(); i++) {
+                for (uint j = 0; j < tmpBoard[i].size(); j++) {
+                    for (uint k = 0; k < tmpBoard[i][j].size(); k++) {
+                        // too lazy to do this properly and efficiently
+                        // maybe revisit
+                        if (tmpBoard.size() * tmpBoard[i].size() 
+                                            * tmpBoard[i][j].size() != 270) {
+                            boardSound = false;
+                        }
+                        if (tmpBoard[i][j][k] != 0) {
+                            boardSound = false;
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            for (uint i = 0; i < tmpBoard.size(); i++) {
+                int numDiffs = 0;
+                for (uint j = 0; j < tmpBoard[i].size(); j++) {
+                    for (uint k = 0; k < tmpBoard[i][j].size(); k++) {
+                        if (tmpBoard.size() * tmpBoard[i].size() 
+                                            * tmpBoard[i][j].size() != 270) {
+                            boardSound = false;
+                        }
+                        if (tmpBoard[i][j][k] != curBoard[i][j][k]) {
+                            numDiffs++;
+                        }
+                    }
+                }
+                if (numDiffs >= 2) {
+                    boardSound = false;
+                }
+            }
+        }
+    } while (!boardSound);
+    return tmpBoard;
+}
 
 void testDriver(void) {
     vector<uint8_t> v;
