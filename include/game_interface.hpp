@@ -19,6 +19,9 @@
 
 #define DECK_SIZE     52
 
+//Number of choices in the main menu
+#define MENU_ITEMS 2
+
 
 using namespace eth_interface;
 

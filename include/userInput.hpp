@@ -1,7 +1,6 @@
 #include <string>
 #include <iostream>
 #include <vector>
-#include <curses.h>
 
 using namespace std;
 
@@ -69,13 +68,8 @@ int8_t promptForCard(string stringToPrint, int numCards) {
 
 int8_t mainMenu(string stringToPrint) {
     int input = -1;
-		initscr();
-		printw("Select an option");
-		refresh();
-		getch();
-		endwin();
-    //cout << stringToPrint << endl << endl << endl << "Select an option:";
-    //cout << endl << "1) make a game" << endl << "2) join a game" << endl;
+    cout << stringToPrint << endl << endl << endl << "Select an option:";
+    cout << endl << "1) make a game" << endl << "2) join a game" << endl;
     cin >> input;
     if (input > 2 || input < 1) {
         cout << "Bad input!" << endl;

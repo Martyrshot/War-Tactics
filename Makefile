@@ -18,10 +18,12 @@ CC = g++
 
 # Disable warnings about future GCC abi changes
 CFLAGS = -Wno-psabi
-CPPFLAGS = -std=gnu++17 -Wall -Wextra -pedantic -g
+CPPFLAGS = -std=gnu++17 -Wall -Wextra -pedantic -g -D_GNU_SOURCE -D_DEFAULT_SOURCE
 LDFLAGS = -lconfig++ \
 					-lpthread \
-					-lncurses \
+					-lmenu \
+					-lncursesw \
+					-ltinfo \
 					-lboost_system
 
 JSONINC = ./json/include
@@ -60,7 +62,7 @@ OBJECTS := $(OBJ)/eth_interface.o \
 			$(OBJ)/misc.o \
 			$(OBJ)/client.o
 
-$(OBJ)/%.o: %.cpp include/%.hpp
+$(OBJ)/%.o: %.cpp
 	$(CC) $(CFLAGS) $(CPPFLAGS) -c $(DEBUG) -o $@ $(INCLUDE) $<
 
 $(BIN)/client: $(OBJECTS)

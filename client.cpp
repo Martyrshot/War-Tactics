@@ -8,6 +8,8 @@
 #include "include/game_interface.hpp"
 #include "include/prompts.hpp"
 #include <time.h> // TODO remove this after testing is complete
+#include <menu.h> //For ncurses
+#include <ncursesw/ncurses.h>
 using namespace std;
 
 // etherium address
@@ -40,25 +42,80 @@ void playGame(void);
 int main(int argc, char **argv) {
     
     int8_t selection = -1;
+		const char *menu_strings[] = {"make a game", "join a game", NULL};
+//We use MENU_ITEMS+1 because new_item MUST be NULL terminated before it's used
+//in new_menu. So part of the initialization is creating a NULL item....
+//gf 7 hours.
+		ITEM *menu_items[MENU_ITEMS+1];
+		MENU *main_menu;
+		WINDOW *main_win;
 
     (void) argc;
     (void) argv;
 
-		do {
-			selection = mainMenu(TITLE);
-    } while (selection == -1);
-    if (selection == 0) {
-        if (!createGame()) {
-            return -1;
-        }
-    }
-    else {
-        string addr = promptAddress();
-        if (!joinGame(addr)) {
-            return -1;
-        }
-    }
-    playGame();
+//Init ncurses		
+		setlocale(LC_ALL, "");
+		initscr();
+		if(has_colors()) {
+			start_color();
+		}
+		cbreak();
+		noecho();
+
+		printw(TITLE);
+		refresh();
+//Create a menu to choose a game option from
+    init_pair(1, COLOR_RED, COLOR_BLACK);
+		for(int i = 0; i < MENU_ITEMS+1; i++) {
+			 menu_items[i] = new_item(menu_strings[i], menu_strings[i]);
+		}
+    main_menu = new_menu(menu_items);
+		main_win = newwin(10,40,13,4);
+		keypad(main_win, TRUE);
+		set_menu_win(main_menu, main_win);
+		set_menu_sub(main_menu, derwin(main_win, 6, 38, 3, 1));
+		set_menu_mark(main_menu, " * ");
+		box(main_win, 0, 0);
+		wattron(main_win, COLOR_PAIR(1));
+		mvwprintw(main_win, 3, 15, "%s", "Main Menu");
+		wattroff(main_win, COLOR_PAIR(1));
+		refresh();
+		post_menu(main_menu);
+		wrefresh(main_win);
+		int c;
+    while((c = wgetch(main_win)) != KEY_F(1)) {
+		    switch(c) {
+				    case KEY_DOWN: menu_driver(main_menu, REQ_DOWN_ITEM);
+						    break;
+            case KEY_UP: menu_driver(main_menu, REQ_UP_ITEM);
+								break;
+				}
+				wrefresh(main_win);
+		}
+
+//Clean up
+		getch();
+		unpost_menu(main_menu);
+		free_menu(main_menu);
+		for(int i = 0; i < MENU_ITEMS; i++) {
+			  free_item(menu_items[i]);
+		}
+		endwin();
+	//	do {
+	//		selection = mainMenu(TITLE);
+  //  } while (selection == -1);
+  //  if (selection == 0) {
+  //      if (!createGame()) {
+  //          return -1;
+  //      }
+  //  }
+  //  else {
+  //      string addr = promptAddress();
+  //      if (!joinGame(addr)) {
+  //          return -1;
+  //      }
+  //  }
+  //  playGame();
     
     //testDriver();
     return 0;
