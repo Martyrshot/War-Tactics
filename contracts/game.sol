@@ -484,7 +484,10 @@ contract Game {
 
 		require(
 			board[BOARD_OWNER][unitX][unitY] == sender + 1 &&
-			board[BOARD_STATE][unitX][unitY] == STATE_PATH_AND_UNIT &&
+			(
+				board[BOARD_STATE][unitX][unitY] == STATE_PATH_AND_UNIT ||
+				board[BOARD_STATE][unitX][unitY] == STATE_HQ_AND_UNIT
+			) &&
 			check_neighbouring(unitX, unitY, attackX, attackY)
 		);
 		require(
