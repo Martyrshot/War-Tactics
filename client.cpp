@@ -24,6 +24,7 @@ vector<uint8_t> handIDs;
 uint8_t numCardsInHand = 0;
 
 uint8_t playerID;
+uint8_t oppID;
 
 
 
@@ -98,6 +99,7 @@ bool createGame(void) {
         return false;
     }
     playerID = 1;
+    oppID = 2;
     return true;
 }
 
@@ -125,6 +127,7 @@ bool joinGame(string address) {
         return false;
     }
     playerID = 2;
+    oppID = 1;
     return true;
 }
 
@@ -140,7 +143,8 @@ void playGame(void) {
         points = getPossibleHQLocations(playerID);
         healths = interface.getHqHealth();
         board = safeGetBoardState(board, true);
-        printBoard(board, playerID, points, healths[0], healths[1]);
+        printBoard(board, playerID, points, healths[playerID - 1],
+                                                             healths[oppID -1]);
         points.clear();
         vector<uint8_t> point;
         do {
@@ -185,7 +189,8 @@ void playGame(void) {
 
         healths = interface.getHqHealth();
         // TODO confirm which health is which
-        printBoard(board, playerID, points, healths[0], healths[1]);
+        printBoard(board, playerID, points, healths[playerID - 1],
+                                                             healths[oppID -1]);
         printHand(handIDs);
         interface.waitNextTurn();
         int action = promptForAction(PROMPTACTION);
@@ -204,7 +209,8 @@ void playGame(void) {
                 printOpponentsHand(oppHandSize);
                 healths = interface.getHqHealth();
                 // TODO confirm which health is which
-                printBoard(board, playerID, points, healths[0], healths[1]);
+                printBoard(board, playerID, points, healths[playerID - 1],
+                                                             healths[oppID -1]);
                 printHand(handIDs, cardID);
                 vector<uint8_t> point;
                 do {
@@ -253,7 +259,8 @@ void playGame(void) {
                 printOpponentsHand(oppHandSize);
                 healths = interface.getHqHealth();
                 // TODO confirm which health is which
-                printBoard(board, playerID, points, healths[0], healths[1]);
+                printBoard(board, playerID, points, healths[playerID - 1],
+                                                             healths[oppID -1]);
                 printHand(handIDs);
                 do {
                     dest = promptForPoint(PROMPTSECONDARYBOARDSELECTION);
@@ -275,7 +282,8 @@ void playGame(void) {
                 printOpponentsHand(oppHandSize);
                 healths = interface.getHqHealth();
                 // TODO confirm which health is which
-                printBoard(board, playerID, points, healths[0], healths[1]);
+                printBoard(board, playerID, points, healths[playerID - 1],
+                                                             healths[oppID -1]);
                 printHand(handIDs);
                 do {
                     dest = promptForPoint(PROMPTSECONDARYBOARDSELECTION);
@@ -294,7 +302,8 @@ void playGame(void) {
         printOpponentsHand(oppHandSize);
         healths = interface.getHqHealth();
         // TODO confirm which health is which
-        printBoard(board, playerID, points, healths[0], healths[1]);
+        printBoard(board, playerID, points, healths[playerID - 1],
+                                                             healths[oppID -1]);
         printHand(handIDs);
     }
     //TODO
