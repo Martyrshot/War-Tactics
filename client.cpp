@@ -158,7 +158,7 @@ void playGame(void) {
 
     points = getPossibleHQLocations(playerID);
     healths = interface.getHqHealth();
-    board = safeGetBoardState(board, true);
+    board = safeGetBoardState(board, false);
     printBoard(board, playerID, points, healths[playerID - 1],
                                                              healths[oppID -1]);
     interface.waitGameStart();
