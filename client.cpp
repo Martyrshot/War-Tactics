@@ -140,7 +140,7 @@ void playGame(void) {
     vector<uint8_t> healths;
 
 
-    //system("clear");
+    system("clear");
     points = getPossibleHQLocations(playerID);
     healths = interface.getHqHealth();
     board = safeGetBoardState(board, true);
@@ -171,7 +171,8 @@ void playGame(void) {
         hqPlaced = interface.placeHq(point[0]);
 
     }
-
+    
+    system("clear");
     points.clear();
     healths = interface.getHqHealth();
     board = safeGetBoardState(board, false);
@@ -181,6 +182,7 @@ void playGame(void) {
     interface.waitNextTurn();
 
     while(!interface.isGameOver()) {
+        system("clear");
         board = safeGetBoardState(board, false);
         handSeeds = interface.getPlayerSeedHand(playerID);
         handIDs = buildHand(handSeeds);

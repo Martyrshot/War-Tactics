@@ -11,13 +11,13 @@
                                     "4) Attack\n"
 
 #define PROMPTHANDSELECTION "Please enter the number corresponding to the card"\
-                            " you wish to play\n Enter 0 to select a different"\
+                            " you wish to play\nEnter 0 to select a different"\
                             " action\n"
 
-#define PROMPTBOARDSELECTION "Please select a tile. (e.g. A1)\n Enter 0 to" \
+#define PROMPTBOARDSELECTION "Please select a tile. (e.g. A1)\nEnter 0 to " \
                             "select a different action\n"
 
-#define PROMPTSECONDARYBOARDSELECTION "Please select another tile\n Enter 0 to"\
+#define PROMPTSECONDARYBOARDSELECTION "Please select another tile\nEnter 0 to "\
                             "select a different action\n"
 
 #define PROMPTBATTLELOST "You lost the battle\n"
