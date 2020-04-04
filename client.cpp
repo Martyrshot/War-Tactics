@@ -56,7 +56,7 @@ void cleanMenu(MENU *menu, ITEM **menu_items) {
 		}
 		unpost_menu(menu);
 		free_menu(menu);
-}	
+}
 
 int main(int argc, char **argv) {
 
@@ -78,7 +78,7 @@ int main(int argc, char **argv) {
 			                            "Join a game",
 																	"Exit",
 																	NULL};
-		
+
 		ITEM *menu_items[MENU_ITEMS+1];
 		ITEM *currentItem;
 		MENU *main_menu;
@@ -94,7 +94,6 @@ int main(int argc, char **argv) {
 		cbreak();
 		noecho();
 
-		printf("%lc", L'\U1F0A1000');
 		printw(TITLE);
 		refresh();
 		keypad(stdscr, TRUE);
@@ -258,7 +257,7 @@ void playGame(void) {
         hqPlaced = interface.placeHq(point[0]);
 
     }
-    
+
     system("clear");
     points.clear();
     healths = interface.getHqHealth();
