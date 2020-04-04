@@ -327,7 +327,9 @@ void playGame(void) {
         printBoard(board, playerID, points, healths[playerID - 1],
                                                              healths[oppID -1]);
         printHand(handIDs);
-        interface.waitNextTurn();
+        if (!interface.isGameOver()) {
+            interface.waitNextTurn();
+        }
 
 
     }
