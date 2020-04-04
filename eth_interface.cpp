@@ -426,18 +426,10 @@ EthInterface::create_contract(string const& solFile, string const& abiFile, stri
 
 
 
-// Throws TransactionFailedException from eth_sendTransaction() and locally
-// Throws ResourceRequestFailedException
-string
-EthInterface::create_contract(string const& solFile, string const& abiFile, string const& binFile, string const& params)
+void
+EthInterface::compile_solidity(string const& solFile, string const& abiFile, string const& binFile)
 {
-	string contractBin,
-		transactionJsonStr,
-		transactionHash,
-		transactionReceipt,
-		contractAddress,
-		shellCall;
-	Json transactionJsonData, receiptJsonData;
+	string shellCall;
 
 	shellCall = "solc --bin '";
 	shellCall += solFile;
@@ -446,7 +438,7 @@ EthInterface::create_contract(string const& solFile, string const& abiFile, stri
 	shellCall += "'";
 
 #ifdef _DEBUG
-	cout << "create_contract(): system(\"" << shellCall << "\")" << endl;
+	cout << "compile_solidity(): system(\"" << shellCall << "\")" << endl;
 #endif //_DEBUG
 
 	if (system(shellCall.c_str()) != 0)
@@ -462,7 +454,7 @@ EthInterface::create_contract(string const& solFile, string const& abiFile, stri
 	shellCall += "'";
 
 #ifdef _DEBUG
-	cout << "create_contract(): system(\"" << shellCall << "\")" << endl;
+	cout << "compile_solidity(): system(\"" << shellCall << "\")" << endl;
 #endif //_DEBUG
 
 	if (system(shellCall.c_str()) != 0)
@@ -470,6 +462,23 @@ EthInterface::create_contract(string const& solFile, string const& abiFile, stri
 		throw ResourceRequestFailedException(
 			"solc failed to compile contract to abi format!");
 	}
+}
+
+
+
+// Throws TransactionFailedException from eth_sendTransaction() and locally
+// Throws ResourceRequestFailedException
+string
+EthInterface::create_contract(string const& solFile, string const& abiFile, string const& binFile, string const& params)
+{
+	string contractBin,
+		transactionJsonStr,
+		transactionHash,
+		transactionReceipt,
+		contractAddress;
+	Json transactionJsonData, receiptJsonData;
+
+	compile_solidity(solFile, abiFile, binFile);
 
 	contractBin = boost::trim_copy(readFile2(binFile));
 	contractBin = contractBin.substr(0, contractBin.find_first_of('\n', 0)) + params;
