@@ -202,7 +202,7 @@ void playGame(void) {
         printBoard(board, playerID, points, healths[playerID - 1],
                                                              healths[oppID -1]);
         printHand(handIDs);
-        interface.waitNextTurn();
+        //interface.waitNextTurn();
         board = safeGetBoardState(board, false);
         //promptForEnter(PRPOMPTSTARTTURN);
         // clear screen, and prompt for action
@@ -215,7 +215,7 @@ void playGame(void) {
         printBoard(board, playerID, points, healths[playerID - 1],
                                                              healths[oppID -1]);
         printHand(handIDs);
-        interface.waitNextTurn();
+        //interface.waitNextTurn();
         int action = promptForAction(PROMPTACTION);
         switch (action) {
             case 0:
@@ -320,9 +320,22 @@ void playGame(void) {
         }
         points.clear();
 
-        //system("clear");
         board = safeGetBoardState(board, false);
+        handSeeds = interface.getPlayerSeedHand(playerID);
+        handIDs = buildHand(handSeeds);
+        oppHand;
+        if (playerID == 1) {
+            oppHand = interface.getPlayerSeedHand(2);
+        }
+        else {
+            oppHand = interface.getPlayerSeedHand(1);
+        }
+        oppHandSize = oppHand.size();
+
+        // Print initial turn state
         printOpponentsHand(oppHandSize);
+
+        points.clear();
         healths = interface.getHqHealth();
         // TODO confirm which health is which
         printBoard(board, playerID, points, healths[playerID - 1],
@@ -330,6 +343,7 @@ void playGame(void) {
         printHand(handIDs);
         
         interface.waitNextTurn();
+        
 
     }
     //TODO
