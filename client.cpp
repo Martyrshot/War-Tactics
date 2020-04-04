@@ -156,6 +156,11 @@ void playGame(void) {
 
     } while (!hqPlaced);
 
+    points = getPossibleHQLocations(playerID);
+    healths = interface.getHqHealth();
+    board = safeGetBoardState(board, true);
+    printBoard(board, playerID, points, healths[playerID - 1],
+                                                             healths[oppID -1]);
     interface.waitGameStart();
     while(!interface.isGameOver()) {
         interface.waitNextTurn();
@@ -364,7 +369,7 @@ safeGetBoardState(vector< vector< vector<uint8_t> > >curBoard,
                         }
                     }
                 }
-                if (numDiffs >= 2) {
+                if (numDiffs > 2) {
                     boardSound = false;
                 }
             }
