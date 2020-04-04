@@ -594,7 +594,7 @@ contract Game {
 
 
 	// https://github.com/provable-things/ethereum-api/blob/master/oraclizeAPI_0.5.sol
-	function uint2str(uint _i) public pure returns (string memory _uintAsString) {
+	function uint2str(uint _i) internal pure returns (string memory _uintAsString) {
 		uint i = _i;
 		if (i == 0) {
 			return "0";
