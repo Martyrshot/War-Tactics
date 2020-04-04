@@ -261,16 +261,27 @@ getPossibleMovementOptionsForUnit(vector< vector< vector<uint8_t> > >board,
     uint8_t y = unit[1];
 
     vector< vector<uint8_t> > points;
-    if (x < 9 && board[1][x+1][y] == STATE_PATH) {
+    if (x > 9|| x < 0 || y > 8 || y < 0) {
+        return points;
+    }
+    if (board[1][x][y] != STATE_HQ_AND_UNIT
+                                     || board[1][x][y] != STATE_PATH_AND_UNIT) {
+        return points;
+    }
+    if (x < 9 && 
+             (board[1][x+1][y] == STATE_PATH || board[1][x+1][y] == STATE_HQ)) {
             points.push_back({static_cast<unsigned char>(x+1),y});
     }
-    if (x > 0 && board[1][x-1][y] == STATE_PATH) {
+    if (x > 0 && 
+              (board[1][x-1][y] == STATE_PATH || board[1][x-1][y]== STATE_HQ)) {
                 points.push_back({static_cast<unsigned char>(x-1),y});
     }
-    if (y > 0 && board[1][x][y-1] == STATE_PATH) {
+    if (y > 0 &&
+              (board[1][x][y-1] == STATE_PATH || board[1][x][y-1]== STATE_HQ)) {
                 points.push_back({x,static_cast<unsigned char>(y-1)});
     }
-    if (y < 8 && board[1][x][y+1] == STATE_PATH) {
+    if (y < 8 &&
+              (board[1][x][y+1] == STATE_PATH || board[1][x][y+1]== STATE_HQ)) {
                 points.push_back({x,static_cast<unsigned char>(y+1)});
     }
 
