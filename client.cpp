@@ -29,6 +29,7 @@ uint8_t oppID;
 
 
 
+
 game_interface::GameInterface interface;
 
 void testDriver(void);
@@ -41,7 +42,7 @@ void playGame(void);
 
 vector< vector< vector<uint8_t> > >
 safeGetBoardState(vector< vector< vector<uint8_t> > >curBoard,
-                                                             bool initialState);
+                                                             int printNum);
 
 int main(int argc, char **argv) {
 
@@ -138,11 +139,26 @@ void playGame(void) {
     vector< vector<uint8_t> >points;
     vector<uint8_t> healths;
 
+    
+    //system("clear");
+    points = getPossibleHQLocations(playerID);
+    healths = interface.getHqHealth();
+    board = safeGetBoardState(board, true);
+    printBoard(board, playerID, points, healths[playerID - 1],
+                                                         healths[oppID -1]);
+    points.clear();
+    vector<uint8_t> point;
     do {
+        point = promptForPoint(PROMPTHQPLACE);
+    } while (point.size() == 0);
+
+    // we only need the x coord, but ask for both for consistency
+    hqPlaced = interface.placeHq(point[0]);
+
+    while (!hqPlaced) {
         //system("clear");
         points = getPossibleHQLocations(playerID);
         healths = interface.getHqHealth();
-        board = safeGetBoardState(board, true);
         printBoard(board, playerID, points, healths[playerID - 1],
                                                              healths[oppID -1]);
         points.clear();
@@ -154,16 +170,17 @@ void playGame(void) {
         // we only need the x coord, but ask for both for consistency
         hqPlaced = interface.placeHq(point[0]);
 
-    } while (!hqPlaced);
+    }
 
-    points = getPossibleHQLocations(playerID);
+    points.clear();
     healths = interface.getHqHealth();
     board = safeGetBoardState(board, false);
     printBoard(board, playerID, points, healths[playerID - 1],
                                                              healths[oppID -1]);
     interface.waitGameStart();
+    interface.waitNextTurn();
+
     while(!interface.isGameOver()) {
-        interface.waitNextTurn();
         board = safeGetBoardState(board, false);
         handSeeds = interface.getPlayerSeedHand(playerID);
         handIDs = buildHand(handSeeds);
@@ -182,7 +199,8 @@ void playGame(void) {
         points.clear();
         healths = interface.getHqHealth();
         // TODO confirm which health is which
-        printBoard(board, playerID, points, healths[0], healths[1]);
+        printBoard(board, playerID, points, healths[playerID - 1],
+                                                             healths[oppID -1]);
         printHand(handIDs);
         interface.waitNextTurn();
         board = safeGetBoardState(board, false);
@@ -310,6 +328,9 @@ void playGame(void) {
         printBoard(board, playerID, points, healths[playerID - 1],
                                                              healths[oppID -1]);
         printHand(handIDs);
+        
+        interface.waitNextTurn();
+
     }
     //TODO
     // Having a nicer printout would be ideal, but for now this is fine
