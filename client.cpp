@@ -220,7 +220,7 @@ void playGame(void) {
                 } while (cardID == -1);
                 vector< vector<uint8_t> > points =
                                     getAllPathPlacementOptions(board,playerID);
-                //system("clear");
+                system("clear");
                 printOpponentsHand(oppHandSize);
                 healths = interface.getHqHealth();
                 // TODO confirm which health is which
@@ -230,7 +230,12 @@ void playGame(void) {
                 vector<uint8_t> point;
                 do {
                     point = promptForPoint(PROMPTBOARDSELECTION);
-                } while (point.size() == 0);
+                    if (point.size() == 1) {
+                        // user wants to return to action menu
+                        point.clear();
+                        goto selectAction;
+                    }
+                } while (point.size() != 2);
                 uint8_t adjx = 63; //error val
                 uint8_t adjy = 63; //error val
                 for(vector<uint8_t> tile:
@@ -279,7 +284,7 @@ void playGame(void) {
                 } while (source.size() != 2);
                 points =
                        getPossibleMovementOptionsForUnit(board, source);
-                //system("clear");
+                system("clear");
                 printOpponentsHand(oppHandSize);
                 healths = interface.getHqHealth();
                 // TODO confirm which health is which
@@ -312,7 +317,7 @@ void playGame(void) {
                 } while (source.size() != 2);
                 points =
                        getPossibleAttackOptionsForUnit(board, playerID, source);
-                //system("clear");
+                system("clear");
                 printOpponentsHand(oppHandSize);
                 healths = interface.getHqHealth();
                 // TODO confirm which health is which
@@ -348,6 +353,7 @@ void playGame(void) {
         oppHandSize = oppHand.size();
 
         // Print initial turn state
+        system("clear");
         printOpponentsHand(oppHandSize);
 
         points.clear();
