@@ -123,7 +123,7 @@ GameInterface::createGame(void)
 {
 	string gameContractAddress;
 
-	gameContractAddress = this->create_contract(GAME_SOL, GAME_ABI, GAME_BIN, "");
+	gameContractAddress = this->create_contract(GAME_SOL, GAME_ABI, GAME_BIN);
 	setContractAddress(gameContractAddress);
 	createEventLogWaitManager();
 	return gameContractAddress;
@@ -137,6 +137,7 @@ GameInterface::joinGame(string const& gameAddress)
 	string ethabiEncodeArgs;
 	unique_ptr<unordered_map<string, string>> eventLog;
 
+	compile_solidity(GAME_SOL, GAME_ABI, GAME_BIN);
 	setContractAddress(gameAddress);
 	createEventLogWaitManager();
 	ethabiEncodeArgs = "";
