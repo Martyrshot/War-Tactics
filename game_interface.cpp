@@ -480,7 +480,7 @@ GameInterface::waitGameStart(void)
 void
 GameInterface::waitNextTurn(void)
 {
-	while(!myTurn)
+	while(!myTurn())
 	{
 		blockForEvent("NextTurn");
 	}
