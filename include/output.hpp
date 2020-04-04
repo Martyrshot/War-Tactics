@@ -256,7 +256,7 @@ getAllUnitPoints(vector< vector< vector<uint8_t> > >board, int playerID) {
 
 vector< vector<uint8_t> >
 getPossibleMovementOptionsForUnit(vector< vector< vector<uint8_t> > >board,
-                                            vector<uint8_t> unit) {
+                                       vector<uint8_t> unit, uint8_t playerID) {
     uint8_t x = unit[0];
     uint8_t y = unit[1];
 
@@ -264,8 +264,8 @@ getPossibleMovementOptionsForUnit(vector< vector< vector<uint8_t> > >board,
     if (x > 9|| x < 0 || y > 8 || y < 0) {
         return points;
     }
-    if (board[1][x][y] != STATE_HQ_AND_UNIT
-                                     || board[1][x][y] != STATE_PATH_AND_UNIT) {
+    if (board[2][x][y] == playerID && (board[1][x][y] != STATE_HQ_AND_UNIT
+                                    || board[1][x][y] != STATE_PATH_AND_UNIT)) {
         return points;
     }
     if (x < 9 && 
