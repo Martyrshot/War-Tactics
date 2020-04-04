@@ -327,11 +327,6 @@ void playGame(void) {
         printBoard(board, playerID, points, healths[playerID - 1],
                                                              healths[oppID -1]);
         printHand(handIDs);
-        if (interface.myTurn) {
-            cout << "waitNextTurn() will not block!" << endl;
-        } else {
-            cout << "waitNextTurn() will block" << endl;
-        }
         interface.waitNextTurn();
 
 
