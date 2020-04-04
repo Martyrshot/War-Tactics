@@ -20,11 +20,11 @@ CC = g++
 CFLAGS = -Wno-psabi
 CPPFLAGS = -std=gnu++17 -Wall -Wextra -pedantic -g3 -D_GNU_SOURCE -D_DEFAULT_SOURCE
 LDFLAGS = -lconfig++ \
-					-lpthread \
-					-lmenuw \
-					-lncursesw \
-					-ltinfo \
-					-lboost_system
+          -lpthread \
+          -lmenuw \
+          -lncursesw \
+          -ltinfo \
+          -lboost_system
 
 JSONINC = ./json/include
 LIBCONFIGINC = ./libconfig/lib
