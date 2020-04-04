@@ -18,10 +18,10 @@ CC = g++
 
 # Disable warnings about future GCC abi changes
 CFLAGS = -Wno-psabi
-CPPFLAGS = -std=gnu++17 -Wall -Wextra -pedantic -g -D_GNU_SOURCE -D_DEFAULT_SOURCE
+CPPFLAGS = -std=gnu++17 -Wall -Wextra -pedantic -g3 -D_GNU_SOURCE -D_DEFAULT_SOURCE
 LDFLAGS = -lconfig++ \
 					-lpthread \
-					-lmenu \
+					-lmenuw \
 					-lncursesw \
 					-ltinfo \
 					-lboost_system
