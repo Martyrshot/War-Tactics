@@ -227,7 +227,7 @@ restart: // TODO: Get rid of this
 		}
 		catch (const Json::exception& e)
 		{
-			cerr << "ipc_subscription_listener_setup(): JSON responce error in responce while subscribing:"
+			cerr << "ipc_subscription_listener_setup(): JSON response error in response while subscribing:"
 				 << endl
 				 << "\t"
 				 << message
@@ -240,7 +240,7 @@ restart: // TODO: Get rid of this
 		if (jsonResponce.count("error") > 0)
 		{
 			throw ResourceRequestFailedException(
-				"ipc_subscription_listener_setup(): Got an error responce to eth_subscribe!\n"
+				"ipc_subscription_listener_setup(): Got an error response to eth_subscribe!\n"
 				"Signature: "
 				+ get<1>(contractLogSignatures[i]) + "\n"
 													"Request: "
@@ -258,7 +258,7 @@ restart: // TODO: Get rid of this
 		if (jsonResponce.count("result") == 0 || !jsonResponce["result"].is_string())
 		{
 			throw ResourceRequestFailedException(
-				"ipc_subscription_listener_setup(): Unexpected responce to eth_subscribe received!");
+				"ipc_subscription_listener_setup(): Unexpected response to eth_subscribe received!");
 		}
 		string result = jsonResponce["result"];
 
@@ -340,7 +340,7 @@ begin:
 		}
 		catch (const Json::exception& e)
 		{
-			cerr << "ipc_subscription_listener_thread(): JSON responce error in responce:"
+			cerr << "ipc_subscription_listener_thread(): JSON response error in response:"
 				 << endl
 				 << "\t"
 				 << message
