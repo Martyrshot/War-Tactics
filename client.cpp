@@ -42,7 +42,7 @@ void playGame(void);
 
 vector< vector< vector<uint8_t> > >
 safeGetBoardState(vector< vector< vector<uint8_t> > >curBoard,
-                                                             int printNum);
+                                                             bool printNum);
 
 int main(int argc, char **argv) {
 
