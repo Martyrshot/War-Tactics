@@ -54,7 +54,7 @@ void printBoard(vector< vector< vector<uint8_t> > >board, int playerID,
                                             uint8_t enemyHqLife) {
     cout << BOARDHANDSEPARATER << endl;
     cout << "       "; // spacing
-    cout << "Enemy's HQ Health Points: "<< (int)enemyHqLife << endl;
+    cout << "Enemy HQ's Health Points: "<< (int)enemyHqLife << endl;
     cout << BOARDHANDSEPARATER << endl;
     if (playerID == 2) {
         printHorizontalBar(0,points);
@@ -81,10 +81,10 @@ void printBoard(vector< vector< vector<uint8_t> > >board, int playerID,
                     break;
                     case (STATE_PATH):
                         if (foundSquare) {
-                            cout << "\033[1;0m" << " = " << "\033[1;33m";
+                            cout << "\033[1;0m" << " ░ " << "\033[1;33m";
                         }
                         else {
-                            cout << " = ";
+                            cout << " ▓ ";
                         }
                     break;
                     case (STATE_HQ):
@@ -111,24 +111,24 @@ void printBoard(vector< vector< vector<uint8_t> > >board, int playerID,
                         else {
                             cout << "\033[1;31m";
                         }
-                        int curcard = board[0][i][j] % 13;
-                        if (curcard == 10) {
-                            cout << " " << (int)curcard;
+                        unsigned int curcard = board[0][j][i] % 13;
+                        if (curcard == 8) {
+                            cout << " " << (int)curcard + 2;
                         }
-                        else if (curcard == 11) {
+                        else if (curcard == 9) {
                             cout << " J ";
                         }
-                        else if (curcard == 12) {
+                        else if (curcard == 10) {
                             cout << " Q " ;
                         }
-                        else if (curcard == 13) {
+                        else if (curcard == 11) {
                             cout << " K ";
                         }
-                        else if (curcard == 1) {
+                        else if (curcard == 12) {
                             cout << " A ";
                         }
                         else {
-                            cout << " " << (int)curcard << " ";
+                            cout << " " << (int)(curcard + 2) << " ";
                         }
                         if (oneMore) {
                             cout << "\033[1;33m";
@@ -167,10 +167,10 @@ void printBoard(vector< vector< vector<uint8_t> > >board, int playerID,
                     break;
                     case (STATE_PATH):
                         if (foundSquare) {
-                            cout << "\033[1;0m" << " = " << "\033[1;33m";
+                            cout << "\033[1;0m" << " ░ " << "\033[1;33m";
                         }
                         else {
-                            cout << " = ";
+                            cout << " ▓ ";
                         }
                     break;
                     case (STATE_HQ):
@@ -197,24 +197,24 @@ void printBoard(vector< vector< vector<uint8_t> > >board, int playerID,
                         else {
                             cout << "\033[1;31m";
                         }
-                        int curcard = board[0][i][j] % 13;
-                        if (curcard == 10) {
-                            cout << " " << (int)curcard;
+                        unsigned int curcard = board[0][j][i] % 13;
+                        if (curcard == 8) {
+                            cout << " " << (int)(curcard + 2);
                         }
-                        else if (curcard == 11) {
+                        else if (curcard == 9) {
                             cout << " J ";
                         }
-                        else if (curcard == 12) {
+                        else if (curcard == 10) {
                             cout << " Q " ;
                         }
-                        else if (curcard == 13) {
+                        else if (curcard == 11) {
                             cout << " K ";
                         }
-                        else if (curcard == 1) {
+                        else if (curcard == 12) {
                             cout << " A ";
                         }
                         else {
-                            cout << " " << (int)curcard << " ";
+                            cout << " " << (int)(curcard + 2) << " ";
                         }
                         if (oneMore) {
                             cout << "\033[1;33m";
@@ -246,7 +246,7 @@ getAllUnitPoints(vector< vector< vector<uint8_t> > >board, int playerID) {
             if ((board[1][j][i] == STATE_PATH_AND_UNIT
                             || board[1][j][i] == STATE_HQ_AND_UNIT)
                             && board[2][j][i] == playerID) {
-                
+
                 points.push_back({j, i});
             }
         }
@@ -273,17 +273,21 @@ getPossibleMovementOptionsForUnit(vector< vector< vector<uint8_t> > >board,
     if (y < 8 && board[1][x][y+1] == STATE_PATH) {
                 points.push_back({x,static_cast<unsigned char>(y+1)});
     }
-    
+
     return points;
 }
 
+
+vector< vector<uint8_t> >
+getFriendlyHQ(vector< vector< vector<uint8_t> > >board, int playerID);
 
 vector< vector<uint8_t> >
 getAllPathPlacementOptions(vector< vector< vector<uint8_t> > >board,
                                                                 int playerID) {
     vector< vector<uint8_t> > points;
     vector< vector<uint8_t> > units = getAllUnitPoints(board, playerID);
-
+    vector< vector<uint8_t> > hq = getFriendlyHQ(board, playerID);
+    units.insert(units.end(), hq.begin(), hq.end());
     for (vector<uint8_t> unit: units) {
 
         uint8_t x = unit[0];
@@ -378,21 +382,20 @@ vector< vector<uint8_t> >
 getAdjacentTiles(vector<uint8_t> unit) {
     uint8_t x = unit[0];
     uint8_t y = unit[1];
-
     vector< vector<uint8_t> > points;
     if (x < 9) {
             points.push_back({static_cast<unsigned char>(x+1),y});
     }
     if (x > 0) {
-                points.push_back({static_cast<unsigned char>(x-1),y});
+            points.push_back({static_cast<unsigned char>(x-1),y});
     }
     if (y > 0) {
-                points.push_back({x,static_cast<unsigned char>(y-1)});
+            points.push_back({x,static_cast<unsigned char>(y-1)});
     }
     if (y < 8) {
-                points.push_back({x,static_cast<unsigned char>(y+1)});
+            points.push_back({x,static_cast<unsigned char>(y+1)});
     }
-    
+
     return points;
 }
 

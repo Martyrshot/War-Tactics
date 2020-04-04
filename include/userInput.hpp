@@ -1,21 +1,34 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <limits>
 
 using namespace std;
 
 void promptForEnter(string stringToPrint) {
     cout << stringToPrint << flush;
+    if (!cin) {
+        cin.clear();
+        cin.ignore(numeric_limits<std::streamsize>::max(), '\n');
+    }
     while (cin.get() != '\n');
+
 }
 
 vector<uint8_t> promptForPoint(string stringToPrint) {
     string input;
     vector<uint8_t> result;
     cout << stringToPrint << flush;
+    if (!cin) {
+        cin.clear();
+        cin.ignore(numeric_limits<std::streamsize>::max(), '\n');
+    }
     cin >> input;
-
-    if (input.size() != 2) {
+    if (input.size() == 1 && ((input[0] - 48) == 0)) {
+        result.push_back(63);
+        return result;
+    }
+    else if (input.size() != 2) {
         cout << "Bad input!\n" << flush;
         return result;
     }
@@ -42,8 +55,12 @@ vector<uint8_t> promptForPoint(string stringToPrint) {
 }
 
 int8_t promptForAction(string stringToPrint) {
-    int8_t input = -1;
+    int input = -1;
     cout << stringToPrint << flush;
+    if (!cin) {
+        cin.clear();
+        cin.ignore(numeric_limits<std::streamsize>::max(), '\n');
+    }
     cin >> input;
     input = input - 1;
     if (input > 3 || input < 0) {
@@ -56,9 +73,19 @@ int8_t promptForAction(string stringToPrint) {
 int8_t promptForCard(string stringToPrint, int numCards) {
     int input = -1;
     cout << stringToPrint << flush;
+    if (!cin) {
+        cin.clear();
+        cin.ignore(numeric_limits<std::streamsize>::max(), '\n');
+    }
     cin >> input;
+
+
     input = input - 1;
-    if (input > numCards - 1 || input < 0) {
+    if (input == -1) {
+        // denote the user wanted to return to action section
+        return -2;
+    }
+    else if (input > numCards - 1 || input < 0) {
         cout << "Bad input!\n" << flush;
         return -1;
     }

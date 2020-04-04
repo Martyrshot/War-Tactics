@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <cinttypes>
 
 using namespace std;
 
@@ -27,13 +28,7 @@ vector<string> joker = {
                         ,string("|/_\\/_|")};
       
 vector< vector<string> > spades = {
-                        {    string(" _____ ")
-                            ,string("|A .  |")
-                            ,string("| /.\\ |")
-                            ,string("|(_._)|")
-                            ,string("|  |  |")
-                            ,string("|____V|")}
-                        ,{   string(" _____ ")
+                         {   string(" _____ ")
                             ,string("|2    |")
                             ,string("|  ^  |")
                             ,string("|     |")
@@ -115,18 +110,19 @@ vector< vector<string> > spades = {
                             ,string("| ^ {)|")
                             ,string("|(.)%%|")
                             ,string("| |%%%|")
-                            ,string("|_%%%>|")}};
+                            ,string("|_%%%>|")}
+
+                        ,{   string(" _____ ")
+                            ,string("|A .  |")
+                            ,string("| /.\\ |")
+                            ,string("|(_._)|")
+                            ,string("|  |  |")
+                            ,string("|____V|")}
+                        };
    
       
 vector< vector<string> > clubs = {
-                        {    string(" _____ ")
-                            ,string("|A _  |")
-                            ,string("| ( ) |")
-                            ,string("|(_'_)|")
-                            ,string("|  |  |")
-                            ,string("|____V|")}
-    
-                        ,{   string(" _____ ")
+                         {   string(" _____ ")
                             ,string("|2    |")
                             ,string("|  &  |")
                             ,string("|     |")
@@ -208,17 +204,17 @@ vector< vector<string> > clubs = {
                             ,string("| o {)|")
                             ,string("|o o%%|")
                             ,string("| |%%%|")
-                            ,string("|_%%%>|")}};
+                            ,string("|_%%%>|")}
+                        
+                        ,{   string(" _____ ")
+                            ,string("|A _  |")
+                            ,string("| ( ) |")
+                            ,string("|(_'_)|")
+                            ,string("|  |  |")
+                            ,string("|____V|")}};
 
 vector< vector<string> > hearts = {
-                        {    string(" _____ ")
-                            ,string("|A_ _ |")
-                            ,string("|( v )|")
-                            ,string("| \\ / |")
-                            ,string("|  .  |")
-                            ,string("|____V|")}
-                            
-                        ,{   string(" _____ ")
+                         {   string(" _____ ")
                             ,string("|2    |")
                             ,string("|  v  |")
                             ,string("|     |")
@@ -300,17 +296,17 @@ vector< vector<string> > hearts = {
                             ,string("|   {)|")
                             ,string("|(v)%%|")
                             ,string("| v%%%|")
-                            ,string("|_%%%>|")}   };
+                            ,string("|_%%%>|")}
 
-vector< vector<string> > diamonds = {
-                        {    string(" _____ ")
-                            ,string("|A ^  |")
-                            ,string("| / \\ |")
+                        ,{   string(" _____ ")
+                            ,string("|A_ _ |")
+                            ,string("|( v )|")
                             ,string("| \\ / |")
                             ,string("|  .  |")
-                            ,string("|____V|")}
-                            
-                        ,{   string(" _____ ")
+                            ,string("|____V|")}};
+
+vector< vector<string> > diamonds = {
+                        {   string(" _____ ")
                             ,string("|2    |")
                             ,string("|  o  |")
                             ,string("|     |")
@@ -392,7 +388,14 @@ vector< vector<string> > diamonds = {
                             ,string("| /\\{)|")
                             ,string("| \\/%%|")
                             ,string("|  %%%|")
-                            ,string("|_%%%>|")}};
+                            ,string("|_%%%>|")}
+                            
+                        ,{   string(" _____ ")
+                            ,string("|A ^  |")
+                            ,string("| / \\ |")
+                            ,string("| \\ / |")
+                            ,string("|  .  |")
+                            ,string("|____V|")}};
 
 
 // It is the responsibility of the caller to pass shifted number that starts at
@@ -400,10 +403,7 @@ vector< vector<string> > diamonds = {
 void printHand(vector<uint8_t> ids, uint8_t idx) {
 
     vector< vector<string> > cards;
-    for(int n : ids) {
-        if (n < 0) {
-            return;
-        }
+    for(unsigned int n : ids) {
         if (n < 13) {
             cards.push_back(spades[n]);
         }
@@ -417,7 +417,6 @@ void printHand(vector<uint8_t> ids, uint8_t idx) {
             cards.push_back(hearts[n%13]);
         }
     }
-
     
     for (int i = 0; i < CARDHEIGHT; i++) {
         int curCard = 0;

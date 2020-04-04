@@ -3,7 +3,6 @@
 #include <boost/algorithm/string/trim.hpp>
 #include <boost/lexical_cast.hpp>
 #include <iostream>
-#include <sstream>
 #include <string>
 
 #include <fcntl.h>
@@ -197,33 +196,13 @@ EthInterface::getIntFromContract(string const& funcName)
 uint64_t
 EthInterface::getIntFromContract(string const& funcName, string const& params)
 {
-	stringstream ss;
-	uint64_t result;
+	string hex;
+	uint64_t dec;
 
-	ss << getFrom(funcName, params);
-	ss >> result;
+	hex = getFrom(funcName, params);
+	dec = strtoull(hex.c_str(), nullptr, 16);
 
-	return result;
-}
-
-
-
-// Throws ResourceRequestFailedException from ethabi()
-string
-EthInterface::getArrayFromContract(string const& funcName)
-{
-	return getArrayFromContract(funcName, "");
-}
-
-
-
-// Throws ResourceRequestFailedException from ethabi()
-string
-EthInterface::getArrayFromContract(string const& funcName, string const& params)
-{
-	string arrayStr;
-	arrayStr = getFrom(funcName, params);
-	return arrayStr;
+	return dec;
 }
 
 
@@ -299,7 +278,7 @@ EthInterface::callMutatorContract(
 	string data;
 
 	data = ethabi(
-		"encode -l function " + this->ethContractABI + " " + funcName + ethabiEncodeArgs);
+		"encode -l function " + this->ethContractABI + " " + funcName + " " + ethabiEncodeArgs);
 
 	try
 	{
@@ -338,29 +317,49 @@ EthInterface::callMutatorContract(
 string
 EthInterface::eth_sign(string const& data)
 {
+	string sig;
+	string jsonResponceStr;
 	string jsonRequest = "{\"jsonrpc\":\"2.0\","
 						 "\"method\":\"eth_sign\","
 						 "\"params\":[\"0x" +
 						 clientAddress +
-						 "\",\"" +
+						 "\",\"0x" +
 						 data +
 						 "\"],\"id\":1}";
 
-#ifdef _DEBUG
-	cout << "eth_sign()" << endl;
-#endif //_DEBUG
+	jsonResponceStr = this->eth_ipc_request(jsonRequest);
 
-	Json jsonResponce = this->eth_ipc_request(jsonRequest);
+
+
+	Json jsonResponce = Json::parse(jsonResponceStr);
 	auto result = jsonResponce.find("result");
 
-	if (result != jsonResponce.end())
+#ifdef _DEBUG
+	cout << "eth_sign: jsonResponce = \""
+		 << jsonResponceStr
+		 << "\""
+		 << endl;
+#endif //_DEBUG
+
+	if (result == jsonResponce.end())
 	{
 		throw TransactionFailedException(
 			"eth_sign(): \"result\" was not "
 			"present in responce to eth_sign!");
 	}
 
-	return result.value();
+	sig = result.value();
+
+#ifdef _DEBUG
+	cout << "eth_sign(\""
+		 << data
+		 << "\") = \""
+		 << sig
+		 << "\""
+		 << endl;
+#endif //_DEBUG
+
+	return sig;
 }
 
 

@@ -1,6 +1,7 @@
 #include <string>
 #include <vector>
 #include <iostream>
+#include <fstream>
 #include "include/cards.hpp"
 #include "include/userInput.hpp"
 #include "include/output.hpp"
@@ -23,6 +24,8 @@ vector<uint8_t> handIDs;
 uint8_t numCardsInHand = 0;
 
 uint8_t playerID;
+uint8_t oppID;
+
 
 
 
@@ -37,12 +40,22 @@ bool joinGame(string address);
 
 void playGame(void);
 
+vector< vector< vector<uint8_t> > >
+safeGetBoardState(vector< vector< vector<uint8_t> > >curBoard,
+                                                             bool printNum);
+
 int main(int argc, char **argv) {
-    
+
+    unsigned int randSeed;
+    ifstream irand("/dev/urand", ios::binary);
     int8_t selection = -1;
 
     (void) argc;
     (void) argv;
+
+    irand.read((char*) &randSeed, sizeof(randSeed));
+    srand(randSeed);
+    irand.close();
 
     do {
         selection = mainMenu(TITLE);
@@ -59,7 +72,7 @@ int main(int argc, char **argv) {
         }
     }
     playGame();
-    
+
     //testDriver();
     return 0;
 }
@@ -73,7 +86,6 @@ bool createGame(void) {
         return false;
     }
     uint8_t deckSeed[DECK_SIZE];
-    srand(time(NULL));
     for (int i = 0; i < DECK_SIZE; i++) {
         deckSeed[i] = rand();
     }
@@ -81,16 +93,14 @@ bool createGame(void) {
         cout << "Error creating deck!" << endl;
         return false;
     }
-    while(!interface.hasDeck())
-    {
-        sleep(1);
-    }
+
     interface.waitDecksReady();
     if (!interface.drawHand()) {
         cout << "Error drawing initial hand!" << endl;
         return false;
     }
     playerID = 1;
+    oppID = 2;
     return true;
 }
 
@@ -104,7 +114,6 @@ bool joinGame(string address) {
         cout << "Exception: Failed to join game with address: " << address << endl;
         return false;
     }
-    srand(time(NULL));
     uint8_t deckSeed[DECK_SIZE];
     for (int i = 0; i < DECK_SIZE; i++) {
         deckSeed[i] = rand();
@@ -119,6 +128,7 @@ bool joinGame(string address) {
         return false;
     }
     playerID = 2;
+    oppID = 1;
     return true;
 }
 
@@ -129,12 +139,28 @@ void playGame(void) {
     vector< vector<uint8_t> >points;
     vector<uint8_t> healths;
 
+
+    system("clear");
+    points = getPossibleHQLocations(playerID);
+    healths = interface.getHqHealth();
+    board = safeGetBoardState(board, true);
+    printBoard(board, playerID, points, healths[playerID - 1],
+                                                         healths[oppID -1]);
+    points.clear();
+    vector<uint8_t> point;
     do {
-        system("clear");
+        point = promptForPoint(PROMPTHQPLACE);
+    } while (point.size() != 2);
+
+    // we only need the x coord, but ask for both for consistency
+    hqPlaced = interface.placeHq(point[0]);
+
+    while (!hqPlaced) {
+        //system("clear");
         points = getPossibleHQLocations(playerID);
         healths = interface.getHqHealth();
-        board = interface.getBoardState();
-        printBoard(board, playerID, points, healths[0], healths[1]);
+        printBoard(board, playerID, points, healths[playerID - 1],
+                                                             healths[oppID -1]);
         points.clear();
         vector<uint8_t> point;
         do {
@@ -144,12 +170,20 @@ void playGame(void) {
         // we only need the x coord, but ask for both for consistency
         hqPlaced = interface.placeHq(point[0]);
 
-    } while (!hqPlaced);
-
+    }
+    
+    system("clear");
+    points.clear();
+    healths = interface.getHqHealth();
+    board = safeGetBoardState(board, false);
+    printBoard(board, playerID, points, healths[playerID - 1],
+                                                             healths[oppID -1]);
     interface.waitGameStart();
+    interface.waitNextTurn();
+
     while(!interface.isGameOver()) {
-        interface.waitNextTurn();
-        board = interface.getBoardState();
+        system("clear");
+        board = safeGetBoardState(board, false);
         handSeeds = interface.getPlayerSeedHand(playerID);
         handIDs = buildHand(handSeeds);
         vector<uint8_t> oppHand;
@@ -167,27 +201,24 @@ void playGame(void) {
         points.clear();
         healths = interface.getHqHealth();
         // TODO confirm which health is which
-        printBoard(board, playerID, points, healths[0], healths[1]);
+        printBoard(board, playerID, points, healths[playerID - 1],
+                                                             healths[oppID -1]);
         printHand(handIDs);
-        promptForEnter(PRPOMPTSTARTTURN);
-        // clear screen, and prompt for action
-        system("clear");
-        printOpponentsHand(oppHandSize);
-        // printBoard requires points. give it no points to highlight
-
-        healths = interface.getHqHealth();
-        // TODO confirm which health is which
-        printBoard(board, playerID, points, healths[0], healths[1]);
-        printHand(handIDs);
+        //interface.waitNextTurn();
+        selectAction:
         int action = promptForAction(PROMPTACTION);
         switch (action) {
-            case 1:
+            case 0:
                 {
                 // lay a path
                 int8_t cardID = -1;
                 int handSize = handIDs.size();
                 do {
                     cardID = promptForCard(PROMPTHANDSELECTION, handSize);
+                    if (cardID == -2) {
+                        // user wants to return to action selection
+                        goto selectAction;
+                    }
                 } while (cardID == -1);
                 vector< vector<uint8_t> > points =
                                     getAllPathPlacementOptions(board,playerID);
@@ -195,12 +226,18 @@ void playGame(void) {
                 printOpponentsHand(oppHandSize);
                 healths = interface.getHqHealth();
                 // TODO confirm which health is which
-                printBoard(board, playerID, points, healths[0], healths[1]);
+                printBoard(board, playerID, points, healths[playerID - 1],
+                                                             healths[oppID -1]);
                 printHand(handIDs, cardID);
                 vector<uint8_t> point;
                 do {
                     point = promptForPoint(PROMPTBOARDSELECTION);
-                } while (point.size() == 0);
+                    if (point.size() == 1) {
+                        // user wants to return to action menu
+                        point.clear();
+                        goto selectAction;
+                    }
+                } while (point.size() != 2);
                 uint8_t adjx = 63; //error val
                 uint8_t adjy = 63; //error val
                 for(vector<uint8_t> tile:
@@ -209,7 +246,7 @@ void playGame(void) {
                                                getAdjacentTiles(point)) {
                         if (tile[0] == adjtile[0] && tile[1] == adjtile[1]) {
                             adjx = tile[0];
-                            adjy = tile[0];
+                            adjy = tile[1];
                         }
                     }
                 }
@@ -218,59 +255,85 @@ void playGame(void) {
                 }
             }
             break;
-            case 2:
+            case 1:
             {
                 // Place a new unit
                 int cardID = -1;
                 int handSize = handIDs.size();
                 do {
                     cardID = promptForCard(PROMPTHANDSELECTION, handSize);
+                    if (cardID == -2) {
+                        // user wants to return to action selection
+                        goto selectAction;
+                    }
                 } while (cardID == -1);
                 points.clear();
                 interface.layUnit(cardID);
             }
             break;
-            case 3:
+            case 2:
             {
                 // Move a unit
                 vector<uint8_t> dest;
                 vector<uint8_t> source;
                 do {
                     source = promptForPoint(PROMPTBOARDSELECTION);
-                } while (source.size() == 0);
+                    if (source.size() == 1) {
+                        // user wants to return to action menu
+                        source.clear();
+                        goto selectAction;
+                    }
+                } while (source.size() != 2);
                 points =
                        getPossibleMovementOptionsForUnit(board, source);
                 system("clear");
                 printOpponentsHand(oppHandSize);
                 healths = interface.getHqHealth();
                 // TODO confirm which health is which
-                printBoard(board, playerID, points, healths[0], healths[1]);
+                printBoard(board, playerID, points, healths[playerID - 1],
+                                                             healths[oppID -1]);
                 printHand(handIDs);
                 do {
                     dest = promptForPoint(PROMPTSECONDARYBOARDSELECTION);
-                } while (dest.size() == 0);
+                    if (source.size() == 1) {
+                        // user wants to return to action menu
+                        source.clear();
+                        goto selectAction;
+                    }
+                } while (dest.size() != 2);
                 interface.moveUnit(source[0], source[1], dest[0], dest[1]);
             }
             break;
-            case 4:
+            case 3:
             {
                 // Attack
                 vector<uint8_t> dest;
                 vector<uint8_t> source;
                 do {
                     source = promptForPoint(PROMPTBOARDSELECTION);
-                } while (source.size() == 0);
+                    if (source.size() == 1) {
+                        // user wants to return to action menu
+                        source.clear();
+                        goto selectAction;
+                    }
+                } while (source.size() != 2);
                 points =
                        getPossibleAttackOptionsForUnit(board, playerID, source);
                 system("clear");
                 printOpponentsHand(oppHandSize);
                 healths = interface.getHqHealth();
                 // TODO confirm which health is which
-                printBoard(board, playerID, points, healths[0], healths[1]);
+                printBoard(board, playerID, points, healths[playerID - 1],
+                                                             healths[oppID -1]);
                 printHand(handIDs);
                 do {
                     dest = promptForPoint(PROMPTSECONDARYBOARDSELECTION);
-                } while (dest.size() == 0);
+                    if (source.size() == 1) {
+                        // user wants to return to action menu
+                        source.clear();
+                        goto selectAction;
+                    }
+                } while (dest.size() != 2);
                 interface.attack(source[0], source[1], dest[0], dest[1]);
             }
             break;
@@ -280,13 +343,32 @@ void playGame(void) {
         }
         points.clear();
 
+        board = safeGetBoardState(board, false);
+        handSeeds = interface.getPlayerSeedHand(playerID);
+        handIDs = buildHand(handSeeds);
+        if (playerID == 1) {
+            oppHand = interface.getPlayerSeedHand(2);
+        }
+        else {
+            oppHand = interface.getPlayerSeedHand(1);
+        }
+        oppHandSize = oppHand.size();
+
+        // Print initial turn state
         system("clear");
-        board = interface.getBoardState();
         printOpponentsHand(oppHandSize);
+
+        points.clear();
         healths = interface.getHqHealth();
         // TODO confirm which health is which
-        printBoard(board, playerID, points, healths[0], healths[1]);
+        printBoard(board, playerID, points, healths[playerID - 1],
+                                                             healths[oppID -1]);
         printHand(handIDs);
+        if (!interface.isGameOver()) {
+            interface.waitNextTurn();
+        }
+
+
     }
     //TODO
     // Having a nicer printout would be ideal, but for now this is fine
@@ -307,7 +389,53 @@ vector<uint8_t> buildHand(vector<uint8_t> handSeeds) {
     return result;
 }
 
-
+vector< vector< vector<uint8_t> > >
+safeGetBoardState(vector< vector< vector<uint8_t> > >curBoard,
+                                                      bool initialVerification){
+    bool boardSound;
+    vector< vector< vector<uint8_t> > >tmpBoard;
+    do {
+        boardSound = true;
+        tmpBoard = interface.getBoardState();
+        if (initialVerification) {
+            for (uint i = 0; i < tmpBoard.size(); i++) {
+                for (uint j = 0; j < tmpBoard[i].size(); j++) {
+                    for (uint k = 0; k < tmpBoard[i][j].size(); k++) {
+                        // too lazy to do this properly and efficiently
+                        // maybe revisit
+                        if (tmpBoard.size() * tmpBoard[i].size()
+                                            * tmpBoard[i][j].size() != 270) {
+                            boardSound = false;
+                        }
+                        if (tmpBoard[i][j][k] != 0) {
+                            boardSound = false;
+                        }
+                    }
+                }
+            }
+        }
+        else {
+            for (uint i = 0; i < tmpBoard.size(); i++) {
+                int numDiffs = 0;
+                for (uint j = 0; j < tmpBoard[i].size(); j++) {
+                    for (uint k = 0; k < tmpBoard[i][j].size(); k++) {
+                        if (tmpBoard.size() * tmpBoard[i].size()
+                                            * tmpBoard[i][j].size() != 270) {
+                            boardSound = false;
+                        }
+                        if (tmpBoard[i][j][k] != curBoard[i][j][k]) {
+                            numDiffs++;
+                        }
+                    }
+                }
+                if (numDiffs > 2) {
+                    boardSound = false;
+                }
+            }
+        }
+    } while (!boardSound);
+    return tmpBoard;
+}
 
 void testDriver(void) {
     vector<uint8_t> v;
@@ -320,7 +448,6 @@ void testDriver(void) {
 
     // Dumby initialization
     playerID = 2;
-    srand(time(NULL));
     vector< vector<uint8_t> > r0;
     vector< vector<uint8_t> > r1;
     vector< vector<uint8_t> > r2;
@@ -361,9 +488,29 @@ void testDriver(void) {
 
 
     vector<uint8_t> point;
+    points = getAllTilesInControl(board, 2);
+    printBoard(board, 2, points, healths[0], healths[1]);
+
     do {
         point = promptForPoint("Please enter a point\n");
     } while(point.size() != 2);
+    printBoard(board, 2, points, healths[0], healths[1]);
+    uint8_t adjx = 63; //error val
+    uint8_t adjy = 63; //error val
+    for(vector<uint8_t> tile:
+                            getAllTilesInControl(board, playerID)) {
+        for(vector<uint8_t> adjtile:
+                                   getAdjacentTiles(point)) {
+            if (tile[0] == adjtile[0] && tile[1] == adjtile[1]) {
+                adjx = tile[0];
+                adjy = tile[1];
+
+            }
+        }
+    }
+    points.clear();
+    points.push_back({adjx, adjy});
+    printBoard(board, 2, points, healths[0], healths[1]);
     int input = -1;
     do {
         input = promptForAction("Enter 1,2,3 or 4\n");

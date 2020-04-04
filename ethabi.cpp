@@ -7,6 +7,7 @@
 
 #include <boost/algorithm/string.hpp>
 #include <boost/algorithm/string/trim.hpp>
+#include <boost/algorithm/string/replace.hpp>
 #include <ethabi.hpp>
 
 
@@ -203,6 +204,26 @@ ethabi_decode_uint8_array(string const& abiFile, string const& eventName, string
 	return arrayUInt8;
 }
 
+
+
+vector<uint8_t>
+ethabi_decode_3d_uint8_array(string const& abiFile, string const& eventName, string const& data)
+{
+	vector<string> arrayStr;
+	vector<uint8_t> arrayUInt8;
+	string responce;
+
+	responce = boost::trim_copy(ethabi_decode_result(abiFile, eventName, data));
+	boost::replace_all(responce, "[", "");
+	boost::replace_all(responce, "]", "");
+	boost::split(arrayStr, responce, boost::is_any_of(","));
+
+	for (vector<string>::iterator it = arrayStr.begin(); it != arrayStr.end(); ++it)
+	{
+		arrayUInt8.push_back(strtoul(((*it).c_str()), nullptr, 16));
+	}
+	return arrayUInt8;
+}
 
 
 } //namespace

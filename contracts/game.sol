@@ -26,7 +26,7 @@ contract Game {
 	uint8 constant BOARD_OWNER = 2;
 
 
-	uint8[3][BOARD_WIDTH][BOARD_HEIGHT] board;
+	uint8[BOARD_HEIGHT][BOARD_WIDTH][3] board;
 
 	string game_create_time;
 	string game_join_time;
@@ -154,32 +154,16 @@ contract Game {
 		if (player[PLAYER1] == msg.sender) {
 			require(!has_player_deck[PLAYER1]);
 
-			if (has_player_deck[PLAYER2]) {
-				for (uint8 i = 0; i < DECK_SIZE; i++) {
-					deck[i] = deck[i] ^ _deck[i];
-				}
-
-			} else {
-				for (uint8 i = 0; i < DECK_SIZE; i++) {
-					deck[i] = _deck[i];
-				}
-			}
 			has_player_deck[PLAYER1] = true;
 
 		} else if (player[PLAYER2] == msg.sender) {
 			require(!has_player_deck[PLAYER2]);
 
-			if (has_player_deck[PLAYER1]) {
-				for (uint8 i = 0; i < DECK_SIZE; i++) {
-					deck[i] = deck[i] ^ _deck[i];
-				}
-
-			} else {
-				for (uint8 i = 0; i < DECK_SIZE; i++) {
-					deck[i] = _deck[i];
-				}
-			}
 			has_player_deck[PLAYER2] = true;
+		}
+
+		for (uint8 i = 0; i < DECK_SIZE; i++) {
+			deck[i] = deck[i] ^ _deck[i];
 		}
 
 		if (has_player_deck[PLAYER1] && has_player_deck[PLAYER2]) {
@@ -188,34 +172,46 @@ contract Game {
 
 		emit CreateDeck(msg.sender);
 
-		if (has_player_hq[PLAYER1] &&
-			has_player_hq[PLAYER2] &&
-			has_deck()
-		) {
-			emit GameStart();
-		}
-
+		check_game_start();
 		return true;
 	}
 
 
-	function get_private_card_from_seed(uint8 v, bytes32 r, bytes32 s) public pure returns (uint8) {
-		uint8 c = v;
-		for (uint8 i = 0; i < 32; i++) {
-			c = c ^ uint8(r[i]) ^ uint8(s[i]);
+	function get_private_card_from_signature(bytes memory signature) public pure returns (uint8) {
+		uint8 c = 0;
+		for (uint8 i = 0; i < 65; i++) {
+			c = c ^ uint8(signature[i]);
 		}
 		return c % DECK_SIZE;
 	}
 
 
 	function get_card_hash(uint8 cardSeed) public view returns (bytes32) {
-		return prefixed(keccak256(abi.encodePacked(game_create_time, game_join_time, cardSeed)));
+		return keccak256(abi.encodePacked(game_create_time, game_join_time, cardSeed));
 	}
 
 
-	function verify_card(uint8 card, uint8 cardSeed, address addr, uint8 v, bytes32 r, bytes32 s) public view returns (bool) {
-		bytes32 hash = get_card_hash(cardSeed);
-		return ecrecover(hash, v, r, s) == addr && get_private_card_from_seed(v, r, s) == card;
+	function get_hand_card_hash(uint8 handIndex) public view returns (bytes32) {
+		uint8 sender;
+
+		if (msg.sender == player[PLAYER1]) {
+			sender = PLAYER1;
+		} else {
+			sender = PLAYER2;
+		}
+
+		require(handIndex < player_hand[sender].length);
+
+		return get_card_hash(player_hand[sender][handIndex]);
+	}
+
+
+	function verify_card(uint8 card, uint8 cardSeed, address addr, bytes memory signature) internal view returns (bool) {
+		bytes32 message = prefixed(get_card_hash(cardSeed));
+		(uint8 v, bytes32 r, bytes32 s) = split_signature(signature);
+
+		return ecrecover(message, v, r, s) == addr &&
+			get_private_card_from_signature(signature) == card;
 	}
 
 
@@ -231,6 +227,7 @@ contract Game {
 		draw_cards();
 		check_game_start();
 		emit DrawHand(msg.sender);
+		return true;
 	}
 
 
@@ -280,13 +277,19 @@ contract Game {
 
 
 	function get_player_seed_hand(uint8 playerNum) external view returns (uint8[] memory) {
-		require(playerNum == 1 || playerNum == 2);
+		require(playerNum == 0 || playerNum == 1 || playerNum == 2);
 
+		if (playerNum == 0) {
+			if (msg.sender == player[PLAYER1]) {
+				return player_hand[PLAYER1];
+			}
+			return player_hand[PLAYER2];
+		}
 		return player_hand[playerNum - 1];
 	}
 
 
-	function get_board_state() public view returns (uint8[3][10][9] memory) {
+	function get_board_state() public view returns (uint8[9][10][3] memory) {
 		return board;
 	}
 
@@ -298,25 +301,25 @@ contract Game {
 
 	function place_hq(uint8 x) external _player returns (bool) {
 		uint8 sender;
-		uint8 other;
+
+		require (x < BOARD_WIDTH);
 
 		if (msg.sender == player[PLAYER1]) {
 			sender = PLAYER1;
-			other = PLAYER2;
 		} else {
 			sender = PLAYER2;
-			other = PLAYER1;
 		}
 
 		require(!has_player_hq[sender]);
-		require (x < BOARD_WIDTH);
 
 		if (sender == PLAYER1) {
 			board[BOARD_OWNER][x][0] = PLAYER1 + 1;
+			board[BOARD_STATE][x][0] = STATE_HQ;
 		}
 		else
 		{
 			board[BOARD_OWNER][x][BOARD_HEIGHT - 1] = PLAYER2 + 1;
+			board[BOARD_STATE][x][BOARD_HEIGHT - 1] = STATE_HQ;
 		}
 		player_hq[sender] = x;
 		has_player_hq[sender] = true;
@@ -331,6 +334,12 @@ contract Game {
 		uint8 sender;
 		uint8 other;
 
+		require(
+			x < BOARD_WIDTH &&
+			y < BOARD_HEIGHT &&
+			adjacentPathX < BOARD_WIDTH &&
+			adjacentPathY < BOARD_HEIGHT
+		);
 		require(game_started && !game_over);
 
 		if (msg.sender == player[PLAYER1]) {
@@ -341,22 +350,17 @@ contract Game {
 			other = PLAYER1;
 		}
 
-		if (handIndex >= player_hand[sender].length) {
-			require(false);
-		}
-
-		if (board[BOARD_STATE][x][y] != STATE_BLANK) {
-			require(false);
-		}
-
-		if (
-			(board[BOARD_OWNER][adjacentPathX][adjacentPathY] != sender + 1) ||
-			(board[BOARD_STATE][adjacentPathX][adjacentPathY] != STATE_PATH_AND_UNIT) ||
-			!check_neighbouring(x, y, adjacentPathX, adjacentPathY) ||
-			(board[BOARD_STATE][adjacentPathX][adjacentPathY] == STATE_BLANK)
-		) {
-			require(false);
-		}
+		require(handIndex < player_hand[sender].length);
+		require(board[BOARD_STATE][x][y] == STATE_BLANK);
+		require(
+			(board[BOARD_OWNER][adjacentPathX][adjacentPathY] == sender + 1) &&
+			(
+				board[BOARD_STATE][adjacentPathX][adjacentPathY] == STATE_PATH_AND_UNIT ||
+				board[BOARD_STATE][adjacentPathX][adjacentPathY] == STATE_HQ ||
+				board[BOARD_STATE][adjacentPathX][adjacentPathY] == STATE_HQ_AND_UNIT
+			) &&
+			check_neighbouring(x, y, adjacentPathX, adjacentPathY)
+		);
 
 		// The card value is irrelavent so just ignore it
 		board[BOARD_OWNER][x][y] = sender + 1;
@@ -373,31 +377,24 @@ contract Game {
 	}
 
 
-	function lay_unit(uint8 handIndex, uint8 card, uint8 v, bytes32 r, bytes32 s) external _players_turn returns (bool) {
+	function lay_unit(uint8 handIndex, uint8 card, bytes calldata signature) external _players_turn returns (bool) {
 		uint8 sender;
-		uint8 other;
 
+		require(signature.length == 65);
 		require(game_started && !game_over);
 
 		if (msg.sender == player[PLAYER1]) {
 			sender = PLAYER1;
-			other = PLAYER2;
 		} else {
 			sender = PLAYER2;
-			other = PLAYER1;
 		}
 
-		if (handIndex >= player_hand[sender].length) {
-			require(false);
-		}
+		require(handIndex < player_hand[sender].length);
+		require(has_player_hq[sender] && board[BOARD_STATE][player_hq[sender]][sender * (BOARD_HEIGHT - 1)] == STATE_HQ);
+		require(verify_card(card, player_hand[sender][handIndex], msg.sender, signature));
 
-		if (!has_player_hq[sender] || board[BOARD_STATE][player_hq[sender]][0] != STATE_HQ) {
-			require(false);
-		}
-
-		if (!verify_card(card, player_hand[sender][handIndex], msg.sender, v, r, s)) {
-			require(false);
-		}
+		board[BOARD_STATE][player_hq[sender]][sender * (BOARD_HEIGHT - 1)] = STATE_HQ_AND_UNIT;
+		board[BOARD_CARD][player_hq[sender]][sender * (BOARD_HEIGHT - 1)] = card;
 
 		player_hand[sender][handIndex] = player_hand[sender][player_hand[sender].length - 1];
 		player_hand[sender].pop();
@@ -412,28 +409,35 @@ contract Game {
 
 	function move_unit(uint8 unitX, uint8 unitY, uint8 moveX, uint8 moveY) external _players_turn returns (bool) {
 		uint8 sender;
-		uint8 other;
 
+		require(
+			unitX < BOARD_WIDTH &&
+			unitY < BOARD_HEIGHT &&
+			moveX < BOARD_WIDTH &&
+			moveY < BOARD_HEIGHT
+		);
 		require(game_started && !game_over);
 
 		if (msg.sender == player[PLAYER1]) {
 			sender = PLAYER1;
-			other = PLAYER2;
 		} else {
 			sender = PLAYER2;
-			other = PLAYER1;
 		}
 
-		if (board[BOARD_OWNER][unitX][unitY] != sender + 1 ||
-			board[BOARD_STATE][unitX][unitY] != STATE_PATH_AND_UNIT ||
-			!check_neighbouring(unitX, unitY, moveX, moveY) ||
+		require(
+			board[BOARD_OWNER][unitX][unitY] == sender + 1 &&
 			(
-				board[BOARD_STATE][moveX][moveY] != STATE_PATH &&
-				(board[BOARD_STATE][moveX][moveY] != STATE_HQ || board[BOARD_OWNER][unitX][unitY] != sender + 1)
-			)
-		) {
-			require(false);
-		}
+				board[BOARD_STATE][unitX][unitY] == STATE_PATH_AND_UNIT ||
+				board[BOARD_STATE][unitX][unitY] == STATE_HQ_AND_UNIT
+			) && (
+				board[BOARD_STATE][moveX][moveY] == STATE_PATH ||
+				(
+					board[BOARD_STATE][moveX][moveY] == STATE_HQ &&
+					board[BOARD_OWNER][moveX][moveY] == sender + 1
+				)
+			) &&
+			check_neighbouring(unitX, unitY, moveX, moveY)
+		);
 
 		board[BOARD_CARD][moveX][moveY] = board[BOARD_CARD][unitX][unitY];
 		if (board[BOARD_STATE][moveX][moveY] == STATE_HQ) {
@@ -462,6 +466,12 @@ contract Game {
 		uint8 attackerCard;
 		uint8 attackeeCard;
 
+		require(
+			unitX < BOARD_WIDTH &&
+			unitY < BOARD_HEIGHT &&
+			attackX < BOARD_WIDTH &&
+			attackY < BOARD_HEIGHT
+		);
 		require(game_started && !game_over);
 
 		if (msg.sender == player[PLAYER1]) {
@@ -472,22 +482,22 @@ contract Game {
 			other = PLAYER1;
 		}
 
-		if (board[BOARD_OWNER][unitX][unitY] != sender + 1 ||
-			board[BOARD_STATE][unitX][unitY] != STATE_PATH_AND_UNIT ||
-			!check_neighbouring(unitX, unitY, attackX, attackY)
-		) {
-			require(false);
-		}
-
-		if (board[BOARD_OWNER][attackX][attackY] != other + 1 ||
+		require(
+			board[BOARD_OWNER][unitX][unitY] == sender + 1 &&
 			(
-				board[BOARD_STATE][attackX][attackY] != STATE_HQ &&
-				board[BOARD_STATE][attackX][attackY] != STATE_HQ_AND_UNIT &&
-				board[BOARD_STATE][attackX][attackY] != STATE_PATH_AND_UNIT
+				board[BOARD_STATE][unitX][unitY] == STATE_PATH_AND_UNIT ||
+				board[BOARD_STATE][unitX][unitY] == STATE_HQ_AND_UNIT
+			) &&
+			check_neighbouring(unitX, unitY, attackX, attackY)
+		);
+		require(
+			board[BOARD_OWNER][attackX][attackY] == other + 1 &&
+			(
+				board[BOARD_STATE][attackX][attackY] == STATE_HQ ||
+				board[BOARD_STATE][attackX][attackY] == STATE_HQ_AND_UNIT ||
+				board[BOARD_STATE][attackX][attackY] == STATE_PATH_AND_UNIT
 			)
-		){
-			require(false);
-		}
+		);
 
 		if (board[BOARD_STATE][attackX][attackY] == STATE_HQ) {
 			// Inflict damage on HQ
@@ -498,9 +508,12 @@ contract Game {
 				if (sender == PLAYER1) {
 					player1_won = true;
 				}
-
-				return true;
 			}
+
+			player1_turn = !player1_turn;
+			emit Attack(msg.sender);
+			emit NextTurn();
+			return true;
 		}
 
 		attackerCard = board[BOARD_CARD][unitX][unitY] % 13;
@@ -538,7 +551,6 @@ contract Game {
 
 		}
 
-		// No cards were spent from the players hand, so no need to draw, correct?
 		player1_turn = !player1_turn;
 		emit Attack(msg.sender);
 		emit NextTurn();
@@ -556,10 +568,28 @@ contract Game {
 		return false;
 	}
 
+
 	// https://solidity.readthedocs.io/en/v0.6.3/solidity-by-example.html
 	/// builds a prefixed hash to mimic the behavior of eth_sign.
 	function prefixed(bytes32 hash) internal pure returns (bytes32) {
-		return keccak256(abi.encodePacked("\x19ethereum signed message:\n32", hash));
+		return keccak256(abi.encodePacked("\x19Ethereum Signed Message:\n32", hash));
+	}
+
+
+	// https://solidity.readthedocs.io/en/v0.6.3/solidity-by-example.html
+	function split_signature(bytes memory sig) internal pure returns (uint8 v, bytes32 r, bytes32 s) {
+		require(sig.length == 65);
+
+		assembly {
+			// first 32 bytes, after the length prefix.
+			r := mload(add(sig, 32))
+			// second 32 bytes.
+			s := mload(add(sig, 64))
+			// final byte (first byte of the next 32 bytes).
+			v := byte(0, mload(add(sig, 96)))
+		}
+
+		return (v, r, s);
 	}
 
 
