@@ -114,20 +114,20 @@ int main(int argc, char **argv) {
     srand(randSeed);
     irand.close();
 
-    do {
-        selection = mainMenu(TITLE);
-    } while (selection == -1);
-    if (selection == 0) {
-        if (!createGame()) {
-            return -1;
-        }
-    }
-    else {
-        string addr = promptAddress();
-        if (!joinGame(addr)) {
-            return -1;
-        }
-    }
+//    do {
+//        selection = mainMenu(TITLE);
+//    } while (selection == -1);
+//    if (selection == 0) {
+//        if (!createGame()) {
+//            return -1;
+//        }
+//    }
+//    else {
+//        string addr = promptAddress();
+//        if (!joinGame(addr)) {
+//            return -1;
+//        }
+//    }
     playGame();
 
     //testDriver();
