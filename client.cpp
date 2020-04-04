@@ -372,7 +372,7 @@ void playGame(void) {
                     }
                 } while (source.size() != 2);
                 points =
-                       getPossibleMovementOptionsForUnit(board, source);
+                    getPossibleMovementOptionsForUnit(board, source, playerID);
                 system("clear");
                 printOpponentsHand(oppHandSize);
                 healths = interface.getHqHealth();
@@ -382,9 +382,9 @@ void playGame(void) {
                 printHand(handIDs);
                 do {
                     dest = promptForPoint(PROMPTSECONDARYBOARDSELECTION);
-                    if (source.size() == 1) {
+                    if (dest.size() == 1) {
                         // user wants to return to action menu
-                        source.clear();
+                        dest.clear();
                         goto selectAction;
                     }
                 } while (dest.size() != 2);
@@ -415,9 +415,9 @@ void playGame(void) {
                 printHand(handIDs);
                 do {
                     dest = promptForPoint(PROMPTSECONDARYBOARDSELECTION);
-                    if (source.size() == 1) {
+                    if (dest.size() == 1) {
                         // user wants to return to action menu
-                        source.clear();
+                        dest.clear();
                         goto selectAction;
                     }
                 } while (dest.size() != 2);
