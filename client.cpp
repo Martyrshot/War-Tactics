@@ -150,7 +150,7 @@ void playGame(void) {
     vector<uint8_t> point;
     do {
         point = promptForPoint(PROMPTHQPLACE);
-    } while (point.size() == 0);
+    } while (point.size() != 2);
 
     // we only need the x coord, but ask for both for consistency
     hqPlaced = interface.placeHq(point[0]);
@@ -203,6 +203,7 @@ void playGame(void) {
                                                              healths[oppID -1]);
         printHand(handIDs);
         //interface.waitNextTurn();
+        selectAction:
         int action = promptForAction(PROMPTACTION);
         switch (action) {
             case 0:
@@ -212,6 +213,10 @@ void playGame(void) {
                 int handSize = handIDs.size();
                 do {
                     cardID = promptForCard(PROMPTHANDSELECTION, handSize);
+                    if (cardID == -2) {
+                        // user wants to return to action selection
+                        goto selectAction;
+                    }
                 } while (cardID == -1);
                 vector< vector<uint8_t> > points =
                                     getAllPathPlacementOptions(board,playerID);
@@ -250,6 +255,10 @@ void playGame(void) {
                 int handSize = handIDs.size();
                 do {
                     cardID = promptForCard(PROMPTHANDSELECTION, handSize);
+                    if (cardID == -2) {
+                        // user wants to return to action selection
+                        goto selectAction;
+                    }
                 } while (cardID == -1);
                 points.clear();
                 interface.layUnit(cardID);
@@ -262,7 +271,12 @@ void playGame(void) {
                 vector<uint8_t> source;
                 do {
                     source = promptForPoint(PROMPTBOARDSELECTION);
-                } while (source.size() == 0);
+                    if (source.size() == 1) {
+                        // user wants to return to action menu
+                        source.clear();
+                        goto selectAction;
+                    }
+                } while (source.size() != 2);
                 points =
                        getPossibleMovementOptionsForUnit(board, source);
                 //system("clear");
@@ -274,7 +288,12 @@ void playGame(void) {
                 printHand(handIDs);
                 do {
                     dest = promptForPoint(PROMPTSECONDARYBOARDSELECTION);
-                } while (dest.size() == 0);
+                    if (source.size() == 1) {
+                        // user wants to return to action menu
+                        source.clear();
+                        goto selectAction;
+                    }
+                } while (dest.size() != 2);
                 interface.moveUnit(source[0], source[1], dest[0], dest[1]);
             }
             break;
@@ -285,7 +304,12 @@ void playGame(void) {
                 vector<uint8_t> source;
                 do {
                     source = promptForPoint(PROMPTBOARDSELECTION);
-                } while (source.size() == 0);
+                    if (source.size() == 1) {
+                        // user wants to return to action menu
+                        source.clear();
+                        goto selectAction;
+                    }
+                } while (source.size() != 2);
                 points =
                        getPossibleAttackOptionsForUnit(board, playerID, source);
                 //system("clear");
@@ -297,7 +321,12 @@ void playGame(void) {
                 printHand(handIDs);
                 do {
                     dest = promptForPoint(PROMPTSECONDARYBOARDSELECTION);
-                } while (dest.size() == 0);
+                    if (source.size() == 1) {
+                        // user wants to return to action menu
+                        source.clear();
+                        goto selectAction;
+                    }
+                } while (dest.size() != 2);
                 interface.attack(source[0], source[1], dest[0], dest[1]);
             }
             break;

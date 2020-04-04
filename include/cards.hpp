@@ -4,6 +4,7 @@
 #include <string>
 #include <iostream>
 #include <vector>
+#include <cinttypes>
 
 using namespace std;
 
@@ -402,7 +403,7 @@ vector< vector<string> > diamonds = {
 void printHand(vector<uint8_t> ids, uint8_t idx) {
 
     vector< vector<string> > cards;
-    for(uint n : ids) {
+    for(unsigned int n : ids) {
         if (n < 13) {
             cards.push_back(spades[n]);
         }

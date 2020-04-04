@@ -24,8 +24,11 @@ vector<uint8_t> promptForPoint(string stringToPrint) {
         cin.ignore(numeric_limits<std::streamsize>::max(), '\n');
     }
     cin >> input;
-
-    if (input.size() != 2) {
+    if (input.size() == 1 && ((input[0] - 48) == 0)) {
+        result.push_back(63);
+        return result;
+    }
+    else if (input.size() != 2) {
         cout << "Bad input!\n" << flush;
         return result;
     }
@@ -78,7 +81,11 @@ int8_t promptForCard(string stringToPrint, int numCards) {
 
 
     input = input - 1;
-    if (input > numCards - 1 || input < 0) {
+    if (input == -1) {
+        // denote the user wanted to return to action section
+        return -2;
+    }
+    else if (input > numCards - 1 || input < 0) {
         cout << "Bad input!\n" << flush;
         return -1;
     }
