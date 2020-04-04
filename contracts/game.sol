@@ -505,11 +505,12 @@ contract Game {
 				if (sender == PLAYER1) {
 					player1_won = true;
 				}
-
-				emit Attack(msg.sender);
-				emit NextTurn();
-				return true;
 			}
+
+			player1_turn = !player1_turn;
+			emit Attack(msg.sender);
+			emit NextTurn();
+			return true;
 		}
 
 		attackerCard = board[BOARD_CARD][unitX][unitY] % 13;
@@ -547,7 +548,6 @@ contract Game {
 
 		}
 
-		// No cards were spent from the players hand, so no need to draw, correct?
 		player1_turn = !player1_turn;
 		emit Attack(msg.sender);
 		emit NextTurn();
