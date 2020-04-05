@@ -58,5 +58,5 @@ The Ubuntu based apt repository for Solidity is not compatible with Debian. Use 
 
 ##### MacOS
 
-brew tap ethereum/ethereum
-brew install solidity
+`brew tap ethereum/ethereum`
+`brew install solidity`
