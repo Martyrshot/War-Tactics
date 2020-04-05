@@ -1,9 +1,9 @@
 #include <boost/algorithm/string/trim.hpp>
 #include <iostream>
 
-#include <nlohmann/json.hpp>
 #include <ethabi.hpp>
 #include <event_wait_mgr.hpp>
+#include <nlohmann/json.hpp>
 
 
 using namespace std;
@@ -15,11 +15,11 @@ namespace eth_interface
 
 
 EventLogWaitManager::EventLogWaitManager(
-	string const& clientAddress,
-	string const& contractAddress,
-	string const& ipcPath,
-	vector<tuple<string, string, bool>> const& contractLogSignatures,
-	string const& contractABI)
+	string const &clientAddress,
+	string const &contractAddress,
+	string const &ipcPath,
+	vector<tuple<string, string, bool>> const &contractLogSignatures,
+	string const &contractABI)
 {
 	if (contractLogSignatures.size() < 1)
 	{
@@ -49,9 +49,9 @@ EventLogWaitManager::joinThreads(void)
 
 
 unique_ptr<unordered_map<string, string>>
-EventLogWaitManager::getEventLog(string const& logID)
+EventLogWaitManager::getEventLog(string const &logID)
 {
-	unordered_map<string, string>* element;
+	unordered_map<string, string> *element;
 
 #ifdef _DEBUG
 	cout << "EventLogWaitManager::getEventLog(): Acquiring mutex..." << endl
@@ -110,7 +110,7 @@ EventLogWaitManager::getEventLog(string const& logID)
 
 
 void
-EventLogWaitManager::setEventLog(string const& logID, unordered_map<string, string> const& eventLog)
+EventLogWaitManager::setEventLog(string const &logID, unordered_map<string, string> const &eventLog)
 {
 	mtx.lock();
 
@@ -156,8 +156,8 @@ EventLogWaitManager::setEventLog(string const& logID, unordered_map<string, stri
 
 void
 EventLogWaitManager::ipc_subscription_listener_setup(
-	boost::asio::local::stream_protocol::socket& socket,
-	boost::asio::local::stream_protocol::endpoint& ep)
+	boost::asio::local::stream_protocol::socket &socket,
+	boost::asio::local::stream_protocol::endpoint &ep)
 {
 	char receiveBuffer[IPC_BUFFER_LENGTH];
 	string subscribeParse, data, message;
@@ -225,7 +225,7 @@ restart: // TODO: Get rid of this
 		{
 			jsonResponce = Json::parse(message);
 		}
-		catch (const Json::exception& e)
+		catch (const Json::exception &e)
 		{
 			cerr << "ipc_subscription_listener_setup(): JSON response error in response while subscribing:"
 				 << endl
@@ -243,7 +243,7 @@ restart: // TODO: Get rid of this
 				"ipc_subscription_listener_setup(): Got an error response to eth_subscribe!\n"
 				"Signature: "
 				+ get<1>(contractLogSignatures[i]) + "\n"
-													"Request: "
+													 "Request: "
 				+ data + "\n"
 						 "Responce: "
 				+ message + "\n");
@@ -338,7 +338,7 @@ begin:
 			data = resultJsonObject["data"];
 			transactionHash = resultJsonObject["transactionHash"];
 		}
-		catch (const Json::exception& e)
+		catch (const Json::exception &e)
 		{
 			cerr << "ipc_subscription_listener_thread(): JSON response error in response:"
 				 << endl
@@ -377,26 +377,26 @@ begin:
 		}
 
 #ifdef _DEBUG
-	cout << "ipc_subscription_listener_thread():"
-		 << endl
-		 << "\tcalling ethabi_decode_log(\""
-		 << contractABI
-		 << "\", \""
-		 << get<0>(subscriptionToEventName[subscription])
-		 << "\", [";
-	uint16_t i = 0;
-	for (auto& x : topics)
-	{
-		if (i > 0)
+		cout << "ipc_subscription_listener_thread():"
+			 << endl
+			 << "\tcalling ethabi_decode_log(\""
+			 << contractABI
+			 << "\", \""
+			 << get<0>(subscriptionToEventName[subscription])
+			 << "\", [";
+		uint16_t i = 0;
+		for (auto &x : topics)
 		{
-			cout << ", ";
+			if (i > 0)
+			{
+				cout << ", ";
+			}
+			cout << x;
 		}
-		cout << x;
-	}
-	cout << "], \""
-		 << data.substr(2)
-		 << "\")"
-		 << endl;
+		cout << "], \""
+			 << data.substr(2)
+			 << "\")"
+			 << endl;
 #endif //_DEBUG
 
 		unordered_map<string, string> log;
@@ -455,7 +455,8 @@ begin:
 		{
 			cout << eventLogMap[get<0>(subscriptionToEventName[subscription])].get()->toString();
 		}
-		cout << endl << endl;
+		cout << endl
+			 << endl;
 		mtx.unlock();
 #endif //_DEBUG
 	}

@@ -143,7 +143,7 @@ EthInterface::getEthContractBIN(void)
 
 // Throws ResourceRequestFailedException from ethabi()
 string
-EthInterface::getFrom(string const& funcName, string const& ethabiEncodeArgs)
+EthInterface::getFrom(string const &funcName, string const &ethabiEncodeArgs)
 {
 	string data, result;
 
@@ -164,7 +164,7 @@ EthInterface::getFrom(string const& funcName, string const& ethabiEncodeArgs)
 
 // Throws ResourceRequestFailedException from ethabi()
 string
-EthInterface::getNoArgs(string const& funcName)
+EthInterface::getNoArgs(string const &funcName)
 {
 	return getFrom(funcName, "");
 }
@@ -173,7 +173,7 @@ EthInterface::getNoArgs(string const& funcName)
 
 // Throws ResourceRequestFailedException from ethabi()
 uint64_t
-EthInterface::getInt(string const& funcName)
+EthInterface::getInt(string const &funcName)
 {
 	string value;
 
@@ -185,7 +185,7 @@ EthInterface::getInt(string const& funcName)
 
 // Throws ResourceRequestFailedException from ethabi()
 uint64_t
-EthInterface::getIntFromContract(string const& funcName)
+EthInterface::getIntFromContract(string const &funcName)
 {
 	return getIntFromContract(funcName, "");
 }
@@ -194,7 +194,7 @@ EthInterface::getIntFromContract(string const& funcName)
 
 // Throws ResourceRequestFailedException from ethabi()
 uint64_t
-EthInterface::getIntFromContract(string const& funcName, string const& params)
+EthInterface::getIntFromContract(string const &funcName, string const &params)
 {
 	string hex;
 	uint64_t dec;
@@ -208,7 +208,7 @@ EthInterface::getIntFromContract(string const& funcName, string const& params)
 
 
 Json
-EthInterface::call_helper(string const& data)
+EthInterface::call_helper(string const &data)
 {
 	string callStr = eth_call(data);
 	Json callJson = Json::parse(callStr);
@@ -224,7 +224,7 @@ EthInterface::call_helper(string const& data)
 
 
 void
-EthInterface::blockForEvent(string const& event)
+EthInterface::blockForEvent(string const &event)
 {
 	eventLogWaitManager->getEventLog(event);
 	return;
@@ -233,7 +233,7 @@ EthInterface::blockForEvent(string const& event)
 
 
 unique_ptr<unordered_map<string, string>>
-EthInterface::contract_helper(string const& data)
+EthInterface::contract_helper(string const &data)
 {
 	string transactionHash, transactionReceipt;
 	Json transactionJsonData;
@@ -271,9 +271,9 @@ EthInterface::contract_helper(string const& data)
 // Throws TransactionFailedException from eth_sendTransaction()
 bool
 EthInterface::callMutatorContract(
-	string const& funcName,
-	string const& ethabiEncodeArgs,
-	unique_ptr<unordered_map<string, string>>& eventLog)
+	string const &funcName,
+	string const &ethabiEncodeArgs,
+	unique_ptr<unordered_map<string, string>> &eventLog)
 {
 	string data;
 
@@ -284,11 +284,11 @@ EthInterface::callMutatorContract(
 	{
 		eventLog = contract_helper(data);
 	}
-	catch (const CallFailedException& e)
+	catch (const CallFailedException &e)
 	{
 		return false;
 	}
-	catch (const TransactionFailedException& e)
+	catch (const TransactionFailedException &e)
 	{
 		return false;
 	}
@@ -315,17 +315,14 @@ EthInterface::callMutatorContract(
 
 
 string
-EthInterface::eth_sign(string const& data)
+EthInterface::eth_sign(string const &data)
 {
 	string sig;
 	string jsonResponceStr;
 	string jsonRequest = "{\"jsonrpc\":\"2.0\","
 						 "\"method\":\"eth_sign\","
-						 "\"params\":[\"0x" +
-						 clientAddress +
-						 "\",\"0x" +
-						 data +
-						 "\"],\"id\":1}";
+						 "\"params\":[\"0x"
+		+ clientAddress + "\",\"0x" + data + "\"],\"id\":1}";
 
 	jsonResponceStr = this->eth_ipc_request(jsonRequest);
 
@@ -386,7 +383,7 @@ EthInterface::eth_accounts(void)
 	{
 		jsonStr = this->eth_ipc_request(jsonRequest);
 	}
-	catch(ResourceRequestFailedException const& e)
+	catch (ResourceRequestFailedException const &e)
 	{
 		cerr << "Geth IPC file does not exist!"
 			 << endl
@@ -406,7 +403,7 @@ EthInterface::eth_accounts(void)
 	}
 
 	vector<string> vec;
-	for (auto& item : result.value().items())
+	for (auto &item : result.value().items())
 	{
 		vec.push_back(item.value());
 	}
@@ -419,7 +416,7 @@ EthInterface::eth_accounts(void)
 // Throws TransactionFailedException from eth_sendTransaction() and locally
 // Throws ResourceRequestFailedException
 string
-EthInterface::create_contract(string const& solFile, string const& abiFile, string const& binFile)
+EthInterface::create_contract(string const &solFile, string const &abiFile, string const &binFile)
 {
 	return create_contract(solFile, abiFile, binFile, "");
 }
@@ -427,7 +424,7 @@ EthInterface::create_contract(string const& solFile, string const& abiFile, stri
 
 
 void
-EthInterface::compile_solidity(string const& solFile, string const& abiFile, string const& binFile)
+EthInterface::compile_solidity(string const &solFile, string const &abiFile, string const &binFile)
 {
 	string shellCall;
 
@@ -469,7 +466,7 @@ EthInterface::compile_solidity(string const& solFile, string const& abiFile, str
 // Throws TransactionFailedException from eth_sendTransaction() and locally
 // Throws ResourceRequestFailedException
 string
-EthInterface::create_contract(string const& solFile, string const& abiFile, string const& binFile, string const& params)
+EthInterface::create_contract(string const &solFile, string const &abiFile, string const &binFile, string const &params)
 {
 	string contractBin,
 		transactionJsonStr,
@@ -547,7 +544,7 @@ EthInterface::create_contract(string const& solFile, string const& abiFile, stri
 
 
 string
-EthInterface::getTransactionReceipt(string const& transactionHash)
+EthInterface::getTransactionReceipt(string const &transactionHash)
 {
 	int retries = 0;
 	string transactionReceipt, result;
@@ -567,7 +564,7 @@ EthInterface::getTransactionReceipt(string const& transactionHash)
 		{
 			jsonData = Json::parse(transactionReceipt);
 		}
-		catch(nlohmann::detail::parse_error const& e)
+		catch (nlohmann::detail::parse_error const &e)
 		{
 			continue;
 		}
@@ -603,7 +600,7 @@ EthInterface::getTransactionReceipt(string const& transactionHash)
 // TODO: Should this be ported to Unix Domain Sockets?
 // TODO: At the very least, replace cerr/return with exceptions
 string
-EthInterface::eth_ipc_request(string const& jsonRequest)
+EthInterface::eth_ipc_request(string const &jsonRequest)
 {
 	int ipcFdFlags, ipcFd;
 	string json;
@@ -613,7 +610,7 @@ EthInterface::eth_ipc_request(string const& jsonRequest)
 	cout << "eth_ipc_request(): " << jsonRequest << endl;
 #endif //_DEBUG
 
-	FILE* ipc = popen(
+	FILE *ipc = popen(
 		("echo '" + jsonRequest + "' | nc -U '" + ipcPath + "'").c_str(),
 		"r");
 	if (ipc == NULL)
@@ -646,7 +643,7 @@ EthInterface::eth_ipc_request(string const& jsonRequest)
 
 #ifdef _DEBUG
 	cout << "eth_ipc_request(): Responce: \""
-			<< json << "\"" << endl;
+		 << json << "\"" << endl;
 #endif //_DEBUG
 
 	if (pclose(ipc) < 0)
@@ -665,13 +662,14 @@ EthInterface::eth_ipc_request(string const& jsonRequest)
 
 
 string
-EthInterface::eth_call(string const& abiData)
+EthInterface::eth_call(string const &abiData)
 {
 	string jsonRequest = "{\"jsonrpc\":\"2.0\","
 						 "\"method\":\"eth_call\","
 						 "\"params\":[{"
-						 "\"from\":\"0x" + clientAddress + "\","
-						 "\"to\":\"0x"
+						 "\"from\":\"0x"
+		+ clientAddress + "\","
+						  "\"to\":\"0x"
 		+ contractAddress + "\","
 							"\"data\":\"0x"
 		+ abiData + "\"},\"latest\"],\"id\":1}";
@@ -686,7 +684,7 @@ EthInterface::eth_call(string const& abiData)
 
 
 string
-EthInterface::eth_sendTransaction(string const& abiData)
+EthInterface::eth_sendTransaction(string const &abiData)
 {
 	string jsonRequest = "{\"jsonrpc\":\"2.0\","
 						 "\"method\":\"eth_sendTransaction\""
@@ -695,7 +693,8 @@ EthInterface::eth_sendTransaction(string const& abiData)
 		+ clientAddress + "\","
 						  "\"to\":\"0x"
 		+ contractAddress + "\","
-							"\"gas\":\"" + ETH_DEFAULT_GAS + "\","
+							"\"gas\":\""
+		+ ETH_DEFAULT_GAS + "\","
 							"\"gasPrice\":\"0x0\","
 							"\"data\":\"0x"
 		+ abiData + "\"}],"
@@ -711,16 +710,17 @@ EthInterface::eth_sendTransaction(string const& abiData)
 
 
 string
-EthInterface::eth_createContract(string const& data)
+EthInterface::eth_createContract(string const &data)
 {
 	string jsonRequest = "{\"jsonrpc\":\"2.0\","
 						 "\"method\":\"eth_sendTransaction\""
 						 ",\"params\":[{"
 						 "\"from\":\"0x"
-						 + clientAddress + "\","
-						 "\"gasPrice\":\"0x0\","
-						 "\"gas\":\"" + ETH_DEFAULT_GAS + "\","
-						 "\"data\":\"0x"
+		+ clientAddress + "\","
+						  "\"gasPrice\":\"0x0\","
+						  "\"gas\":\""
+		+ ETH_DEFAULT_GAS + "\","
+							"\"data\":\"0x"
 		+ data + "\"}],"
 				 "\"id\":1}";
 
@@ -734,7 +734,7 @@ EthInterface::eth_createContract(string const& data)
 
 
 string
-EthInterface::eth_getTransactionReceipt(string const& transactionHash)
+EthInterface::eth_getTransactionReceipt(string const &transactionHash)
 {
 	string jsonRequest = "{\"jsonrpc\":\"2.0\","
 						 "\"method\":\"eth_getTransactionReceipt\","

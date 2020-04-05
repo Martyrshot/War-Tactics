@@ -6,8 +6,8 @@
 #endif //_DEBUG
 
 #include <boost/algorithm/string.hpp>
-#include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string/replace.hpp>
+#include <boost/algorithm/string/trim.hpp>
 #include <ethabi.hpp>
 
 
@@ -19,7 +19,7 @@ namespace eth_interface
 
 
 string
-ethabi(string const& args)
+ethabi(string const &args)
 {
 	string result;
 	array<char, IPC_BUFFER_LENGTH> pipe_buffer;
@@ -28,7 +28,7 @@ ethabi(string const& args)
 	cout << "ethabi(): Requested '" << args << "'" << endl;
 #endif //_DEBUG
 
-	FILE* ethabi_pipe = popen(("ethabi " + args).c_str(), "r");
+	FILE *ethabi_pipe = popen(("ethabi " + args).c_str(), "r");
 	if (ethabi_pipe == NULL)
 	{
 		// Failed to open pipe to ethabi -- is the binary installed and in $PATH?
@@ -63,10 +63,10 @@ ethabi(string const& args)
 
 unordered_map<string, string>
 ethabi_decode_log(
-	string const& abiFile,
-	string const& eventName,
-	vector<string>& topics,
-	string const& data)
+	string const &abiFile,
+	string const &eventName,
+	vector<string> &topics,
+	string const &data)
 {
 	string query, responce;
 	vector<string> lines;
@@ -100,7 +100,7 @@ ethabi_decode_log(
 
 
 string
-ethabi_decode_result(string const& abiFile, string const& eventName, string const& data)
+ethabi_decode_result(string const &abiFile, string const &eventName, string const &data)
 {
 	string query, responce;
 
@@ -121,7 +121,7 @@ ethabi_decode_result(string const& abiFile, string const& eventName, string cons
 
 
 vector<string>
-ethabi_decode_results(string const& abiFile, string const& eventName, string const& data)
+ethabi_decode_results(string const &abiFile, string const &eventName, string const &data)
 {
 	vector<string> array;
 	string query, responce;
@@ -152,7 +152,7 @@ ethabi_decode_results(string const& abiFile, string const& eventName, string con
 
 
 vector<string>
-ethabi_decode_string_array(string const& abiFile, string const& eventName, string const& data)
+ethabi_decode_string_array(string const &abiFile, string const &eventName, string const &data)
 {
 	vector<string> array;
 	string responce;
@@ -167,7 +167,7 @@ ethabi_decode_string_array(string const& abiFile, string const& eventName, strin
 
 
 vector<uint32_t>
-ethabi_decode_uint32_array(string const& abiFile, string const& eventName, string const& data)
+ethabi_decode_uint32_array(string const &abiFile, string const &eventName, string const &data)
 {
 	vector<string> arrayStr;
 	vector<uint32_t> arrayUInt32;
@@ -187,7 +187,7 @@ ethabi_decode_uint32_array(string const& abiFile, string const& eventName, strin
 
 
 vector<uint8_t>
-ethabi_decode_uint8_array(string const& abiFile, string const& eventName, string const& data)
+ethabi_decode_uint8_array(string const &abiFile, string const &eventName, string const &data)
 {
 	vector<string> arrayStr;
 	vector<uint8_t> arrayUInt8;
@@ -207,7 +207,7 @@ ethabi_decode_uint8_array(string const& abiFile, string const& eventName, string
 
 
 vector<uint8_t>
-ethabi_decode_3d_uint8_array(string const& abiFile, string const& eventName, string const& data)
+ethabi_decode_3d_uint8_array(string const &abiFile, string const &eventName, string const &data)
 {
 	vector<string> arrayStr;
 	vector<uint8_t> arrayUInt8;

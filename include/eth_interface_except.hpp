@@ -12,11 +12,11 @@ namespace eth_interface
 class EthException : public std::runtime_error
 {
 	public:
-	EthException(const char* msg)
+	EthException(const char *msg)
 		: std::runtime_error(msg)
 	{
 	}
-	EthException(const std::string& msg)
+	EthException(const std::string &msg)
 		: std::runtime_error(msg)
 	{
 	}
@@ -27,11 +27,11 @@ class EthException : public std::runtime_error
 class TransactionException : public EthException
 {
 	public:
-	TransactionException(const char* msg)
+	TransactionException(const char *msg)
 		: EthException(msg)
 	{
 	}
-	TransactionException(const std::string& msg)
+	TransactionException(const std::string &msg)
 		: EthException(msg)
 	{
 	}
@@ -40,11 +40,11 @@ class TransactionException : public EthException
 class CallFailedException : public TransactionException
 {
 	public:
-	CallFailedException(const char* msg)
+	CallFailedException(const char *msg)
 		: TransactionException(msg)
 	{
 	}
-	CallFailedException(const std::string& msg)
+	CallFailedException(const std::string &msg)
 		: TransactionException(msg)
 	{
 	}
@@ -53,11 +53,11 @@ class CallFailedException : public TransactionException
 class TransactionFailedException : public TransactionException
 {
 	public:
-	TransactionFailedException(const char* msg)
+	TransactionFailedException(const char *msg)
 		: TransactionException(msg)
 	{
 	}
-	TransactionFailedException(const std::string& msg)
+	TransactionFailedException(const std::string &msg)
 		: TransactionException(msg)
 	{
 	}
@@ -68,11 +68,11 @@ class TransactionFailedException : public TransactionException
 class InvalidArgumentException : public EthException
 {
 	public:
-	InvalidArgumentException(const char* msg)
+	InvalidArgumentException(const char *msg)
 		: EthException(msg)
 	{
 	}
-	InvalidArgumentException(const std::string& msg)
+	InvalidArgumentException(const std::string &msg)
 		: EthException(msg)
 	{
 	}
@@ -83,11 +83,11 @@ class InvalidArgumentException : public EthException
 class DeviceNotAssignedException : public EthException
 {
 	public:
-	DeviceNotAssignedException(const char* msg)
+	DeviceNotAssignedException(const char *msg)
 		: EthException(msg)
 	{
 	}
-	DeviceNotAssignedException(const std::string& msg)
+	DeviceNotAssignedException(const std::string &msg)
 		: EthException(msg)
 	{
 	}
@@ -96,11 +96,11 @@ class DeviceNotAssignedException : public EthException
 class ResourceRequestFailedException : public EthException
 {
 	public:
-	ResourceRequestFailedException(const char* msg)
+	ResourceRequestFailedException(const char *msg)
 		: EthException(msg)
 	{
 	}
-	ResourceRequestFailedException(const std::string& msg)
+	ResourceRequestFailedException(const std::string &msg)
 		: EthException(msg)
 	{
 	}
@@ -109,11 +109,11 @@ class ResourceRequestFailedException : public EthException
 class ThreadExistsException : public EthException
 {
 	public:
-	ThreadExistsException(const char* msg)
+	ThreadExistsException(const char *msg)
 		: EthException(msg)
 	{
 	}
-	ThreadExistsException(const std::string& msg)
+	ThreadExistsException(const std::string &msg)
 		: EthException(msg)
 	{
 	}

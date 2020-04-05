@@ -1,23 +1,23 @@
 #ifndef __GAME_INTERFACE_HPP
 #define __GAME_INTERFACE_HPP
 
+#include <boost/multi_array.hpp>
 #include <libconfig.h++>
 #include <mutex>
 #include <thread>
-#include <boost/multi_array.hpp>
 
 #include <eth_interface.hpp>
 #include <eth_interface_except.hpp>
 #include <event_wait_mgr.hpp>
 
 
-#define CONFIG_F     "game.conf"
+#define CONFIG_F "game.conf"
 
-#define GAME_SOL     "contracts/game.sol"
-#define GAME_ABI     "contracts/game.abi"
-#define GAME_BIN     "contracts/game.bin"
+#define GAME_SOL "contracts/game.sol"
+#define GAME_ABI "contracts/game.abi"
+#define GAME_BIN "contracts/game.bin"
 
-#define DECK_SIZE     52
+#define DECK_SIZE 52
 
 //Number of choices in the main menu
 #define MENU_ITEMS 3
@@ -32,7 +32,6 @@ namespace game_interface
 class GameInterface : public EthInterface
 {
 	public:
-
 	GameInterface(void);
 
 	// throws include/eth_interface_exception.hpp::TransactionFailedException
@@ -42,7 +41,7 @@ class GameInterface : public EthInterface
 
 	// gameAddress is an ethereum address (hex), without leading "0x"
 	bool
-	joinGame(std::string const& gameAddress);
+	joinGame(std::string const &gameAddress);
 
 	bool
 	createDeck(uint8_t deckSeed[DECK_SIZE]);
@@ -85,25 +84,25 @@ class GameInterface : public EthInterface
 
 	bool
 	layPath(uint8_t x,
-			uint8_t y,
-			uint8_t handIndex,
-			uint8_t adjacentPathX,
-			uint8_t adjacentPathY);
+		uint8_t y,
+		uint8_t handIndex,
+		uint8_t adjacentPathX,
+		uint8_t adjacentPathY);
 
 	bool
 	layUnit(uint8_t handIndex);
 
 	bool
 	moveUnit(uint8_t unitX,
-			uint8_t unitY,
-			uint8_t moveX,
-			uint8_t moveY);
+		uint8_t unitY,
+		uint8_t moveX,
+		uint8_t moveY);
 
 	bool
 	attack(uint8_t unitX,
-			uint8_t unitY,
-			uint8_t attackX,
-			uint8_t attackY);
+		uint8_t unitY,
+		uint8_t attackX,
+		uint8_t attackY);
 
 	void
 	waitPlayerJoined(void);
@@ -121,9 +120,8 @@ class GameInterface : public EthInterface
 	endGame(void);
 
 	private:
-
 	libconfig::Config cfg;
-	libconfig::Setting* cfgRoot;
+	libconfig::Setting *cfgRoot;
 
 	std::vector<std::tuple<std::string, std::string, bool>>
 	contractEventSignatures(void);
@@ -133,7 +131,6 @@ class GameInterface : public EthInterface
 
 	std::string
 	getHandCardHash(uint8_t handIndex);
-
 };
 
 

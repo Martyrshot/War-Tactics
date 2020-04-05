@@ -3,10 +3,10 @@
 
 #include <boost/asio.hpp>
 #include <condition_variable>
-#include <unordered_map>
 #include <mutex>
 #include <string>
 #include <thread>
+#include <unordered_map>
 
 
 
@@ -18,21 +18,21 @@ class EventLogWaitManager
 {
 	public:
 	EventLogWaitManager(
-		std::string const& clientAddress,
-		std::string const& contractAddress,
-		std::string const& ipcPath,
-		std::vector<std::tuple<std::string, std::string, bool>> const& contractLogSignatures,
-		std::string const& contractABI);
+		std::string const &clientAddress,
+		std::string const &contractAddress,
+		std::string const &ipcPath,
+		std::vector<std::tuple<std::string, std::string, bool>> const &contractLogSignatures,
+		std::string const &contractABI);
 
-	std::unique_ptr<std::unordered_map<std::string, std::string>> getEventLog(std::string const& logID);
-	void setEventLog(std::string const& logID, std::unordered_map<std::string, std::string> const& eventLog);
+	std::unique_ptr<std::unordered_map<std::string, std::string>> getEventLog(std::string const &logID);
+	void setEventLog(std::string const &logID, std::unordered_map<std::string, std::string> const &eventLog);
 	void joinThreads(void);
 
 	// Thread main function for geth log monitor thread
 	void ipc_subscription_listener_thread(void);
 
 	private:
-	std::thread* subscriptionListener = NULL;
+	std::thread *subscriptionListener = NULL;
 
 	std::vector<std::tuple<std::string, std::string, bool>> contractLogSignatures;
 	std::map<std::string, std::tuple<std::string, std::string, bool>> subscriptionToEventName;
@@ -75,8 +75,8 @@ class EventLogWaitManager
 	std::unordered_map<std::string, std::unique_ptr<EventLogWaitElement>> eventLogMap;
 
 	void ipc_subscription_listener_setup(
-		boost::asio::local::stream_protocol::socket& socket,
-		boost::asio::local::stream_protocol::endpoint& ep);
+		boost::asio::local::stream_protocol::socket &socket,
+		boost::asio::local::stream_protocol::endpoint &ep);
 };
 
 

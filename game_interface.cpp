@@ -1,6 +1,6 @@
 #include <array>
-#include <boost/algorithm/string/trim.hpp>
 #include <boost/algorithm/string.hpp>
+#include <boost/algorithm/string/trim.hpp>
 #include <iostream>
 #include <sstream>
 #include <string>
@@ -9,10 +9,9 @@
 #include <string.h>
 #include <unistd.h>
 
-#include <game_interface.hpp>
 #include <ethabi.hpp>
+#include <game_interface.hpp>
 #include <misc.hpp>
-
 
 
 
@@ -39,12 +38,12 @@ GameInterface::GameInterface(void)
 	{
 		cfg.readFile(CONFIG_F);
 	}
-	catch (const FileIOException& e)
+	catch (const FileIOException &e)
 	{
 		cerr << "IO error reading config file!" << endl;
 		exit(EXIT_FAILURE);
 	}
-	catch (const ParseException& e)
+	catch (const ParseException &e)
 	{
 		cerr << "Config file error "
 			 << e.getFile()
@@ -83,8 +82,9 @@ GameInterface::GameInterface(void)
 			cfgRoot->remove("clientAddress");
 		cfgRoot->add("clientAddress", Setting::TypeString) = clientAddress;
 		cfg.writeFile(CONFIG_F);
-
-	} else {
+	}
+	else
+	{
 		cfg.lookupValue("clientAddress", clientAddress);
 	}
 	this->clientAddress = clientAddress;
@@ -132,7 +132,7 @@ GameInterface::createGame(void)
 
 
 bool
-GameInterface::joinGame(string const& gameAddress)
+GameInterface::joinGame(string const &gameAddress)
 {
 	string ethabiEncodeArgs;
 	unique_ptr<unordered_map<string, string>> eventLog;
@@ -281,11 +281,11 @@ GameInterface::getBoardState(void)
 {
 	uint16_t n = 0;
 	uint8_t retries = 0;
-	vector<vector<vector<uint8_t>>> result(3, vector<vector<uint8_t>> (10, vector<uint8_t> (9, 0)));
+	vector<vector<vector<uint8_t>>> result(3, vector<vector<uint8_t>>(10, vector<uint8_t>(9, 0)));
 	vector<uint8_t> vec;
 
 	// Temporary fix for: https://github.com/ethereum/go-ethereum/issues/20890
-	while(1)
+	while (1)
 	{
 		try
 		{
@@ -294,7 +294,7 @@ GameInterface::getBoardState(void)
 				"get_board_state",
 				getFrom("get_board_state", ""));
 		}
-		catch (ResourceRequestFailedException const& e)
+		catch (ResourceRequestFailedException const &e)
 		{
 
 #ifdef _DEBUG
@@ -312,7 +312,8 @@ GameInterface::getBoardState(void)
 		break;
 	}
 
-	if (vec.size() != 3 * 10 * 9) {
+	if (vec.size() != 3 * 10 * 9)
+	{
 		throw ResourceRequestFailedException(
 			"getBoardState(): Did not contain the expected quantity of elements");
 	}
@@ -373,19 +374,15 @@ GameInterface::myTurn(void)
 
 bool
 GameInterface::layPath(uint8_t x,
-		uint8_t y,
-		uint8_t handIndex,
-		uint8_t adjacentPathX,
-		uint8_t adjacentPathY)
+	uint8_t y,
+	uint8_t handIndex,
+	uint8_t adjacentPathX,
+	uint8_t adjacentPathY)
 {
 	string ethabiEncodeArgs;
 	unique_ptr<unordered_map<string, string>> eventLog;
 
-	ethabiEncodeArgs = "-p " + to_string(x) +
-		" -p " + to_string(y) +
-		" -p " + to_string(handIndex) +
-		" -p " + to_string(adjacentPathX) +
-		" -p " + to_string(adjacentPathY);
+	ethabiEncodeArgs = "-p " + to_string(x) + " -p " + to_string(y) + " -p " + to_string(handIndex) + " -p " + to_string(adjacentPathX) + " -p " + to_string(adjacentPathY);
 
 	return callMutatorContract("lay_path", ethabiEncodeArgs, eventLog);
 }
@@ -407,9 +404,7 @@ GameInterface::layUnit(uint8_t handIndex)
 	// 	sig = "0" + sig;
 	// }
 
-	ethabiEncodeArgs = "-p " + to_string(handIndex) +
-		" -p " + to_string(getPrivateCardFromSeed(hand[handIndex])) +
-		" -p " + sig;
+	ethabiEncodeArgs = "-p " + to_string(handIndex) + " -p " + to_string(getPrivateCardFromSeed(hand[handIndex])) + " -p " + sig;
 
 	return callMutatorContract("lay_unit", ethabiEncodeArgs, eventLog);
 }
@@ -418,17 +413,14 @@ GameInterface::layUnit(uint8_t handIndex)
 
 bool
 GameInterface::moveUnit(uint8_t unitX,
-		uint8_t unitY,
-		uint8_t moveX,
-		uint8_t moveY)
+	uint8_t unitY,
+	uint8_t moveX,
+	uint8_t moveY)
 {
 	string ethabiEncodeArgs;
 	unique_ptr<unordered_map<string, string>> eventLog;
 
-	ethabiEncodeArgs = "-p " + to_string(unitX) +
-		" -p " + to_string(unitY) +
-		" -p " + to_string(moveX) +
-		" -p " + to_string(moveY);
+	ethabiEncodeArgs = "-p " + to_string(unitX) + " -p " + to_string(unitY) + " -p " + to_string(moveX) + " -p " + to_string(moveY);
 
 	return callMutatorContract("move_unit", ethabiEncodeArgs, eventLog);
 }
@@ -437,17 +429,14 @@ GameInterface::moveUnit(uint8_t unitX,
 
 bool
 GameInterface::attack(uint8_t unitX,
-		uint8_t unitY,
-		uint8_t attackX,
-		uint8_t attackY)
+	uint8_t unitY,
+	uint8_t attackX,
+	uint8_t attackY)
 {
 	string ethabiEncodeArgs;
 	unique_ptr<unordered_map<string, string>> eventLog;
 
-	ethabiEncodeArgs = "-p " + to_string(unitX) +
-		" -p " + to_string(unitY) +
-		" -p " + to_string(attackX) +
-		" -p " + to_string(attackY);
+	ethabiEncodeArgs = "-p " + to_string(unitX) + " -p " + to_string(unitY) + " -p " + to_string(attackX) + " -p " + to_string(attackY);
 
 	return callMutatorContract("attack", ethabiEncodeArgs, eventLog);
 }
@@ -481,7 +470,7 @@ GameInterface::waitGameStart(void)
 void
 GameInterface::waitNextTurn(void)
 {
-	while(!myTurn())
+	while (!myTurn())
 	{
 		blockForEvent("NextTurn");
 	}
