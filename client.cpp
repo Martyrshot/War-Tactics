@@ -368,7 +368,7 @@ void playGame(void) {
                         }
                     }
                 }
-                if (interface.layPath(point[0], point[1], cardID, adjx, adjy)) {
+                if (!interface.layPath(point[0], point[1], cardID, adjx, adjy)) {
                     cout << "Failed to lay a path there!" << endl;
                 }
             }
