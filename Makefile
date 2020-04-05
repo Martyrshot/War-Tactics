@@ -18,10 +18,13 @@ CC = g++
 
 # Disable warnings about future GCC abi changes
 CFLAGS = -Wno-psabi
-CPPFLAGS = -std=gnu++17 -Wall -Wextra -pedantic -g
+CPPFLAGS = -std=gnu++17 -Wall -Wextra -pedantic -g3 -D_GNU_SOURCE -D_DEFAULT_SOURCE
 LDFLAGS = -lconfig++ \
-					-lpthread \
-					-lboost_system
+          -lpthread \
+          -lmenuw \
+          -lncursesw \
+          -ltinfo \
+          -lboost_system
 
 JSONINC = ./json/include
 LIBCONFIGINC = ./libconfig/lib

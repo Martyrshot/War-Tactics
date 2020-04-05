@@ -9,6 +9,10 @@
 #include "include/game_interface.hpp"
 #include "include/prompts.hpp"
 #include <time.h> // TODO remove this after testing is complete
+#ifndef DARWIN
+#include <menu.h> //For ncurses
+#include <ncursesw/ncurses.h>
+#endif
 using namespace std;
 
 // etherium address
@@ -43,9 +47,121 @@ void playGame(void);
 vector< vector< vector<uint8_t> > >
 safeGetBoardState(vector< vector< vector<uint8_t> > >curBoard,
                                                              bool printNum);
+#ifndef DARWIN
+//Free the menu and remove it from the screen. Does not close any windows
+//associated with the menu.
+void cleanMenu(MENU *menu, ITEM **menu_items) {
+	  if (NULL != menu_items) {
+			for (int i = 0; i < MENU_ITEMS; i++) {
+					free_item(menu_items[i]);
+			}
+		}
+		unpost_menu(menu);
+		free_menu(menu);
+}	
+#endif
+
 
 int main(int argc, char **argv) {
+#ifndef DARWIN
+    (void) argc;
+    (void) argv;
 
+    unsigned int randSeed;
+    ifstream irand("/dev/urand", ios::binary);
+    int selection = -1;
+
+    irand.read((char*) &randSeed, sizeof(randSeed));
+    srand(randSeed);
+    irand.close();
+
+//MENU_ITEMS+1 because new_item MUST be NULL terminated before it's used
+//in new_menu. So part of the initialization is creating a NULL item....
+//gf 7 hours.
+		const char *menu_strings[] = {"Make a game",
+			                            "Join a game",
+																	"Exit",
+																	NULL};
+
+		ITEM *menu_items[MENU_ITEMS+1];
+		ITEM *currentItem;
+		MENU *main_menu;
+		WINDOW *main_win;
+
+//Init ncurses
+//MUST include this for unicode support.
+		setlocale(LC_CTYPE, "");
+		initscr();
+		if (has_colors()) {
+ 		    start_color();
+		}
+		cbreak();
+		noecho();
+
+		printw(TITLE);
+		refresh();
+		keypad(stdscr, TRUE);
+    init_pair(2, COLOR_BLUE, COLOR_BLACK);
+		bkgd(COLOR_PAIR(2));
+    init_pair(1, COLOR_RED, COLOR_BLACK);
+//Create a menu to choose a game option from
+		for (int i = 0; i < MENU_ITEMS+1; i++) {
+			 menu_items[i] = new_item(menu_strings[i], NULL);
+		}
+    main_menu = new_menu(menu_items);
+		main_win = newwin(10,42,13,0);
+		keypad(main_win, TRUE);
+		set_menu_win(main_menu, main_win);
+		set_menu_sub(main_menu, derwin(main_win, 3, 32, 3, 5));
+		set_menu_mark(main_menu, " * ");
+		box(main_win, 0, 0);
+		wattron(main_win, COLOR_PAIR(1));
+		wattron(main_win, A_BOLD);
+		mvwprintw(main_win, 1, 15, "%s", "Main Menu");
+// \u expects exactly 4 hex digits while \U expects exactly 8 hex digits
+// Unfortunately, the command line can only display 4 byte unicode.
+		mvwprintw(main_win, 2, 16, "%lc %lc %lc %lc",
+				                              L'\u2660',L'\u2665',L'\u2666',L'\u2663');
+		wattroff(main_win, A_BOLD);
+		wattroff(main_win, COLOR_PAIR(1));
+		refresh();
+		post_menu(main_menu);
+		wrefresh(main_win);
+//There is a macro called KEY_ENTER, but the enter key value is either 10 or
+//13 (NL or CR)
+    while ((selection = wgetch(main_win)) != 10 && selection != 13) {
+		    switch(selection) {
+				    case KEY_DOWN: menu_driver(main_menu, REQ_DOWN_ITEM);
+						    break;
+            case KEY_UP: menu_driver(main_menu, REQ_UP_ITEM);
+								break;
+				}
+				wrefresh(main_win);
+				currentItem = current_item(main_menu);
+		}
+
+        //Decide what to do based on the menu selection
+    if ((item_index(currentItem) == 0)) {
+				cleanMenu(main_menu, menu_items);
+				endwin();
+        if (!createGame()) {
+            return -1;
+        }
+    }
+    else if (item_index(currentItem) == 1) {
+				cleanMenu(main_menu, menu_items);
+				endwin();
+        string addr = promptAddress();
+        if (!joinGame(addr)) {
+            return -1;
+        }
+    }
+	else {
+			cleanMenu(main_menu, menu_items);
+			endwin();
+	    exit(EXIT_SUCCESS);
+	}
+#else
     unsigned int randSeed;
     ifstream irand("/dev/urand", ios::binary);
     int8_t selection = -1;
@@ -71,6 +187,8 @@ int main(int argc, char **argv) {
             return -1;
         }
     }
+#endif
+
     playGame();
 
     //testDriver();
@@ -171,7 +289,7 @@ void playGame(void) {
         hqPlaced = interface.placeHq(point[0]);
 
     }
-    
+
     system("clear");
     points.clear();
     healths = interface.getHqHealth();
