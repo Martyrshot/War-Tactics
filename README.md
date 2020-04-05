@@ -28,12 +28,14 @@ Test ethabi works: `ethabi -h`
 ##### MacOS
 
 Install the Homebrew package manager from [https://brew.sh]
+
 `brew install boost`
 `brew install boost-python`
 
 #### Geth Ethereum Client
 
-War Tactics requires v1.9.9-stable [https://github.com/etheruem/go-ethereum/releases/tag/v1.9.9
+War Tactics requires v1.9.9-stable https://github.com/etheruem/go-ethereum/releases/tag/v1.9.9
+
 `git clone https://github.com/ethereum/go-ethereum.git`
 `git checkout v1.9.9`
 `make`
@@ -47,6 +49,7 @@ War Tactics requires v1.9.9-stable [https://github.com/etheruem/go-ethereum/rele
 ##### Debian
 
 The Ubuntu based apt repository for Solidity is not compatible with Debian. Use the Snap package manger to install instead.
+
 `sudo apt install -y snapd && sudo snap install solc --edge`
 (--edge ensures that you install at least version 0.6.0)
 
