@@ -156,9 +156,6 @@ main(int argc, char **argv)
 	cleanMenu(main_menu, menu_items);
 	endwin();
 
-	// TODO: Remove this after debugging
-	cout << to_string(idx) << endl;
-
 	//Decide what to do based on the menu selection
 	if (idx == 0)
 	{
