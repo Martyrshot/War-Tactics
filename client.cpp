@@ -290,13 +290,14 @@ void playGame(void) {
 
     }
 
+
+    interface.waitGameStart();
     system("clear");
     points.clear();
     healths = interface.getHqHealth();
     board = safeGetBoardState(board, false);
     printBoard(board, playerID, points, healths[playerID - 1],
                                                              healths[oppID -1]);
-    interface.waitGameStart();
     interface.waitNextTurn();
 
     while(!interface.isGameOver()) {
