@@ -48,7 +48,7 @@ War Tactics requires v1.9.9-stable [https://github.com/etheruem/go-ethereum/rele
 
 The Ubuntu based apt repository for Solidity is not compatible with Debian. Use the Snap package manger to install instead.
 `sudo apt install -y snapd && sudo snap install solc --edge`
---edge ensures that you install at least version 0.6.0
+(--edge ensures that you install at least version 0.6.0)
 
 ##### MacOS
 
