@@ -64,6 +64,8 @@ class EthInterface
 
 	EventLogWaitManager* eventLogWaitManager = nullptr;
 
+	void compile_solidity(std::string const& solFile, std::string const& abiFile, std::string const& binFile);
+
 	std::string getFrom(std::string const& funcName, std::string const& ethabiEncodeArgs);
 	std::string getNoArgs(std::string const& funcName);
 	uint64_t getInt(std::string const& funcName);

@@ -261,18 +261,18 @@ getPossibleMovementOptionsForUnit(vector< vector< vector<uint8_t> > >board,
     uint8_t y = unit[1];
 
     vector< vector<uint8_t> > points;
-    if (x > 9|| x < 0 || y > 8 || y < 0) {
+    if (x > 9 || y > 8) {
         return points;
     }
     if (board[2][x][y] == playerID && (board[1][x][y] != STATE_HQ_AND_UNIT
                                     || board[1][x][y] != STATE_PATH_AND_UNIT)) {
         return points;
     }
-    if (x < 9 && 
+    if (x < 9 &&
              (board[1][x+1][y] == STATE_PATH || board[1][x+1][y] == STATE_HQ)) {
             points.push_back({static_cast<unsigned char>(x+1),y});
     }
-    if (x > 0 && 
+    if (x > 0 &&
               (board[1][x-1][y] == STATE_PATH || board[1][x-1][y]== STATE_HQ)) {
                 points.push_back({static_cast<unsigned char>(x-1),y});
     }
