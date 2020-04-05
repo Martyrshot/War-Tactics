@@ -20,6 +20,7 @@ CC = g++
 OS=$(shell uname -s)
 CFLAGS = -Wno-psabi
 CPPFLAGS = -std=gnu++17 -Wall -Wextra -pedantic -g3 -D_GNU_SOURCE -D_DEFAULT_SOURCE
+#Text User Interface is currently not supported on MacOS
 ifeq ($(OS), Darwin)
 LDFLAGS = -lconfig++ \
           -lpthread \
