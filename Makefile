@@ -17,14 +17,22 @@
 CC = g++
 
 # Disable warnings about future GCC abi changes
+OS=$(shell uname -s)
 CFLAGS = -Wno-psabi
 CPPFLAGS = -std=gnu++17 -Wall -Wextra -pedantic -g3 -D_GNU_SOURCE -D_DEFAULT_SOURCE
+ifeq ($(OS), Darwin)
+LDFLAGS = -lconfig++ \
+          -lpthread \
+          -lboost_system
+DARWIN=-DDARWIN
+else
 LDFLAGS = -lconfig++ \
           -lpthread \
           -lmenuw \
           -lncursesw \
           -ltinfo \
           -lboost_system
+endif
 
 JSONINC = ./json/include
 LIBCONFIGINC = ./libconfig/lib
@@ -63,9 +71,9 @@ OBJECTS := $(OBJ)/eth_interface.o \
 			$(OBJ)/client.o
 
 $(OBJ)/%.o: %.cpp
-	$(CC) $(CFLAGS) $(CPPFLAGS) -c $(DEBUG) -o $@ $(INCLUDE) $<
+	$(CC) $(DARWIN) $(CFLAGS) $(CPPFLAGS) -c $(DEBUG) -o $@ $(INCLUDE) $<
 
 $(BIN)/client: $(OBJECTS)
 	$(CC) $(CPPFLAGS) -o $@ \
-		${LDFLAGS} $^ 
+		 ${LDFLAGS} $^ 
 	ln -fs $@ ./client
