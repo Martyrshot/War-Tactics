@@ -68,7 +68,7 @@ int main(int argc, char **argv) {
     (void) argv;
 
     unsigned int randSeed;
-    ifstream irand("/dev/urand", ios::binary);
+    ifstream irand("/dev/urandom", ios::binary);
     int selection = -1;
 
     irand.read((char*) &randSeed, sizeof(randSeed));
@@ -163,7 +163,7 @@ int main(int argc, char **argv) {
 	}
 #else
     unsigned int randSeed;
-    ifstream irand("/dev/urand", ios::binary);
+    ifstream irand("/dev/urandom", ios::binary);
     int8_t selection = -1;
 
     (void) argc;
@@ -274,7 +274,7 @@ void playGame(void) {
     hqPlaced = interface.placeHq(point[0]);
 
     while (!hqPlaced) {
-        //system("clear");
+        system("clear");
         points = getPossibleHQLocations(playerID);
         healths = interface.getHqHealth();
         printBoard(board, playerID, points, healths[playerID - 1],
