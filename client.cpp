@@ -9,8 +9,10 @@
 #include "include/game_interface.hpp"
 #include "include/prompts.hpp"
 #include <time.h> // TODO remove this after testing is complete
+#ifndef DARWIN
 #include <menu.h> //For ncurses
 #include <ncursesw/ncurses.h>
+#endif
 using namespace std;
 
 // etherium address
@@ -45,7 +47,7 @@ void playGame(void);
 vector< vector< vector<uint8_t> > >
 safeGetBoardState(vector< vector< vector<uint8_t> > >curBoard,
                                                              bool printNum);
-
+#ifndef DARWIN
 //Free the menu and remove it from the screen. Does not close any windows
 //associated with the menu.
 void cleanMenu(MENU *menu, ITEM **menu_items) {
@@ -57,9 +59,9 @@ void cleanMenu(MENU *menu, ITEM **menu_items) {
 		unpost_menu(menu);
 		free_menu(menu);
 }	
-
+#endif
 int main(int argc, char **argv) {
-
+#ifndef DARWIN
     (void) argc;
     (void) argv;
 
@@ -137,7 +139,7 @@ int main(int argc, char **argv) {
 				currentItem = current_item(main_menu);
 		}
 
-//Decide what to do based on the menu selection
+        //Decide what to do based on the menu selection
     if ((item_index(currentItem) == 0)) {
 				cleanMenu(main_menu, menu_items);
 				endwin();
@@ -153,11 +155,39 @@ int main(int argc, char **argv) {
             return -1;
         }
     }
-		else {
-				cleanMenu(main_menu, menu_items);
-				endwin();
-		    exit(EXIT_SUCCESS);
-		}
+	else {
+			cleanMenu(main_menu, menu_items);
+			endwin();
+	    exit(EXIT_SUCCESS);
+	}
+#else
+    unsigned int randSeed;
+    ifstream irand("/dev/urand", ios::binary);
+    int8_t selection = -1;
+
+    (void) argc;
+    (void) argv;
+
+    irand.read((char*) &randSeed, sizeof(randSeed));
+    srand(randSeed);
+    irand.close();
+
+    do {
+        selection = mainMenu(TITLE);
+    } while (selection == -1);
+    if (selection == 0) {
+        if (!createGame()) {
+            return -1;
+        }
+    }
+    else {
+        string addr = promptAddress();
+        if (!joinGame(addr)) {
+            return -1;
+        }
+    }
+#endif
+
     playGame();
 
     //testDriver();
