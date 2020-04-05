@@ -563,8 +563,14 @@ EthInterface::getTransactionReceipt(string const& transactionHash)
 		cout << transactionReceipt << endl
 			 << endl;
 #endif //_DEBUG
-
-		jsonData = Json::parse(transactionReceipt);
+		try
+		{
+			jsonData = Json::parse(transactionReceipt);
+		}
+		catch(nlohmann::detail::parse_error const& e)
+		{
+			continue;
+		}
 		auto jsonFindResult = jsonData.find("result");
 		if (jsonFindResult == jsonData.end())
 		{
