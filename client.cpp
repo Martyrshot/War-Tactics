@@ -150,11 +150,13 @@ main(int argc, char **argv)
 		currentItem = current_item(main_menu);
 	}
 
+	currentItem = current_item(main_menu);
 	int idx = item_index(currentItem);
 
 	cleanMenu(main_menu, menu_items);
 	endwin();
 
+	// TODO: Remove this after debugging
 	cout << to_string(idx) << endl;
 
 	//Decide what to do based on the menu selection
