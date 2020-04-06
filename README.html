@@ -18,12 +18,15 @@
   <![endif]-->
 </head>
 <body>
-<p>Note: If you are reading this in a terminal, we recommend reading README.md</p>
+<p>Note: If you are using a terminal, we recommend you read the README.md file instead of this one.</p>
 <h1 id="project">434-project</h1>
-<p><img src="demo.gif" alt="Playthrough video" /> <a href="https://youtu.be/ithINQO8pM8">Click here to view playthrough on youtube</a></p>
+<p><img src="demo.gif" /></p>
+<p><a href="https://youtu.be/ithINQO8pM8">Click here to view playthrough on youtube</a></p>
 <h2 id="dependencies">Dependencies</h2>
 <p>This repository contains submodules from other repositories. Clone using the command:</p>
 <pre><code>git clone --recurse-submodules git@github.com:Martyrshot/434-project.git</code></pre>
+<p>Or if you’ve already cloned the repo, you can add the submodules by using this command:</p>
+<pre><code>git submodule update --init --recursive</code></pre>
 <h4 id="ethabi">ethabi</h4>
 <p>Compile and install the ethabi binary. It MUST use only this one specific commit from the project as listed. This is because of a bug was fixed on one commit, then the commit following that one changed the CLI fairly radically and broke compatibility.</p>
 <p>First install rustc &amp; cargo as directed at [https://www.rust-lang.org/tools/install]</p>

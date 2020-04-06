@@ -1,8 +1,9 @@
-Note: We recommend reading README.html in a web browser rather than README.md
+Note: If you are using a terminal, we recommend you read the README.md file instead of this one.
 
 # 434-project
 
-![Playthrough video](demo.gif)
+![](demo.gif)
+
 [Click here to view playthrough on youtube](https://youtu.be/ithINQO8pM8)
 
 
