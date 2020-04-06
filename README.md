@@ -11,7 +11,7 @@ Note: If you are using a terminal, we recommend you read the README.md file inst
 
 This repository contains submodules from other repositories. Clone using the command:
 ```
-git clone --recurse-submodules git@github.com:Martyrshot/434-project.git
+git clone --recurse-submodules https://github.com/Martyrshot/434-project.git
 ```
 Or if you've already cloned the repo, you can add the submodules by using this command:
 ```
