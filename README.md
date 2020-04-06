@@ -1,6 +1,7 @@
 # 434-project
 
-<iframe width="560" height="315" src="https://www.youtube.com/embed/5d_gcwWznKM" frameborder="0" allow="accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
+![Playthrough video](demo.gif)
+[Click here to view playthrough on youtube](https://youtu.be/ithINQO8pM8)
 
 ## Dependencies
 
