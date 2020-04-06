@@ -1,5 +1,9 @@
 # 434-project
 
+![Playthrough video](demo.gif)
+[Click here to view playthrough on youtube](https://youtu.be/ithINQO8pM8)
+
+
 ## Dependencies
 
 This list is a work in progress and more will be added
