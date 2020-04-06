@@ -18,5 +18,6 @@ geth \
 	--datadir "${FILEPATH}/chaindata" \
 	--networkid 21811 \
 	--port 30303 \
+	--targetgaslimit 40000000 \
 	--allow-insecure-unlock \
 	--rpc
