@@ -80,9 +80,7 @@ brew install solidity
 
 ## Configuration
 
-This project utilizes numerous dependencies. Please refer to the readme file for a list of dependencies and how to obtain them. Once all dependencies have been installed, some configuration and initialization is required.
-
-Acquire the repository:
+Acquire the repository, if you have not done so already:
 ```
 git clone --recurse-submodules git@github.com:Martyrshot/434-project.git
 cd 434-project/chain
