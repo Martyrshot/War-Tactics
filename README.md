@@ -12,6 +12,11 @@ This repository contains submodules from other repositories. Clone using the com
 ```
 git clone --recurse-submodules git@github.com:Martyrshot/434-project.git
 ```
+Or if you've already cloned the repo, you can add the submodules by using this command:
+```
+git submodule update --init --recursive
+```
+
 
 #### ethabi
 Compile and install the ethabi binary. It MUST use only this one specific commit from the project as listed. This is because of a bug was fixed on one commit, then the commit following that one changed the CLI fairly radically and broke compatibility.
