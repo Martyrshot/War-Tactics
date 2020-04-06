@@ -16,7 +16,7 @@ Compile and install the ethabi binary. It MUST use only this one specific commit
 
 First install rustc & cargo as directed at [https://www.rust-lang.org/tools/install]
 
-Ensure that the necessary commands to ~/.profile as specified
+Ensure that the necessary commands to `~/.profile` as specified
 
 Then
 ```
