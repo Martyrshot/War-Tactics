@@ -1,3 +1,5 @@
+Note: We recommend reading README.html in a web browser rather than README.md
+
 # 434-project
 
 ![Playthrough video](demo.gif)
