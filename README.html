@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" lang="" xml:lang="">
+<head>
+  <meta charset="utf-8" />
+  <meta name="generator" content="pandoc" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=yes" />
+  <title>README</title>
+  <style>
+    code{white-space: pre-wrap;}
+    span.smallcaps{font-variant: small-caps;}
+    span.underline{text-decoration: underline;}
+    div.column{display: inline-block; vertical-align: top; width: 50%;}
+    div.hanging-indent{margin-left: 1.5em; text-indent: -1.5em;}
+    ul.task-list{list-style: none;}
+  </style>
+  <!--[if lt IE 9]>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/html5shiv/3.7.3/html5shiv-printshiv.min.js"></script>
+  <![endif]-->
+</head>
+<body>
+<h1 id="note-if-you-are-using-a-terminal-based-document-reader-please-read-readme.md">Note: If you are using a terminal based document reader please read README.md</h1>
+<h1 id="project">434-project</h1>
+<p><img src="demo.gif" /></p>
+<p><a href="https://youtu.be/ithINQO8pM8">Click here to view playthrough on youtube</a></p>
+<h2 id="dependencies">Dependencies</h2>
+<p>This repository contains submodules from other repositories. Clone using the command:</p>
+<pre><code>git clone --recurse-submodules git@github.com:Martyrshot/434-project.git</code></pre>
+<h4 id="ethabi">ethabi</h4>
+<p>Compile and install the ethabi binary. It MUST use only this one specific commit from the project as listed. This is because of a bug was fixed on one commit, then the commit following that one changed the CLI fairly radically and broke compatibility.</p>
+<p>First install rustc &amp; cargo as directed at [https://www.rust-lang.org/tools/install]</p>
+<p>Ensure that the necessary commands to <code>~/.profile</code> as specified</p>
+<p>Then</p>
+<pre><code>cargo install --git https://github.com/paritytech/ethabi.git --rev 7de908fccb2426950dc38a412c35bf1c5b1f6561</code></pre>
+<p>Test ethabi works: <code>ethabi -h</code></p>
+<h4 id="boost-library">Boost Library</h4>
+<h5 id="ubuntudebian">Ubuntu/Debian</h5>
+<pre><code>sudo apt update &amp;&amp; sudo apt install libboost-all-dev</code></pre>
+<h5 id="macos">MacOS</h5>
+<p>Install the Homebrew package manager from [https://brew.sh]</p>
+<pre><code>brew install boost
+brew install boost-python</code></pre>
+<h4 id="geth-ethereum-client">Geth Ethereum Client</h4>
+<p>War Tactics requires v1.9.9-stable https://github.com/etheruem/go-ethereum/releases/tag/v1.9.9</p>
+<pre><code>git clone https://github.com/ethereum/go-ethereum.git
+cd go-ethereum
+git checkout v1.9.9
+make</code></pre>
+<h4 id="solidity-compiler-solc">Solidity Compiler (solc)</h4>
+<h5 id="ubuntu">Ubuntu</h5>
+<pre><code>sudo apt update &amp;&amp; sudo apt install solc</code></pre>
+<h5 id="debian">Debian</h5>
+<p>The Ubuntu based apt repository for Solidity is not compatible with Debian. Use the Snap package manger to install instead.</p>
+<pre><code>sudo apt install -y snapd &amp;&amp; sudo snap install solc --edge</code></pre>
+<h5 id="macos-1">MacOS</h5>
+<pre><code>brew tap ethereum/ethereum
+brew install solidity</code></pre>
+<h2 id="configuration">Configuration</h2>
+<p>Acquire the repository, if you have not done so already:</p>
+<pre><code>git clone --recurse-submodules git@github.com:Martyrshot/434-project.git
+cd 434-project/chain</code></pre>
+<p>Store the directory to an environment variable:</p>
+<pre><code>CHAINDIR=`pwd`</code></pre>
+<p>This set of instructions will have you setup a private Ethereum network. This requires at least 2 seperate Geth clients to pair with each other to work. Both clients must use a unique address. This repo provides 3 address/password pairs for easy testing.</p>
+<p>To select which pair of address/password, set it in the <code>private_chain.sh</code> file. Ensure you use a different values for each client you setup. Edit <code>private_chain.sh</code> and change the value of the “CREDENTIALS” environment variable and set it to one of: “1”, “2”, or “3” (unquoted).</p>
+<p>In addition to the above edit, also set the value of the “–ipcpath” flag to: If on Mac OS X: <code>/Users/USERNAME/Library/Ethereum/geth.ipc</code>, where USERNAME is your home folder If on Linux: <code>/home/USERNAME/.ethereum/geth.ipc</code>, where USERNAME is your homefolder</p>
+<pre><code>vim ${CHAINDIR}/private_chain.sh</code></pre>
+<p>Edit game.conf Change “clientAddress” to “Public address of the key” from above" If on Mac OS X: Change “ipcPath” to the absolute path: <code>/Users/USERNAME/Library/Ethereum/geth.ipc</code>, where USERNAME is your home folder If on Linux: Change “ipcPath” to the absolute path: <code>/home/USERNAME/.ethereum/geth.ipc</code>, where USERNAME is your homefolder</p>
+<pre><code>vim ${CHAINDIR}/../game.conf</code></pre>
+<p>Now initialize the blockchain.</p>
+<pre><code>./private_init.sh</code></pre>
+<h2 id="starting-up">Starting Up</h2>
+<p>Run geth.</p>
+<pre><code>./private_chain.sh</code></pre>
+<p>You will now need to likely tell each client how to connect to the other client. On either client, from within Geth:</p>
+<pre><code>admin.nodeInfo.enode</code></pre>
+<p>This will output a string resembling:</p>
+<blockquote>
+<p>“enode://e367fe669a09dfbb9cc9e86809fcd2175eb3c5de3123a5dbeb7175e27780598f643030762f80735b326c3e134b619ffed7d1d22f72a4805bf9f02030d0d6488b@172.16.1.66:30303”</p>
+</blockquote>
+<p>From the other client, provide this information with the <code>admin.addPeer()</code> function, as in the example below:</p>
+<pre><code>admin.addPeer(&quot;enode://e367fe669a09dfbb9cc9e86809fcd2175eb3c5de3123a5dbeb7175e27780598f643030762f80735b326c3e134b619ffed7d1d22f72a4805bf9f02030d0d6488b@172.16.1.66:30303&quot;)</code></pre>
+<p>After a few moments you should begin to see output indicating that mining occuring every 5 seconds.</p>
+<p>In a seperate terminal, navigate to the root of the repository directory.</p>
+<p>If you have not yet compiled the game, do so with <code>make</code>.</p>
+<p>Run the game with <code>./client</code></p>
+</body>
+</html>
