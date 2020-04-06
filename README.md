@@ -71,11 +71,15 @@ The Ubuntu based apt repository for Solidity is not compatible with Debian. Use 
 This project utilizes numerous dependencies. Please refer to the readme file for a list of dependencies and how to obtain them. Once all dependencies have been installed, some configuration and initialization is required.
 
 Acquire the repository:
-```git clone --recurse-submodules git@github.com:Martyrshot/434-project.git
-cd 434-project/chain```
+```
+git clone --recurse-submodules git@github.com:Martyrshot/434-project.git
+cd 434-project/chain
+```
 
 Store the directory to an environment variable:
-```CHAINDIR=`pwd` ```
+```
+CHAINDIR=`pwd`
+```
 
 This set of instructions will have you setup a private Ethereum network. This requires at least 2 seperate Geth clients to pair with each other to work. Both clients must use a unique address. This repo provides 3 address/password pairs for easy testing.
 
@@ -86,28 +90,38 @@ In addition to the above edit, also set the value of the "--ipcpath" flag to:
 	If on Mac OS X: `/Users/USERNAME/Library/Ethereum/geth.ipc`, where USERNAME is your home folder
 	If on Linux: `/home/USERNAME/.ethereum/geth.ipc`, where USERNAME is your homefolder
 
-```vim ${CHAINDIR}/private_chain.sh```
+```
+vim ${CHAINDIR}/private_chain.sh
+```
 
 Edit game.conf
 Change "clientAddress" to "Public address of the key" from above"
 	If on Mac OS X: Change "ipcPath" to the absolute path: `/Users/USERNAME/Library/Ethereum/geth.ipc`, where USERNAME is your home folder
 	If on Linux: Change "ipcPath" to the absolute path: `/home/USERNAME/.ethereum/geth.ipc`, where USERNAME is your homefolder
 
-```vim ${CHAINDIR}/../game.conf```
+```
+vim ${CHAINDIR}/../game.conf
+```
 
 Now initialize the blockchain.
-```./private_init.sh```
+```
+./private_init.sh
+```
 
 ## Starting Up
 
 Run geth.
-```./private_chain.sh```
+```
+./private_chain.sh
+```
 
 
 You will now need to likely tell each client how to connect to the other client.
 On either client, from within Geth:
 
-```admin.nodeInfo.enode```
+```
+admin.nodeInfo.enode
+```
 
 This will output a string resembling:
 
@@ -115,7 +129,9 @@ This will output a string resembling:
 
 From the other client, provide this information with the `admin.addPeer()` function, as in the example below:
 
-```admin.addPeer("enode://e367fe669a09dfbb9cc9e86809fcd2175eb3c5de3123a5dbeb7175e27780598f643030762f80735b326c3e134b619ffed7d1d22f72a4805bf9f02030d0d6488b@172.16.1.66:30303")```
+```
+admin.addPeer("enode://e367fe669a09dfbb9cc9e86809fcd2175eb3c5de3123a5dbeb7175e27780598f643030762f80735b326c3e134b619ffed7d1d22f72a4805bf9f02030d0d6488b@172.16.1.66:30303")
+```
 
 After a few moments you should begin to see output indicating that mining occuring every 5 seconds.
 
