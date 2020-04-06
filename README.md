@@ -17,7 +17,7 @@ Or if you've already cloned the repo, you can add the submodules by using this c
 ```
 git submodule update --init --recursive
 ```
-
+Please follow the install instructions for json and libconfig directories before continuing, if you don't have them installed on your system already.
 
 #### ethabi
 Compile and install the ethabi binary. It MUST use only this one specific commit from the project as listed. This is because of a bug was fixed on one commit, then the commit following that one changed the CLI fairly radically and broke compatibility.
